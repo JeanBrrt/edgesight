@@ -13,7 +13,7 @@ import time
 from openai import OpenAI, OpenAIError
 
 from ..journal.event_store import EventStore
-from .tools import AgentTools
+from .tools import AgentTools, FinalAnswer
 from .tool_schemas import TOOL_SCHEMAS
 from ._config import (
     LLAMA_SERVER_URL,
@@ -170,6 +170,11 @@ class Agent:
                 question, outcome, attempts, max_rounds, tool_calls_log,
             )
 
+        # Passe à True dès qu'un tool renvoie un résultat "ordinaire" (pas une
+        # FinalAnswer) à N'IMPORTE QUEL tour de cet échange -- voir le
+        # court-circuit plus bas.
+        had_ordinary_result = False
+
         for round_idx in range(max_rounds):
             try:
                 response = self.client.chat.completions.create(
@@ -202,6 +207,7 @@ class Agent:
                 return message.content
 
             messages.append(message.model_dump(exclude_none=True))
+            final_answers: list[str] = []
             for call in message.tool_calls:
                 try:
                     arguments = json.loads(call.function.arguments)
@@ -213,7 +219,30 @@ class Agent:
                     result = self._execute_tool(call.function.name, arguments, now=request_ts)
                     logger.info("Tool %s(%s) -> %s", call.function.name, arguments, result)
                     tool_calls_log.append((call.function.name, arguments))
+                if isinstance(result, FinalAnswer):
+                    final_answers.append(result)
+                else:
+                    had_ordinary_result = True
                 messages.append({"role": "tool", "tool_call_id": call.id, "content": result})
+
+            # Tous les tools de l'échange ont renvoyé une réponse déjà rédigée
+            # (FinalAnswer, voir tools.py) : renvoyée telle quelle, sans tour
+            # de reformulation par le LLM -- qui s'est montré capable d'en
+            # inverser le sens. Un seul résultat "ordinaire" dans l'échange,
+            # même à un tour précédent, suffit à revenir au fonctionnement
+            # normal (question mixte, ex. "combien de voitures maintenant et
+            # depuis quand... ?", que le modèle peut répartir sur deux tours
+            # -- sans cette vérification sur tout l'échange, le chiffre du
+            # premier tour était perdu).
+            if final_answers and not had_ordinary_result:
+                answer = " ".join(final_answers)
+                logger.info("Reponse finale directe (round %d, sans reformulation) : %s", round_idx, answer)
+                _log_summary(round_idx + 1, "reponse finale directe")
+                if use_memory:
+                    messages.append({"role": "assistant", "content": answer})
+                    if session.messages is messages:
+                        self._trim_session(session, messages)
+                return answer
 
         logger.info("Abandon apres %d tours sans reponse finale.", max_rounds)
         _log_summary(max_rounds, "abandon")

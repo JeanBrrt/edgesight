@@ -124,10 +124,11 @@ TOOL_SCHEMAS = [
         "function": {
             "name": "time_since_last_seen",
             "description": (
-                "Renvoie depuis combien de temps (en secondes) le dernier "
-                "objet d'une classe donnée est apparu (première détection de "
-                "la piste la plus récente). À utiliser pour 'quand la "
-                "dernière voiture est-elle passée'."
+                "Renvoie depuis combien de temps (en secondes) aucun objet "
+                "d'une classe donnée n'a été détecté (0 si un objet de "
+                "cette classe est dans le champ en ce moment). À utiliser pour 'depuis combien de temps "
+                "n'a-t-on pas vu de voiture' ou 'quand la dernière voiture "
+                "est-elle passée'."
             ),
             "parameters": {
                 "type": "object",

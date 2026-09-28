@@ -29,6 +29,32 @@ from ..journal.event_store import EventStore
 from ..alerts.zones import UNKNOWN_ZONE, ZONES
 from ._config import AGENT_FRESHNESS_SECONDS
 
+# Libellés des classes (enum `_CLASSES` de tool_schemas.py) pour les
+# réponses rédigées en phrase (time_since_last_seen).
+_CLASS_LABELS_FR = {"person": "personne", "car": "voiture"}
+
+
+class FinalAnswer(str):
+    """Résultat de tool déjà rédigé comme réponse définitive à
+    l'utilisateur : si TOUS les tools d'un tour en renvoient un,
+    `Agent.ask()` le renvoie tel quel, sans le faire reformuler par le LLM
+    (voir agent.py). Réservé aux cas où la reformulation s'est montrée
+    peu fiable -- un str ordinaire reste la règle pour tous les autres
+    tools."""
+
+
+def _format_duration(seconds: float) -> str:
+    """Durée lisible pour une FinalAnswer (le LLM ne passe plus derrière
+    pour transformer "125 secondes" en "environ 2 minutes")."""
+    total = round(seconds)
+    if total < 60:
+        return f"{total} seconde{'s' if total > 1 else ''}"
+    minutes, secs = divmod(total, 60)
+    if minutes < 60:
+        return f"{minutes} min {secs:02d} s" if secs else f"{minutes} min"
+    hours, minutes = divmod(minutes, 60)
+    return f"{hours} h {minutes:02d} min"
+
 
 def _parse_time_today(time_str: str, reference_date: date | None = None) -> float:
     """Convertit une heure "HH:MM" en timestamp epoch, ancré sur une date de
@@ -112,14 +138,31 @@ class AgentTools:
     # Statistiques dérivées
     # ------------------------------------------------------------------
 
-    def time_since_last_seen(self, object_class: str, now: float | None = None) -> float | None:
-        """Secondes écoulées depuis la première apparition de la piste la
-        plus récente de cette classe (None si aucune piste n'a jamais été vue)."""
-        first_seen = self.store.most_recent_first_seen(object_class)
-        if first_seen is None:
-            return None
+    def time_since_last_seen(self, object_class: str, now: float | None = None) -> str:
+        """Depuis combien de temps aucun objet de cette classe n'a été
+        détecté -- basé sur la DERNIÈRE détection (last_seen), avec la même
+        tolérance de fraîcheur que count_now, pour que les deux tools ne se
+        contredisent jamais ("1 voiture maintenant" mais "pas vue depuis
+        3s").
+
+        Renvoie une `FinalAnswer` (phrase définitive, jamais reformulée par
+        le LLM) : testé avec Granite-4.1-3B sur "depuis combien de temps on
+        n'a pas vu de voiture ?" alors qu'une voiture est visible, la
+        reformulation reprenait la négation de la question et inversait le
+        sens du résultat ("aucune voiture n'est actuellement visible") dans
+        ~1 cas sur 3 -- quelle que soit la forme du résultat (nombre,
+        booléen, phrase) ou une consigne ajoutée au prompt système."""
+        label = _CLASS_LABELS_FR.get(object_class, object_class)
+        last_seen = self.store.most_recent_last_seen(object_class)
+        if last_seen is None:
+            return FinalAnswer(f"Aucune {label} n'a été détectée depuis le début de la session.")
         ref_now = now if now is not None else time.time()
-        return ref_now - first_seen
+        elapsed = max(0.0, ref_now - last_seen)
+        if elapsed <= AGENT_FRESHNESS_SECONDS:
+            return FinalAnswer(f"Une {label} est visible en ce moment : la dernière détection date d'à l'instant.")
+        return FinalAnswer(
+            f"Aucune {label} n'est visible en ce moment : la dernière a été détectée il y a {_format_duration(elapsed)}."
+        )
 
     def average_presence_duration(self, object_class: str, now: float | None = None) -> float | None:
         """Durée moyenne de présence (secondes) des objets de cette classe,
