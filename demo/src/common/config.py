@@ -1,11 +1,11 @@
-"""Configuration partagée par les 5 scripts de démo (demo/src/*.py).
+"""Configuration partagée par les 3 scripts de démo (demo/src/scripts/*.py).
 
 Les valeurs vivent dans config/demo.yaml (racine du projet, voir ce
 fichier pour le détail des justifications) -- ce module ne fait que
 charger ce YAML et dériver les quelques valeurs qui en découlent
 (ONNX_PATH/INPUT_SIZE selon ACTIVE_MODEL, DEMO_SOURCES enrichi des
 vidéos personnelles déposées dans custom_videos_dir). Modifier une
-valeur dans le YAML s'applique aux 5 scripts d'un coup, sans toucher au
+valeur dans le YAML s'applique aux 3 scripts d'un coup, sans toucher au
 code.
 """
 
