@@ -1,0 +1,11 @@
+# Dépendances de l'agent (LLM local, orchestration des tools)
+# D2 — llama.cpp (llama-server, binaire dans agent/third_party/, gitignoré)
+# exposant une API compatible OpenAI ; le client `openai` officiel suffit,
+# juste pointé vers l'URL locale du serveur.
+openai
+
+# Tracking (C1) — supervision.ByteTrack est déprécié depuis 0.28.0,
+# on utilise directement le package successeur `trackers`
+numpy
+supervision
+trackers

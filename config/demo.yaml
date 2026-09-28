@@ -1,0 +1,92 @@
+# Configuration partagée par les 3 scripts de démo (demo/src/scripts/*.py),
+# chargée par demo/src/common/config.py -- modifier une valeur ici s'applique
+# aux 3 scripts d'un coup, plutôt que d'éditer chaque script individuellement.
+
+config_path: "detection/third_party/nanodet/config/nanodet-plus-m-1.5x_416-person-car.yml"
+
+# Modèles disponibles. onnx_path et input_size sont toujours groupés
+# ensemble ici pour éviter le mismatch de résolution déjà rencontré (cf.
+# docs/justifications.md "Bug latent...") : chaque fichier ONNX est figé à
+# la résolution de son export, indépendamment de ce que dit config_path
+# (qui reflète la config d'ENTRAÎNEMENT courante, pas forcément celle du
+# modèle choisi ici).
+models:
+  "896px":
+    # mAP=0,466 sur test.json (INT8, model_best epoch 36/50 -- training
+    # arrêté manuellement à l'epoch 40, cette epoch n'a pas amélioré le
+    # mAP val donc model_best est resté sur l'epoch 36). Meilleure
+    # précision du projet à ce jour (+1,7% vs 768px sur mAP, +6,4% sur
+    # AP_small, -4,2% sur AP_large), mais 25 FPS pure inférence pas
+    # mesuré pour CE modèle précis -- seule la latence architecture-only
+    # (indépendante des poids) a été mesurée en amont (section 4.3.1 du
+    # rapport, ~28 FPS à 896px). Entraînement non mené à son terme
+    # (epoch 40/50) : à retenir comme un modèle "meilleur effort",
+    # pas un résultat final comparable en rigueur aux 3 générations
+    # entraînées jusqu'au bout.
+    onnx_path: "detection/models/nanodet-plus-m-1.5x_896-person-car-int8-QDQ-u8s8.onnx"
+    input_size: [896, 896]
+  "512px":
+    # mAP=0,400 (Percentile+CalibStridedMinMax) -- 60,6 FPS, marge confortable sur le seuil de 30
+    onnx_path: "detection/models/nanodet-plus-m-1.5x_512-person-car-int8-QDQ-u8s8.onnx"
+    input_size: [512, 512]
+  "416px":
+    # mAP=0,348 -- ancien modèle, gardé pour comparaison, le plus rapide (100 FPS mesurés)
+    onnx_path: "detection/models/nanodet-plus-m-1.5x_416-person-car-int8-QDQ-u8s8.onnx"
+    input_size: [416, 416]
+active_model: "896px"
+
+# Séquence de sources cyclée à la volée par la touche 'c' dans les 3
+# scripts de démo (voir demo/src/common/source_cycle.py). Pas de webcam (retirée
+# le 2026-09-14 pour ses hoquets driver, puis supprimée entièrement du
+# projet le 2026-09-28 -- non pertinente pour ce cas d'usage). Toutes ces
+# vidéos sous licence Pixabay (libre d'usage, aucune attribution requise) ;
+# caméra fixe vérifiée directement (comparaison de frames), pas seulement
+# supposée sur la base du titre/de la description. Point d'attention
+# gardé en tête (cf. Monaco et le carrefour de Tokyo, écartés en cours de
+# route) : la comparaison de frames espacées confirme la fixité de la
+# caméra, mais PAS l'absence de ralenti/timelapse -- seul un visionnage
+# réel le permet.
+# Ancien lot (autoroute/Broadway/rue résidentielle/place+bus) archivé dans
+# demo/assets/archive/, remplacé par ce second lot (2026-09-12), choisi
+# pour cibler spécifiquement : occlusion naturelle (arbres/mobilier urbain,
+# pedestrian_mall_dense), personne immobile (bangkok_night_dense), et une
+# séquence longue avec entrées/sorties (bus_stop_long, 48s).
+# Les scripts bouclent automatiquement sur un fichier vidéo en fin de clip.
+demo_sources:
+  - ["rue automnale - voiture", "demo/assets/autumn_street_car.mp4"]
+  - ["autoroute - flux faible", "demo/assets/highway_low_traffic.mp4"]
+  - ["autoroute - flux variable", "demo/assets/highway_long_traffic.mp4"]
+  - ["chantier interactif", "INTERACTIVE:demo/assets/construction_site_access.jpg|demo/assets/construction_worker.webp"]
+  - ["pont pieton", "demo/assets/pedestrian_bridge.mp4"]
+
+# Dossier scanné automatiquement au démarrage (demo/src/common/config.py) pour
+# des vidéos ajoutées par l'utilisateur -- déposer un fichier vidéo
+# (.mp4/.avi/.mov/.mkv/.webm) ici suffit à l'ajouter au cycle des sources
+# (touche 'c'), à la suite de demo_sources ci-dessus, sans éditer ce
+# fichier. Le libellé affiché est dérivé du nom de fichier.
+custom_videos_dir: "demo/assets/custom"
+
+# Largeur max de la fenêtre affichée -- certaines vidéos (ex. la source
+# "dense", en 4K) sont bien plus grandes que l'écran, cv2.imshow ouvrirait
+# sinon une fenêtre en grande partie hors écran.
+display_max_width: 1280
+
+# Classes ignorées avant même d'atteindre le tracker/l'affichage -- toute
+# détection de ces classes est supprimée juste après le post-traitement du
+# modèle, dans les 3 scripts. Noms attendus dans cfg.class_names
+# (["person", "car"]). Laisser vide ([]) pour tout réactiver.
+# Remis à [] (2026-09-12) : "person" avait été désactivé pour isoler les
+# tests sur la voiture jouet -- inutile voire contre-productif avec le
+# nouveau lot de vidéos, en grande partie centré sur les piétons.
+disabled_classes: []
+
+# Seuil d'affichage pour 01_detection_demo.py (le seul des 3 scripts sans
+# tracker/hystérésis -- les 2 autres n'ont pas besoin de ce réglage, le
+# filtrage se fait dans agent/src/tracking/tracker.py, cf. hysteresis_high/low dans
+# config/tracker.yaml).
+raw_score_threshold: 0.5
+
+# Durée de présence continue avant déclenchement de l'alerte D3
+# (03_live_agent_demo.py -- alerte posée en dur au démarrage, en plus de
+# celle posable en direct via l'agent).
+person_alert_threshold_seconds: 10.0

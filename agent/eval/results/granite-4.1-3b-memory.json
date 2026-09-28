@@ -1,0 +1,243 @@
+{
+  "summary": {
+    "model_label": "granite-4.1-3b",
+    "n_sequences": 5,
+    "n_sequences_passed": 5
+  },
+  "cases": [
+    {
+      "id": "memory__followup_class_swap",
+      "notes": "Cas de référence de la demande initiale -- 'et de voitures ?' n'a de sens qu'à la lumière du tour précédent (même tool, classe différente).",
+      "passed": true,
+      "turns": [
+        {
+          "turn": 0,
+          "question": "Combien de personnes y a-t-il actuellement ?",
+          "passed": true,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 personnes détectées.",
+          "latency_s": 8.626640796661377,
+          "error": null
+        },
+        {
+          "turn": 1,
+          "question": "Et de voitures ?",
+          "passed": true,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 voitures détectées.",
+          "latency_s": 0.5427181720733643,
+          "error": null
+        }
+      ]
+    },
+    {
+      "id": "memory__followup_alt_phrasing",
+      "notes": "Variante de formulation elliptique ('côté X' plutôt que 'et de X ?'), sur count_total plutôt que count_now -- vérifie que le suivi de contexte ne dépend pas d'un tour de phrase unique appris par cœur.",
+      "passed": true,
+      "turns": [
+        {
+          "turn": 0,
+          "question": "Combien de véhicules sont passés au total ?",
+          "passed": true,
+          "recorded_calls": [
+            [
+              "count_total",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Au total, 3 véhicules ont été détectés.",
+          "latency_s": 2.169847011566162,
+          "error": null
+        },
+        {
+          "turn": 1,
+          "question": "Et côté piétons ?",
+          "passed": true,
+          "recorded_calls": [
+            [
+              "count_total",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Au total, 3 personnes ont été détectées.",
+          "latency_s": 0.49600696563720703,
+          "error": null
+        }
+      ]
+    },
+    {
+      "id": "memory__no_stale_reuse",
+      "notes": "Risque n°2 identifié à la conception (bilan mémoire) : la même question posée deux fois doit redéclencher le tool à CHAQUE fois, pas réutiliser le chiffre déjà donné au tour précédent -- 'maintenant' n'est jamais périmé à l'avance. Couvert par la consigne ajoutée au prompt système (config/agent.yaml) ; ce cas mesure si elle est réellement suivie.",
+      "passed": true,
+      "turns": [
+        {
+          "turn": 0,
+          "question": "Combien de personnes maintenant ?",
+          "passed": true,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 personnes détectées par la caméra.",
+          "latency_s": 2.1202738285064697,
+          "error": null
+        },
+        {
+          "turn": 1,
+          "question": "Et maintenant, combien de personnes ?",
+          "passed": true,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 personnes détectées par la caméra.",
+          "latency_s": 0.6225564479827881,
+          "error": null
+        }
+      ]
+    },
+    {
+      "id": "memory__unrelated_topic_no_confusion",
+      "notes": "Un changement de sujet complet en plein milieu de la conversation ne doit pas faire dériver le 2e tour vers le sujet du 1er (ex. appeler count_now par réflexe plutôt que le tool d'alerte réellement demandé).",
+      "passed": true,
+      "turns": [
+        {
+          "turn": 0,
+          "question": "Combien de personnes actuellement ?",
+          "passed": true,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 personnes détectées.",
+          "latency_s": 2.219540596008301,
+          "error": null
+        },
+        {
+          "turn": 1,
+          "question": "Préviens-moi si une voiture reste garée plus de 30 secondes.",
+          "passed": true,
+          "recorded_calls": [
+            [
+              "set_presence_duration_alert",
+              {
+                "object_class": "car",
+                "threshold_seconds": 30
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L’alerte pour les voitures restant gar\\u00e7es plus de 30 secondes a \\u00e9t\\u00e9 configur\\u00e9e.",
+          "latency_s": 2.554785966873169,
+          "error": null
+        }
+      ]
+    },
+    {
+      "id": "memory__three_turn_chain",
+      "notes": "Chaîne à 3 tours -- vérifie que le suivi de contexte reste correct au-delà d'un unique aller-retour (retour à la classe du 1er tour après un détour par une autre), sans dérive cumulative.",
+      "passed": true,
+      "turns": [
+        {
+          "turn": 0,
+          "question": "Combien de personnes maintenant ?",
+          "passed": true,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 personnes détectées par la caméra.",
+          "latency_s": 0.5585839748382568,
+          "error": null
+        },
+        {
+          "turn": 1,
+          "question": "Et de voitures ?",
+          "passed": true,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 voitures détectées par la caméra.",
+          "latency_s": 2.1978869438171387,
+          "error": null
+        },
+        {
+          "turn": 2,
+          "question": "Et à nouveau les personnes ?",
+          "passed": true,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement toujours 3 personnes détectées par la caméra.",
+          "latency_s": 2.1532185077667236,
+          "error": null
+        }
+      ]
+    }
+  ]
+}

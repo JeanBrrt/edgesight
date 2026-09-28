@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+
+# Données et modèles (souvent volumineux)
+detection/data/*
+!detection/data/.gitkeep
+# Modèle final (fp32 + INT8 retenu, 416/512/896px, ~40 Mo) et checkpoint
+# pré-entraîné (~10 Mo) commités : sans eux, le dépôt cloné ne peut pas
+# faire tourner l'inférence -- contrairement à detection/data/ (COCO,
+# reconstructible via detection/src/01_data/) ou workspace/ (14 Go,
+# régénéré par un réentraînement), il n'existe aucune autre source pour
+# ces poids précis.
+detection/models/*
+!detection/models/.gitkeep
+!detection/models/*.onnx
+!detection/models/pretrained/
+!detection/models/pretrained/*.pth
+# Vidéos/images de démo par défaut commitées pour la même raison (~97 Mo,
+# licence Pixabay pour les vidéos -- voir config/demo.yaml) ; le dossier
+# d'ajouts personnels (custom/) et l'ancien lot archivé restent ignorés.
+demo/assets/*
+!demo/assets/.gitkeep
+!demo/assets/*.mp4
+!demo/assets/*.jpg
+!demo/assets/*.webp
+!demo/assets/*.png
+agent/data/*
+!agent/data/.gitkeep
+# GGUF du LLM (~2 Go, dépasse largement la limite GitHub par fichier) --
+# reste ignoré, voir README pour le lien de téléchargement.
+agent/models/*
+!agent/models/.gitkeep
+
+# Third-Party
+detection/third_party/
+agent/third_party/
+
+# Sorties des scripts nanodet (démo, entraînement)
+workspace/
+
+# Environnement
+.env
+
+# IDE
+.vscode/
+.idea/

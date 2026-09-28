@@ -1,0 +1,9 @@
+# Dépendances du pipeline de démo live (webcam, assemblage detection+agent)
+numpy
+opencv-python
+onnxruntime
+torch
+
+# Le tracking (C1) vit dans agent/ (composant système, pas glue code de
+# démo) — voir agent/requirements.txt pour ses dépendances (supervision,
+# trackers)

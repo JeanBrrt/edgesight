@@ -1,0 +1,398 @@
+2026-09-14 11:35:49,864 INFO     __main__: Modèle : granite-4.1-3b -- serveur : http://127.0.0.1:8080/v1 -- 5 séquence(s) multi-tours (max_tokens=1024, timeout=120s)
+2026-09-14 11:35:49,964 DEBUG    harness: question (historique existant, 1 messages) : 'Combien de personnes y a-t-il actuellement ?'
+2026-09-14 11:35:50,739 DEBUG    openai._base_client: Building HTTP request: method=POST retries_taken=0
+2026-09-14 11:35:50,782 DEBUG    openai._base_client: Sending HTTP Request: POST
+2026-09-14 11:35:50,782 DEBUG    httpcore2.connection: connect_tcp.started host='127.0.0.1' port=8080 local_address=None timeout=120.0 socket_options=None
+2026-09-14 11:35:50,800 DEBUG    httpcore2.connection: connect_tcp.complete return_value=<httpcore2._backends.sync.SyncStream object at 0x00000214648FF830>
+2026-09-14 11:35:50,800 DEBUG    httpcore2.http11: send_request_headers.started request=<Request [b'POST']>
+2026-09-14 11:35:50,800 DEBUG    httpcore2.http11: send_request_headers.complete
+2026-09-14 11:35:50,800 DEBUG    httpcore2.http11: send_request_body.started request=<Request [b'POST']>
+2026-09-14 11:35:50,800 DEBUG    httpcore2.http11: send_request_body.complete
+2026-09-14 11:35:50,800 DEBUG    httpcore2.http11: receive_response_headers.started request=<Request [b'POST']>
+2026-09-14 11:35:58,359 DEBUG    httpcore2.http11: receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'llama.cpp'), (b'Access-Control-Allow-Origin', b''), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'811'), (b'Keep-Alive', b'timeout=5, max=100')])
+2026-09-14 11:35:58,359 INFO     httpx2: HTTP Request: POST http://127.0.0.1:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-14 11:35:58,359 DEBUG    httpcore2.http11: receive_response_body.started request=<Request [b'POST']>
+2026-09-14 11:35:58,359 DEBUG    httpcore2.http11: receive_response_body.complete
+2026-09-14 11:35:58,359 DEBUG    httpcore2.http11: response_closed.started
+2026-09-14 11:35:58,359 DEBUG    httpcore2.http11: response_closed.complete
+2026-09-14 11:35:58,359 DEBUG    openai._base_client: HTTP Response: POST 200
+2026-09-14 11:35:58,359 DEBUG    openai._base_client: request_id: None
+2026-09-14 11:35:58,379 DEBUG    harness: round 0: tool_call -> count_now({'object_class': 'person'})
+2026-09-14 11:35:58,384 DEBUG    openai._base_client: Building HTTP request: method=POST retries_taken=0
+2026-09-14 11:35:58,384 DEBUG    openai._base_client: Sending HTTP Request: POST
+2026-09-14 11:35:58,384 DEBUG    httpcore2.http11: send_request_headers.started request=<Request [b'POST']>
+2026-09-14 11:35:58,384 DEBUG    httpcore2.http11: send_request_headers.complete
+2026-09-14 11:35:58,384 DEBUG    httpcore2.http11: send_request_body.started request=<Request [b'POST']>
+2026-09-14 11:35:58,384 DEBUG    httpcore2.http11: send_request_body.complete
+2026-09-14 11:35:58,384 DEBUG    httpcore2.http11: receive_response_headers.started request=<Request [b'POST']>
+2026-09-14 11:35:58,591 DEBUG    httpcore2.http11: receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'llama.cpp'), (b'Access-Control-Allow-Origin', b''), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'696'), (b'Keep-Alive', b'timeout=5, max=100')])
+2026-09-14 11:35:58,591 INFO     httpx2: HTTP Request: POST http://127.0.0.1:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-14 11:35:58,591 DEBUG    httpcore2.http11: receive_response_body.started request=<Request [b'POST']>
+2026-09-14 11:35:58,591 DEBUG    httpcore2.http11: receive_response_body.complete
+2026-09-14 11:35:58,591 DEBUG    httpcore2.http11: response_closed.started
+2026-09-14 11:35:58,591 DEBUG    httpcore2.http11: response_closed.complete
+2026-09-14 11:35:58,591 DEBUG    openai._base_client: HTTP Response: POST 200
+2026-09-14 11:35:58,591 DEBUG    openai._base_client: request_id: None
+2026-09-14 11:35:58,591 DEBUG    harness: round 1: reponse finale -> 'Il y a actuellement 3 personnes détectées.'
+2026-09-14 11:35:58,591 DEBUG    harness: latence: 8.63s, 1 appel(s) enregistre(s), erreur=None
+2026-09-14 11:35:58,591 INFO     __main__:   [OK] tour 0 : Combien de personnes y a-t-il actuellement ?           
+2026-09-14 11:35:58,591 DEBUG    harness: question (historique existant, 5 messages) : 'Et de voitures ?'
+2026-09-14 11:35:58,599 DEBUG    openai._base_client: Building HTTP request: method=POST retries_taken=0
+2026-09-14 11:35:58,601 DEBUG    openai._base_client: Sending HTTP Request: POST
+2026-09-14 11:35:58,601 DEBUG    httpcore2.http11: send_request_headers.started request=<Request [b'POST']>
+2026-09-14 11:35:58,601 DEBUG    httpcore2.http11: send_request_headers.complete
+2026-09-14 11:35:58,601 DEBUG    httpcore2.http11: send_request_body.started request=<Request [b'POST']>
+2026-09-14 11:35:58,601 DEBUG    httpcore2.http11: send_request_body.complete
+2026-09-14 11:35:58,601 DEBUG    httpcore2.http11: receive_response_headers.started request=<Request [b'POST']>
+2026-09-14 11:35:58,917 DEBUG    httpcore2.http11: receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'llama.cpp'), (b'Access-Control-Allow-Origin', b''), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'808'), (b'Keep-Alive', b'timeout=5, max=100')])
+2026-09-14 11:35:58,917 INFO     httpx2: HTTP Request: POST http://127.0.0.1:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-14 11:35:58,917 DEBUG    httpcore2.http11: receive_response_body.started request=<Request [b'POST']>
+2026-09-14 11:35:58,917 DEBUG    httpcore2.http11: receive_response_body.complete
+2026-09-14 11:35:58,917 DEBUG    httpcore2.http11: response_closed.started
+2026-09-14 11:35:58,917 DEBUG    httpcore2.http11: response_closed.complete
+2026-09-14 11:35:58,917 DEBUG    openai._base_client: HTTP Response: POST 200
+2026-09-14 11:35:58,917 DEBUG    openai._base_client: request_id: None
+2026-09-14 11:35:58,917 DEBUG    harness: round 0: tool_call -> count_now({'object_class': 'car'})
+2026-09-14 11:35:58,917 DEBUG    openai._base_client: Building HTTP request: method=POST retries_taken=0
+2026-09-14 11:35:58,917 DEBUG    openai._base_client: Sending HTTP Request: POST
+2026-09-14 11:35:58,917 DEBUG    httpcore2.http11: send_request_headers.started request=<Request [b'POST']>
+2026-09-14 11:35:58,917 DEBUG    httpcore2.http11: send_request_headers.complete
+2026-09-14 11:35:58,917 DEBUG    httpcore2.http11: send_request_body.started request=<Request [b'POST']>
+2026-09-14 11:35:58,917 DEBUG    httpcore2.http11: send_request_body.complete
+2026-09-14 11:35:58,917 DEBUG    httpcore2.http11: receive_response_headers.started request=<Request [b'POST']>
+2026-09-14 11:35:59,133 DEBUG    httpcore2.http11: receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'llama.cpp'), (b'Access-Control-Allow-Origin', b''), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'698'), (b'Keep-Alive', b'timeout=5, max=100')])
+2026-09-14 11:35:59,133 INFO     httpx2: HTTP Request: POST http://127.0.0.1:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-14 11:35:59,133 DEBUG    httpcore2.http11: receive_response_body.started request=<Request [b'POST']>
+2026-09-14 11:35:59,133 DEBUG    httpcore2.http11: receive_response_body.complete
+2026-09-14 11:35:59,133 DEBUG    httpcore2.http11: response_closed.started
+2026-09-14 11:35:59,133 DEBUG    httpcore2.http11: response_closed.complete
+2026-09-14 11:35:59,133 DEBUG    openai._base_client: HTTP Response: POST 200
+2026-09-14 11:35:59,133 DEBUG    openai._base_client: request_id: None
+2026-09-14 11:35:59,133 DEBUG    harness: round 1: reponse finale -> 'Il y a actuellement 3 voitures détectées.'
+2026-09-14 11:35:59,133 DEBUG    harness: latence: 0.54s, 1 appel(s) enregistre(s), erreur=None
+2026-09-14 11:35:59,133 INFO     __main__:   [OK] tour 1 : Et de voitures ?                                       
+2026-09-14 11:35:59,133 INFO     __main__: [OK] memory__followup_class_swap (2 tours)
+2026-09-14 11:35:59,133 DEBUG    harness: question (historique existant, 1 messages) : 'Combien de véhicules sont passés au total ?'
+2026-09-14 11:35:59,133 DEBUG    openai._base_client: Building HTTP request: method=POST retries_taken=0
+2026-09-14 11:35:59,133 DEBUG    openai._base_client: Sending HTTP Request: POST
+2026-09-14 11:35:59,133 DEBUG    httpcore2.http11: send_request_headers.started request=<Request [b'POST']>
+2026-09-14 11:35:59,133 DEBUG    httpcore2.http11: send_request_headers.complete
+2026-09-14 11:35:59,133 DEBUG    httpcore2.http11: send_request_body.started request=<Request [b'POST']>
+2026-09-14 11:35:59,133 DEBUG    httpcore2.http11: send_request_body.complete
+2026-09-14 11:35:59,133 DEBUG    httpcore2.http11: receive_response_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:01,022 DEBUG    httpcore2.http11: receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'llama.cpp'), (b'Access-Control-Allow-Origin', b''), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'820'), (b'Keep-Alive', b'timeout=5, max=100')])
+2026-09-14 11:36:01,022 INFO     httpx2: HTTP Request: POST http://127.0.0.1:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-14 11:36:01,022 DEBUG    httpcore2.http11: receive_response_body.started request=<Request [b'POST']>
+2026-09-14 11:36:01,022 DEBUG    httpcore2.http11: receive_response_body.complete
+2026-09-14 11:36:01,022 DEBUG    httpcore2.http11: response_closed.started
+2026-09-14 11:36:01,022 DEBUG    httpcore2.http11: response_closed.complete
+2026-09-14 11:36:01,022 DEBUG    openai._base_client: HTTP Response: POST 200
+2026-09-14 11:36:01,022 DEBUG    openai._base_client: request_id: None
+2026-09-14 11:36:01,022 DEBUG    harness: round 0: tool_call -> count_total({'object_class': 'car'})
+2026-09-14 11:36:01,022 DEBUG    openai._base_client: Building HTTP request: method=POST retries_taken=0
+2026-09-14 11:36:01,022 DEBUG    openai._base_client: Sending HTTP Request: POST
+2026-09-14 11:36:01,022 DEBUG    httpcore2.http11: send_request_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:01,022 DEBUG    httpcore2.http11: send_request_headers.complete
+2026-09-14 11:36:01,022 DEBUG    httpcore2.http11: send_request_body.started request=<Request [b'POST']>
+2026-09-14 11:36:01,022 DEBUG    httpcore2.http11: send_request_body.complete
+2026-09-14 11:36:01,022 DEBUG    httpcore2.http11: receive_response_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:01,303 DEBUG    httpcore2.http11: receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'llama.cpp'), (b'Access-Control-Allow-Origin', b''), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'694'), (b'Keep-Alive', b'timeout=5, max=100')])
+2026-09-14 11:36:01,303 INFO     httpx2: HTTP Request: POST http://127.0.0.1:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-14 11:36:01,303 DEBUG    httpcore2.http11: receive_response_body.started request=<Request [b'POST']>
+2026-09-14 11:36:01,303 DEBUG    httpcore2.http11: receive_response_body.complete
+2026-09-14 11:36:01,303 DEBUG    httpcore2.http11: response_closed.started
+2026-09-14 11:36:01,303 DEBUG    httpcore2.http11: response_closed.complete
+2026-09-14 11:36:01,303 DEBUG    openai._base_client: HTTP Response: POST 200
+2026-09-14 11:36:01,303 DEBUG    openai._base_client: request_id: None
+2026-09-14 11:36:01,303 DEBUG    harness: round 1: reponse finale -> 'Au total, 3 véhicules ont été détectés.'
+2026-09-14 11:36:01,303 DEBUG    harness: latence: 2.17s, 1 appel(s) enregistre(s), erreur=None
+2026-09-14 11:36:01,303 INFO     __main__:   [OK] tour 0 : Combien de véhicules sont passés au total ?            
+2026-09-14 11:36:01,303 DEBUG    harness: question (historique existant, 5 messages) : 'Et côté piétons ?'
+2026-09-14 11:36:01,303 DEBUG    openai._base_client: Building HTTP request: method=POST retries_taken=0
+2026-09-14 11:36:01,303 DEBUG    openai._base_client: Sending HTTP Request: POST
+2026-09-14 11:36:01,303 DEBUG    httpcore2.http11: send_request_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:01,303 DEBUG    httpcore2.http11: send_request_headers.complete
+2026-09-14 11:36:01,303 DEBUG    httpcore2.http11: send_request_body.started request=<Request [b'POST']>
+2026-09-14 11:36:01,303 DEBUG    httpcore2.http11: send_request_body.complete
+2026-09-14 11:36:01,303 DEBUG    httpcore2.http11: receive_response_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:01,599 DEBUG    httpcore2.http11: receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'llama.cpp'), (b'Access-Control-Allow-Origin', b''), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'802'), (b'Keep-Alive', b'timeout=5, max=100')])
+2026-09-14 11:36:01,601 INFO     httpx2: HTTP Request: POST http://127.0.0.1:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-14 11:36:01,601 DEBUG    httpcore2.http11: receive_response_body.started request=<Request [b'POST']>
+2026-09-14 11:36:01,601 DEBUG    httpcore2.http11: receive_response_body.complete
+2026-09-14 11:36:01,601 DEBUG    httpcore2.http11: response_closed.started
+2026-09-14 11:36:01,601 DEBUG    httpcore2.http11: response_closed.complete
+2026-09-14 11:36:01,601 DEBUG    openai._base_client: HTTP Response: POST 200
+2026-09-14 11:36:01,601 DEBUG    openai._base_client: request_id: None
+2026-09-14 11:36:01,601 DEBUG    harness: round 0: tool_call -> count_total({'object_class': 'person'})
+2026-09-14 11:36:01,601 DEBUG    openai._base_client: Building HTTP request: method=POST retries_taken=0
+2026-09-14 11:36:01,601 DEBUG    openai._base_client: Sending HTTP Request: POST
+2026-09-14 11:36:01,601 DEBUG    httpcore2.http11: send_request_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:01,601 DEBUG    httpcore2.http11: send_request_headers.complete
+2026-09-14 11:36:01,601 DEBUG    httpcore2.http11: send_request_body.started request=<Request [b'POST']>
+2026-09-14 11:36:01,601 DEBUG    httpcore2.http11: send_request_body.complete
+2026-09-14 11:36:01,601 DEBUG    httpcore2.http11: receive_response_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:01,799 DEBUG    httpcore2.http11: receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'llama.cpp'), (b'Access-Control-Allow-Origin', b''), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'697'), (b'Keep-Alive', b'timeout=5, max=100')])
+2026-09-14 11:36:01,799 INFO     httpx2: HTTP Request: POST http://127.0.0.1:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-14 11:36:01,799 DEBUG    httpcore2.http11: receive_response_body.started request=<Request [b'POST']>
+2026-09-14 11:36:01,799 DEBUG    httpcore2.http11: receive_response_body.complete
+2026-09-14 11:36:01,799 DEBUG    httpcore2.http11: response_closed.started
+2026-09-14 11:36:01,799 DEBUG    httpcore2.http11: response_closed.complete
+2026-09-14 11:36:01,799 DEBUG    openai._base_client: HTTP Response: POST 200
+2026-09-14 11:36:01,799 DEBUG    openai._base_client: request_id: None
+2026-09-14 11:36:01,799 DEBUG    harness: round 1: reponse finale -> 'Au total, 3 personnes ont été détectées.'
+2026-09-14 11:36:01,799 DEBUG    harness: latence: 0.50s, 1 appel(s) enregistre(s), erreur=None
+2026-09-14 11:36:01,799 INFO     __main__:   [OK] tour 1 : Et côté piétons ?                                      
+2026-09-14 11:36:01,806 INFO     __main__: [OK] memory__followup_alt_phrasing (2 tours)
+2026-09-14 11:36:01,806 DEBUG    harness: question (historique existant, 1 messages) : 'Combien de personnes maintenant ?'
+2026-09-14 11:36:01,806 DEBUG    openai._base_client: Building HTTP request: method=POST retries_taken=0
+2026-09-14 11:36:01,806 DEBUG    openai._base_client: Sending HTTP Request: POST
+2026-09-14 11:36:01,806 DEBUG    httpcore2.http11: send_request_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:01,806 DEBUG    httpcore2.http11: send_request_headers.complete
+2026-09-14 11:36:01,806 DEBUG    httpcore2.http11: send_request_body.started request=<Request [b'POST']>
+2026-09-14 11:36:01,806 DEBUG    httpcore2.http11: send_request_body.complete
+2026-09-14 11:36:01,806 DEBUG    httpcore2.http11: receive_response_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:03,640 DEBUG    httpcore2.http11: receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'llama.cpp'), (b'Access-Control-Allow-Origin', b''), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'803'), (b'Keep-Alive', b'timeout=5, max=100')])
+2026-09-14 11:36:03,640 INFO     httpx2: HTTP Request: POST http://127.0.0.1:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-14 11:36:03,640 DEBUG    httpcore2.http11: receive_response_body.started request=<Request [b'POST']>
+2026-09-14 11:36:03,640 DEBUG    httpcore2.http11: receive_response_body.complete
+2026-09-14 11:36:03,640 DEBUG    httpcore2.http11: response_closed.started
+2026-09-14 11:36:03,640 DEBUG    httpcore2.http11: response_closed.complete
+2026-09-14 11:36:03,640 DEBUG    openai._base_client: HTTP Response: POST 200
+2026-09-14 11:36:03,640 DEBUG    openai._base_client: request_id: None
+2026-09-14 11:36:03,640 DEBUG    harness: round 0: tool_call -> count_now({'object_class': 'person'})
+2026-09-14 11:36:03,651 DEBUG    openai._base_client: Building HTTP request: method=POST retries_taken=0
+2026-09-14 11:36:03,651 DEBUG    openai._base_client: Sending HTTP Request: POST
+2026-09-14 11:36:03,651 DEBUG    httpcore2.http11: send_request_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:03,651 DEBUG    httpcore2.http11: send_request_headers.complete
+2026-09-14 11:36:03,651 DEBUG    httpcore2.http11: send_request_body.started request=<Request [b'POST']>
+2026-09-14 11:36:03,651 DEBUG    httpcore2.http11: send_request_body.complete
+2026-09-14 11:36:03,651 DEBUG    httpcore2.http11: receive_response_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:03,926 DEBUG    httpcore2.http11: receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'llama.cpp'), (b'Access-Control-Allow-Origin', b''), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'699'), (b'Keep-Alive', b'timeout=5, max=100')])
+2026-09-14 11:36:03,926 INFO     httpx2: HTTP Request: POST http://127.0.0.1:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-14 11:36:03,926 DEBUG    httpcore2.http11: receive_response_body.started request=<Request [b'POST']>
+2026-09-14 11:36:03,926 DEBUG    httpcore2.http11: receive_response_body.complete
+2026-09-14 11:36:03,926 DEBUG    httpcore2.http11: response_closed.started
+2026-09-14 11:36:03,926 DEBUG    httpcore2.http11: response_closed.complete
+2026-09-14 11:36:03,926 DEBUG    openai._base_client: HTTP Response: POST 200
+2026-09-14 11:36:03,926 DEBUG    openai._base_client: request_id: None
+2026-09-14 11:36:03,926 DEBUG    harness: round 1: reponse finale -> 'Il y a actuellement 3 personnes détectées par la caméra.'
+2026-09-14 11:36:03,926 DEBUG    harness: latence: 2.12s, 1 appel(s) enregistre(s), erreur=None
+2026-09-14 11:36:03,926 INFO     __main__:   [OK] tour 0 : Combien de personnes maintenant ?                      
+2026-09-14 11:36:03,931 DEBUG    harness: question (historique existant, 5 messages) : 'Et maintenant, combien de personnes ?'
+2026-09-14 11:36:03,931 DEBUG    openai._base_client: Building HTTP request: method=POST retries_taken=0
+2026-09-14 11:36:03,931 DEBUG    openai._base_client: Sending HTTP Request: POST
+2026-09-14 11:36:03,931 DEBUG    httpcore2.http11: send_request_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:03,931 DEBUG    httpcore2.http11: send_request_headers.complete
+2026-09-14 11:36:03,931 DEBUG    httpcore2.http11: send_request_body.started request=<Request [b'POST']>
+2026-09-14 11:36:03,931 DEBUG    httpcore2.http11: send_request_body.complete
+2026-09-14 11:36:03,931 DEBUG    httpcore2.http11: receive_response_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:04,244 DEBUG    httpcore2.http11: receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'llama.cpp'), (b'Access-Control-Allow-Origin', b''), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'822'), (b'Keep-Alive', b'timeout=5, max=100')])
+2026-09-14 11:36:04,244 INFO     httpx2: HTTP Request: POST http://127.0.0.1:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-14 11:36:04,244 DEBUG    httpcore2.http11: receive_response_body.started request=<Request [b'POST']>
+2026-09-14 11:36:04,244 DEBUG    httpcore2.http11: receive_response_body.complete
+2026-09-14 11:36:04,244 DEBUG    httpcore2.http11: response_closed.started
+2026-09-14 11:36:04,244 DEBUG    httpcore2.http11: response_closed.complete
+2026-09-14 11:36:04,244 DEBUG    openai._base_client: HTTP Response: POST 200
+2026-09-14 11:36:04,244 DEBUG    openai._base_client: request_id: None
+2026-09-14 11:36:04,244 DEBUG    harness: round 0: tool_call -> count_now({'object_class': 'person'})
+2026-09-14 11:36:04,249 DEBUG    openai._base_client: Building HTTP request: method=POST retries_taken=0
+2026-09-14 11:36:04,249 DEBUG    openai._base_client: Sending HTTP Request: POST
+2026-09-14 11:36:04,249 DEBUG    httpcore2.http11: send_request_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:04,249 DEBUG    httpcore2.http11: send_request_headers.complete
+2026-09-14 11:36:04,249 DEBUG    httpcore2.http11: send_request_body.started request=<Request [b'POST']>
+2026-09-14 11:36:04,249 DEBUG    httpcore2.http11: send_request_body.complete
+2026-09-14 11:36:04,249 DEBUG    httpcore2.http11: receive_response_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:04,554 DEBUG    httpcore2.http11: receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'llama.cpp'), (b'Access-Control-Allow-Origin', b''), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'706'), (b'Keep-Alive', b'timeout=5, max=100')])
+2026-09-14 11:36:04,554 INFO     httpx2: HTTP Request: POST http://127.0.0.1:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-14 11:36:04,554 DEBUG    httpcore2.http11: receive_response_body.started request=<Request [b'POST']>
+2026-09-14 11:36:04,554 DEBUG    httpcore2.http11: receive_response_body.complete
+2026-09-14 11:36:04,554 DEBUG    httpcore2.http11: response_closed.started
+2026-09-14 11:36:04,554 DEBUG    httpcore2.http11: response_closed.complete
+2026-09-14 11:36:04,554 DEBUG    openai._base_client: HTTP Response: POST 200
+2026-09-14 11:36:04,554 DEBUG    openai._base_client: request_id: None
+2026-09-14 11:36:04,554 DEBUG    harness: round 1: reponse finale -> 'Il y a actuellement 3 personnes détectées par la caméra.'
+2026-09-14 11:36:04,554 DEBUG    harness: latence: 0.62s, 1 appel(s) enregistre(s), erreur=None
+2026-09-14 11:36:04,554 INFO     __main__:   [OK] tour 1 : Et maintenant, combien de personnes ?                  
+2026-09-14 11:36:04,554 INFO     __main__: [OK] memory__no_stale_reuse (2 tours)
+2026-09-14 11:36:04,559 DEBUG    harness: question (historique existant, 1 messages) : 'Combien de personnes actuellement ?'
+2026-09-14 11:36:04,559 DEBUG    openai._base_client: Building HTTP request: method=POST retries_taken=0
+2026-09-14 11:36:04,559 DEBUG    openai._base_client: Sending HTTP Request: POST
+2026-09-14 11:36:04,559 DEBUG    httpcore2.http11: send_request_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:04,559 DEBUG    httpcore2.http11: send_request_headers.complete
+2026-09-14 11:36:04,559 DEBUG    httpcore2.http11: send_request_body.started request=<Request [b'POST']>
+2026-09-14 11:36:04,559 DEBUG    httpcore2.http11: send_request_body.complete
+2026-09-14 11:36:04,559 DEBUG    httpcore2.http11: receive_response_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:06,587 DEBUG    httpcore2.http11: receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'llama.cpp'), (b'Access-Control-Allow-Origin', b''), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'812'), (b'Keep-Alive', b'timeout=5, max=100')])
+2026-09-14 11:36:06,587 INFO     httpx2: HTTP Request: POST http://127.0.0.1:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-14 11:36:06,587 DEBUG    httpcore2.http11: receive_response_body.started request=<Request [b'POST']>
+2026-09-14 11:36:06,587 DEBUG    httpcore2.http11: receive_response_body.complete
+2026-09-14 11:36:06,587 DEBUG    httpcore2.http11: response_closed.started
+2026-09-14 11:36:06,587 DEBUG    httpcore2.http11: response_closed.complete
+2026-09-14 11:36:06,587 DEBUG    openai._base_client: HTTP Response: POST 200
+2026-09-14 11:36:06,587 DEBUG    openai._base_client: request_id: None
+2026-09-14 11:36:06,587 DEBUG    harness: round 0: tool_call -> count_now({'object_class': 'person'})
+2026-09-14 11:36:06,589 DEBUG    openai._base_client: Building HTTP request: method=POST retries_taken=0
+2026-09-14 11:36:06,589 DEBUG    openai._base_client: Sending HTTP Request: POST
+2026-09-14 11:36:06,589 DEBUG    httpcore2.http11: send_request_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:06,589 DEBUG    httpcore2.http11: send_request_headers.complete
+2026-09-14 11:36:06,589 DEBUG    httpcore2.http11: send_request_body.started request=<Request [b'POST']>
+2026-09-14 11:36:06,589 DEBUG    httpcore2.http11: send_request_body.complete
+2026-09-14 11:36:06,589 DEBUG    httpcore2.http11: receive_response_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:06,779 DEBUG    httpcore2.http11: receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'llama.cpp'), (b'Access-Control-Allow-Origin', b''), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'685'), (b'Keep-Alive', b'timeout=5, max=100')])
+2026-09-14 11:36:06,779 INFO     httpx2: HTTP Request: POST http://127.0.0.1:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-14 11:36:06,779 DEBUG    httpcore2.http11: receive_response_body.started request=<Request [b'POST']>
+2026-09-14 11:36:06,779 DEBUG    httpcore2.http11: receive_response_body.complete
+2026-09-14 11:36:06,779 DEBUG    httpcore2.http11: response_closed.started
+2026-09-14 11:36:06,779 DEBUG    httpcore2.http11: response_closed.complete
+2026-09-14 11:36:06,779 DEBUG    openai._base_client: HTTP Response: POST 200
+2026-09-14 11:36:06,779 DEBUG    openai._base_client: request_id: None
+2026-09-14 11:36:06,779 DEBUG    harness: round 1: reponse finale -> 'Il y a actuellement 3 personnes détectées.'
+2026-09-14 11:36:06,779 DEBUG    harness: latence: 2.22s, 1 appel(s) enregistre(s), erreur=None
+2026-09-14 11:36:06,779 INFO     __main__:   [OK] tour 0 : Combien de personnes actuellement ?                    
+2026-09-14 11:36:06,779 DEBUG    harness: question (historique existant, 5 messages) : 'Préviens-moi si une voiture reste garée plus de 30 secondes.'
+2026-09-14 11:36:06,783 DEBUG    openai._base_client: Building HTTP request: method=POST retries_taken=0
+2026-09-14 11:36:06,783 DEBUG    openai._base_client: Sending HTTP Request: POST
+2026-09-14 11:36:06,783 DEBUG    httpcore2.http11: send_request_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:06,783 DEBUG    httpcore2.http11: send_request_headers.complete
+2026-09-14 11:36:06,783 DEBUG    httpcore2.http11: send_request_body.started request=<Request [b'POST']>
+2026-09-14 11:36:06,783 DEBUG    httpcore2.http11: send_request_body.complete
+2026-09-14 11:36:06,783 DEBUG    httpcore2.http11: receive_response_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:07,203 DEBUG    httpcore2.http11: receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'llama.cpp'), (b'Access-Control-Allow-Origin', b''), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'864'), (b'Keep-Alive', b'timeout=5, max=100')])
+2026-09-14 11:36:07,203 INFO     httpx2: HTTP Request: POST http://127.0.0.1:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-14 11:36:07,203 DEBUG    httpcore2.http11: receive_response_body.started request=<Request [b'POST']>
+2026-09-14 11:36:07,209 DEBUG    httpcore2.http11: receive_response_body.complete
+2026-09-14 11:36:07,209 DEBUG    httpcore2.http11: response_closed.started
+2026-09-14 11:36:07,209 DEBUG    httpcore2.http11: response_closed.complete
+2026-09-14 11:36:07,209 DEBUG    openai._base_client: HTTP Response: POST 200
+2026-09-14 11:36:07,209 DEBUG    openai._base_client: request_id: None
+2026-09-14 11:36:07,209 DEBUG    harness: round 0: tool_call -> set_presence_duration_alert({'object_class': 'car', 'threshold_seconds': 30})
+2026-09-14 11:36:07,209 DEBUG    openai._base_client: Building HTTP request: method=POST retries_taken=0
+2026-09-14 11:36:07,209 DEBUG    openai._base_client: Sending HTTP Request: POST
+2026-09-14 11:36:07,209 DEBUG    httpcore2.http11: send_request_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:07,209 DEBUG    httpcore2.http11: send_request_headers.complete
+2026-09-14 11:36:07,209 DEBUG    httpcore2.http11: send_request_body.started request=<Request [b'POST']>
+2026-09-14 11:36:07,209 DEBUG    httpcore2.http11: send_request_body.complete
+2026-09-14 11:36:07,209 DEBUG    httpcore2.http11: receive_response_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:09,333 DEBUG    httpcore2.http11: receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'llama.cpp'), (b'Access-Control-Allow-Origin', b''), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'761'), (b'Keep-Alive', b'timeout=5, max=100')])
+2026-09-14 11:36:09,333 INFO     httpx2: HTTP Request: POST http://127.0.0.1:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-14 11:36:09,333 DEBUG    httpcore2.http11: receive_response_body.started request=<Request [b'POST']>
+2026-09-14 11:36:09,333 DEBUG    httpcore2.http11: receive_response_body.complete
+2026-09-14 11:36:09,333 DEBUG    httpcore2.http11: response_closed.started
+2026-09-14 11:36:09,333 DEBUG    httpcore2.http11: response_closed.complete
+2026-09-14 11:36:09,333 DEBUG    openai._base_client: HTTP Response: POST 200
+2026-09-14 11:36:09,333 DEBUG    openai._base_client: request_id: None
+2026-09-14 11:36:09,333 DEBUG    harness: round 1: reponse finale -> 'L’alerte pour les voitures restant gar\\u00e7es plus de 30 secondes a \\u00e9t\\u00e9 configur\\u00e9e.'
+2026-09-14 11:36:09,333 DEBUG    harness: latence: 2.55s, 1 appel(s) enregistre(s), erreur=None
+2026-09-14 11:36:09,333 INFO     __main__:   [OK] tour 1 : Préviens-moi si une voiture reste garée plus de 30 secondes.
+2026-09-14 11:36:09,333 INFO     __main__: [OK] memory__unrelated_topic_no_confusion (2 tours)
+2026-09-14 11:36:09,333 DEBUG    harness: question (historique existant, 1 messages) : 'Combien de personnes maintenant ?'
+2026-09-14 11:36:09,333 DEBUG    openai._base_client: Building HTTP request: method=POST retries_taken=0
+2026-09-14 11:36:09,336 DEBUG    openai._base_client: Sending HTTP Request: POST
+2026-09-14 11:36:09,336 DEBUG    httpcore2.http11: send_request_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:09,336 DEBUG    httpcore2.http11: send_request_headers.complete
+2026-09-14 11:36:09,336 DEBUG    httpcore2.http11: send_request_body.started request=<Request [b'POST']>
+2026-09-14 11:36:09,336 DEBUG    httpcore2.http11: send_request_body.complete
+2026-09-14 11:36:09,336 DEBUG    httpcore2.http11: receive_response_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:09,639 DEBUG    httpcore2.http11: receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'llama.cpp'), (b'Access-Control-Allow-Origin', b''), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'810'), (b'Keep-Alive', b'timeout=5, max=100')])
+2026-09-14 11:36:09,639 INFO     httpx2: HTTP Request: POST http://127.0.0.1:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-14 11:36:09,639 DEBUG    httpcore2.http11: receive_response_body.started request=<Request [b'POST']>
+2026-09-14 11:36:09,639 DEBUG    httpcore2.http11: receive_response_body.complete
+2026-09-14 11:36:09,639 DEBUG    httpcore2.http11: response_closed.started
+2026-09-14 11:36:09,639 DEBUG    httpcore2.http11: response_closed.complete
+2026-09-14 11:36:09,639 DEBUG    openai._base_client: HTTP Response: POST 200
+2026-09-14 11:36:09,639 DEBUG    openai._base_client: request_id: None
+2026-09-14 11:36:09,639 DEBUG    harness: round 0: tool_call -> count_now({'object_class': 'person'})
+2026-09-14 11:36:09,639 DEBUG    openai._base_client: Building HTTP request: method=POST retries_taken=0
+2026-09-14 11:36:09,639 DEBUG    openai._base_client: Sending HTTP Request: POST
+2026-09-14 11:36:09,639 DEBUG    httpcore2.http11: send_request_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:09,639 DEBUG    httpcore2.http11: send_request_headers.complete
+2026-09-14 11:36:09,639 DEBUG    httpcore2.http11: send_request_body.started request=<Request [b'POST']>
+2026-09-14 11:36:09,639 DEBUG    httpcore2.http11: send_request_body.complete
+2026-09-14 11:36:09,639 DEBUG    httpcore2.http11: receive_response_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:09,892 DEBUG    httpcore2.http11: receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'llama.cpp'), (b'Access-Control-Allow-Origin', b''), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'704'), (b'Keep-Alive', b'timeout=5, max=100')])
+2026-09-14 11:36:09,892 INFO     httpx2: HTTP Request: POST http://127.0.0.1:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-14 11:36:09,892 DEBUG    httpcore2.http11: receive_response_body.started request=<Request [b'POST']>
+2026-09-14 11:36:09,892 DEBUG    httpcore2.http11: receive_response_body.complete
+2026-09-14 11:36:09,892 DEBUG    httpcore2.http11: response_closed.started
+2026-09-14 11:36:09,892 DEBUG    httpcore2.http11: response_closed.complete
+2026-09-14 11:36:09,892 DEBUG    openai._base_client: HTTP Response: POST 200
+2026-09-14 11:36:09,892 DEBUG    openai._base_client: request_id: None
+2026-09-14 11:36:09,892 DEBUG    harness: round 1: reponse finale -> 'Il y a actuellement 3 personnes détectées par la caméra.'
+2026-09-14 11:36:09,892 DEBUG    harness: latence: 0.56s, 1 appel(s) enregistre(s), erreur=None
+2026-09-14 11:36:09,892 INFO     __main__:   [OK] tour 0 : Combien de personnes maintenant ?                      
+2026-09-14 11:36:09,892 DEBUG    harness: question (historique existant, 5 messages) : 'Et de voitures ?'
+2026-09-14 11:36:09,892 DEBUG    openai._base_client: Building HTTP request: method=POST retries_taken=0
+2026-09-14 11:36:09,892 DEBUG    openai._base_client: Sending HTTP Request: POST
+2026-09-14 11:36:09,892 DEBUG    httpcore2.http11: send_request_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:09,892 DEBUG    httpcore2.http11: send_request_headers.complete
+2026-09-14 11:36:09,892 DEBUG    httpcore2.http11: send_request_body.started request=<Request [b'POST']>
+2026-09-14 11:36:09,892 DEBUG    httpcore2.http11: send_request_body.complete
+2026-09-14 11:36:09,892 DEBUG    httpcore2.http11: receive_response_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:11,798 DEBUG    httpcore2.http11: receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'llama.cpp'), (b'Access-Control-Allow-Origin', b''), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'820'), (b'Keep-Alive', b'timeout=5, max=100')])
+2026-09-14 11:36:11,798 INFO     httpx2: HTTP Request: POST http://127.0.0.1:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-14 11:36:11,798 DEBUG    httpcore2.http11: receive_response_body.started request=<Request [b'POST']>
+2026-09-14 11:36:11,798 DEBUG    httpcore2.http11: receive_response_body.complete
+2026-09-14 11:36:11,798 DEBUG    httpcore2.http11: response_closed.started
+2026-09-14 11:36:11,798 DEBUG    httpcore2.http11: response_closed.complete
+2026-09-14 11:36:11,798 DEBUG    openai._base_client: HTTP Response: POST 200
+2026-09-14 11:36:11,798 DEBUG    openai._base_client: request_id: None
+2026-09-14 11:36:11,798 DEBUG    harness: round 0: tool_call -> count_now({'object_class': 'car'})
+2026-09-14 11:36:11,803 DEBUG    openai._base_client: Building HTTP request: method=POST retries_taken=0
+2026-09-14 11:36:11,803 DEBUG    openai._base_client: Sending HTTP Request: POST
+2026-09-14 11:36:11,803 DEBUG    httpcore2.http11: send_request_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:11,803 DEBUG    httpcore2.http11: send_request_headers.complete
+2026-09-14 11:36:11,803 DEBUG    httpcore2.http11: send_request_body.started request=<Request [b'POST']>
+2026-09-14 11:36:11,803 DEBUG    httpcore2.http11: send_request_body.complete
+2026-09-14 11:36:11,803 DEBUG    httpcore2.http11: receive_response_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:12,090 DEBUG    httpcore2.http11: receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'llama.cpp'), (b'Access-Control-Allow-Origin', b''), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'713'), (b'Keep-Alive', b'timeout=5, max=100')])
+2026-09-14 11:36:12,090 INFO     httpx2: HTTP Request: POST http://127.0.0.1:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-14 11:36:12,090 DEBUG    httpcore2.http11: receive_response_body.started request=<Request [b'POST']>
+2026-09-14 11:36:12,090 DEBUG    httpcore2.http11: receive_response_body.complete
+2026-09-14 11:36:12,090 DEBUG    httpcore2.http11: response_closed.started
+2026-09-14 11:36:12,090 DEBUG    httpcore2.http11: response_closed.complete
+2026-09-14 11:36:12,090 DEBUG    openai._base_client: HTTP Response: POST 200
+2026-09-14 11:36:12,090 DEBUG    openai._base_client: request_id: None
+2026-09-14 11:36:12,090 DEBUG    harness: round 1: reponse finale -> 'Il y a actuellement 3 voitures détectées par la caméra.'
+2026-09-14 11:36:12,090 DEBUG    harness: latence: 2.20s, 1 appel(s) enregistre(s), erreur=None
+2026-09-14 11:36:12,090 INFO     __main__:   [OK] tour 1 : Et de voitures ?                                       
+2026-09-14 11:36:12,090 DEBUG    harness: question (historique existant, 9 messages) : 'Et à nouveau les personnes ?'
+2026-09-14 11:36:12,090 DEBUG    openai._base_client: Building HTTP request: method=POST retries_taken=0
+2026-09-14 11:36:12,090 DEBUG    openai._base_client: Sending HTTP Request: POST
+2026-09-14 11:36:12,090 DEBUG    httpcore2.http11: send_request_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:12,090 DEBUG    httpcore2.http11: send_request_headers.complete
+2026-09-14 11:36:12,090 DEBUG    httpcore2.http11: send_request_body.started request=<Request [b'POST']>
+2026-09-14 11:36:12,090 DEBUG    httpcore2.http11: send_request_body.complete
+2026-09-14 11:36:12,090 DEBUG    httpcore2.http11: receive_response_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:12,396 DEBUG    httpcore2.http11: receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'llama.cpp'), (b'Access-Control-Allow-Origin', b''), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'802'), (b'Keep-Alive', b'timeout=5, max=100')])
+2026-09-14 11:36:12,396 INFO     httpx2: HTTP Request: POST http://127.0.0.1:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-14 11:36:12,396 DEBUG    httpcore2.http11: receive_response_body.started request=<Request [b'POST']>
+2026-09-14 11:36:12,396 DEBUG    httpcore2.http11: receive_response_body.complete
+2026-09-14 11:36:12,396 DEBUG    httpcore2.http11: response_closed.started
+2026-09-14 11:36:12,396 DEBUG    httpcore2.http11: response_closed.complete
+2026-09-14 11:36:12,396 DEBUG    openai._base_client: HTTP Response: POST 200
+2026-09-14 11:36:12,396 DEBUG    openai._base_client: request_id: None
+2026-09-14 11:36:12,396 DEBUG    harness: round 0: tool_call -> count_now({'object_class': 'person'})
+2026-09-14 11:36:12,402 DEBUG    openai._base_client: Building HTTP request: method=POST retries_taken=0
+2026-09-14 11:36:12,404 DEBUG    openai._base_client: Sending HTTP Request: POST
+2026-09-14 11:36:12,404 DEBUG    httpcore2.http11: send_request_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:12,404 DEBUG    httpcore2.http11: send_request_headers.complete
+2026-09-14 11:36:12,404 DEBUG    httpcore2.http11: send_request_body.started request=<Request [b'POST']>
+2026-09-14 11:36:12,404 DEBUG    httpcore2.http11: send_request_body.complete
+2026-09-14 11:36:12,404 DEBUG    httpcore2.http11: receive_response_headers.started request=<Request [b'POST']>
+2026-09-14 11:36:14,243 DEBUG    httpcore2.http11: receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'llama.cpp'), (b'Access-Control-Allow-Origin', b''), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'719'), (b'Keep-Alive', b'timeout=5, max=100')])
+2026-09-14 11:36:14,243 INFO     httpx2: HTTP Request: POST http://127.0.0.1:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-14 11:36:14,243 DEBUG    httpcore2.http11: receive_response_body.started request=<Request [b'POST']>
+2026-09-14 11:36:14,243 DEBUG    httpcore2.http11: receive_response_body.complete
+2026-09-14 11:36:14,243 DEBUG    httpcore2.http11: response_closed.started
+2026-09-14 11:36:14,243 DEBUG    httpcore2.http11: response_closed.complete
+2026-09-14 11:36:14,243 DEBUG    openai._base_client: HTTP Response: POST 200
+2026-09-14 11:36:14,243 DEBUG    openai._base_client: request_id: None
+2026-09-14 11:36:14,243 DEBUG    harness: round 1: reponse finale -> 'Il y a actuellement toujours 3 personnes détectées par la caméra.'
+2026-09-14 11:36:14,243 DEBUG    harness: latence: 2.15s, 1 appel(s) enregistre(s), erreur=None
+2026-09-14 11:36:14,243 INFO     __main__:   [OK] tour 2 : Et à nouveau les personnes ?                           
+2026-09-14 11:36:14,243 INFO     __main__: [OK] memory__three_turn_chain (3 tours)
+2026-09-14 11:36:14,243 INFO     __main__: 
+2026-09-14 11:36:14,243 INFO     __main__: === granite-4.1-3b (mémoire) ===
+2026-09-14 11:36:14,243 INFO     __main__: 5/5 séquences réussies intégralement (tous les tours corrects)
+2026-09-14 11:36:14,243 INFO     __main__: Résultats écrits dans agent\eval\results\granite-4.1-3b-memory.json
+2026-09-14 11:36:14,243 INFO     __main__: Log détaillé écrit dans agent\eval\results\granite-4.1-3b-memory.log

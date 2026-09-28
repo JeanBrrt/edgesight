@@ -1,0 +1,68 @@
+# Paramètres de l'agent conversationnel (D1 agent/src/agent/tools.py, D2
+# agent/src/agent/agent.py) -- centralisés ici pour être ajustables sans
+# toucher au code.
+
+llama_server_url: "http://127.0.0.1:8080/v1"
+
+system_prompt: >-
+  Tu es un assistant qui répond à des questions sur des personnes et
+  véhicules détectés par une caméra. Utilise toujours les tools
+  disponibles pour obtenir des chiffres réels plutôt que d'inventer une
+  réponse. Pour un outil qui prend un nom de zone, si la zone décrite par
+  l'utilisateur ne correspond CLAIREMENT à aucune des zones connues,
+  utilise la valeur 'zone_inconnue' -- ne choisis jamais la zone réelle la
+  plus proche à sa place. Si une question fait suite à une précédente et
+  semble incomplète (ex. "et les voitures ?" après une question sur les
+  personnes), interprète-la dans le contexte de l'échange précédent. Un
+  chiffre obtenu par un tool devient obsolète dès qu'il est donné :
+  rappelle TOUJOURS le tool correspondant pour une question sur l'état
+  actuel ("maintenant"), même si tu as déjà posé une question similaire
+  plus tôt dans la conversation -- ne réutilise jamais un chiffre déjà
+  donné pour répondre à une nouvelle question. Réponds ensuite de façon
+  brève et naturelle en français.
+
+# Nombre max d'allers-retours LLM <-> tools avant d'abandonner (Agent.ask()).
+max_rounds: 4
+
+# Mémoire conversationnelle (D2, agent/src/agent/agent.py:Session) -- si activée,
+# l'historique persiste entre deux appels de la MÊME session (portée par
+# l'appelant, ex. input_worker dans demo/src/scripts/03_live_agent_demo.py), pour
+# qu'une question elliptique ("et de voitures ?" après "combien de
+# personnes maintenant ?") soit comprise en contexte plutôt que traitée
+# isolément. `enabled: false` retombe EXACTEMENT sur le comportement
+# d'origine (chaque question reconstruit une liste [system, user] neuve,
+# aucun historique) -- c'est le seul réglage à toucher pour revenir en
+# arrière si la mémoire introduit un effet de bord indésirable (ex. un
+# modèle qui réutilise un chiffre périmé malgré la consigne du prompt
+# système ci-dessus). N'affecte JAMAIS les notifications d'alerte (D3,
+# alert_notifier) : celles-ci n'utilisent volontairement aucune session,
+# pour rester isolées du thread de conversation utilisateur (deux threads
+# concurrents ne doivent jamais partager le même historique mutable).
+memory:
+  enabled: true
+  # Nombre d'échanges (un "échange" = d'une question utilisateur à la
+  # suivante) conservés dans l'historique -- fenêtre glissante appliquée
+  # après chaque réponse finale, coupe toujours à une frontière d'échange
+  # complet (jamais au milieu d'une séquence de tool calls). Borne la
+  # croissance du contexte envoyé à llama-server (lancé avec -c 8192,
+  # section 9.1 du rapport) sur une session longue -- au-delà de ce
+  # nombre, les échanges les plus anciens sont oubliés.
+  max_turns: 6
+
+# Tolérance de fraîcheur pour "actuellement présent" (D1, count_now ->
+# EventStore.active_tracks). Question produit pure (jusqu'à combien de
+# temps sans détection un objet compte-t-il encore comme "là", même
+# raisonnement que C1/C2 pour le clignotement occasionnel du détecteur) --
+# PAS un fudge-factor pour la latence LLM : `request_ts` est capturé dans
+# Agent.ask() AVANT tout appel au LLM et injecté explicitement comme `now`
+# dans chaque tool, donc le résultat est déjà indépendant de la latence
+# d'inférence (~1,6s mesurée), quelle qu'elle soit -- voir docs/rapport.tex
+# section 9.8 ("Un bug révélateur : latence LLM et fraîcheur des données")
+# pour le détail du bug trouvé (fenêtre trop stricte avant cet ancrage) puis
+# corrigé -- correctif indépendant du modèle servi (section 9.5). Volontairement
+# un peu plus large que la tolérance
+# de D3 (1,0s par défaut côté EventStore.active_durations, agent/src/alerts/alerts.py)
+# : une alerte de sécurité a intérêt à réagir vite à une vraie disparition,
+# une réponse conversationnelle peut se permettre d'être légèrement plus
+# tolérante sans que ça choque l'utilisateur.
+freshness_seconds: 2.0

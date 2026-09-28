@@ -1,0 +1,52 @@
+# Zones de danger, regroupées PAR SCÈNE (agent/src/alerts/zones.py) -- chaque
+# scène (une vidéo précise, ou l'image de fond d'une scène interactive
+# silhouette+souris) a son propre jeu de zones nommées, sélectionné
+# automatiquement selon la source actuellement affichée (`source:`
+# ci-dessous, comparé au chemin résolu de la source active -- voir
+# SourceCycler.zone_source_key dans demo/src/source_cycle.py). Une source
+# sans scène correspondante n'a simplement aucune zone surveillée --
+# comportement par défaut, pas une erreur.
+#
+# Coordonnées de chaque zone NORMALISÉES (fraction de la largeur/hauteur
+# de l'image, 0.0-1.0), volontairement PAS en pixels bruts : un polygone
+# en pixels ne serait valide que pour une seule résolution, un polygone
+# normalisé se reprojette correctement quelle que soit la résolution
+# réelle de la frame. Chaque zone est un polygone simple (liste de
+# [x_frac, y_frac], dans l'ordre, non auto-intersectant -- testé par un
+# lancer de rayon classique, cf. zones.py:_point_in_polygon).
+#
+# Ajouter une scène (vidéo réelle ou image+silhouette interactive) :
+# agent/src/alerts/define_zones.py -- voir le README, section "Ajouter une
+# scène avec zones de danger", pour l'usage complet.
+
+# Fraction minimale (0.0-1.0) de la SURFACE de la boîte (personne/voiture)
+# qui doit recouvrir le polygone de la zone pour compter comme "entrée" --
+# évite qu'un simple effleurement du bord de la zone (quelques % de la
+# boîte) déclenche une alerte. Voir zones.py:_box_coverage_fraction.
+# Valeur par défaut, applicable à toute scène qui ne la surcharge pas
+# explicitement (clé min_coverage_fraction au niveau de la scène).
+min_coverage_fraction: 0.2
+
+scenes:
+  chantier:
+    # Scène interactive (image de fond + silhouette qui suit la souris,
+    # cf. InteractiveOverlaySource dans demo/src/source_cycle.py) -- pas
+    # une vraie vidéo. Zones calibrées sur
+    # demo/assets/construction_site_access.jpg via
+    # agent/src/alerts/define_zones.py (clic manuel sur l'image, coordonnées
+    # normalisées imprimées automatiquement). Aperçu visuel :
+    # demo/assets/construction_site_access_zones_preview.png. À
+    # recalibrer si la scène de fond change.
+    source: "demo/assets/construction_site_access.jpg"
+    zones:
+      zone_centrale:
+        - [0.639, 0.85]
+        - [0.861, 0.537]
+        - [0.474, 0.462]
+        - [0.122, 0.584]
+      zone_laterale:
+        - [0.363, 0.82]
+        - [0.138, 0.996]
+        - [0.003, 0.83]
+        - [0.003, 0.635]
+        - [0.045, 0.616]

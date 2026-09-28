@@ -1,0 +1,6304 @@
+{
+  "summary": {
+    "model_label": "granite-4.1-3b",
+    "repeats": 10,
+    "n_cases_total": 36,
+    "n_cases_done": 36,
+    "complete": true,
+    "overall_pass_rate": 0.9722222222222222,
+    "n_errored_runs": 0,
+    "latency_mean_s": 0.6983071254359351,
+    "latency_median_s": 0.6509989500045776,
+    "latency_p95_s": 1.0137405395507812
+  },
+  "cases": [
+    {
+      "id": "count_now__person_fr",
+      "question": "Combien de personnes y a-t-il actuellement ?",
+      "notes": "",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 1.4054811000823975,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 personnes détectées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.4756894111633301,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 personnes détectées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.47859692573547363,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 personnes dans la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.524766206741333,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement **3 personnes** dans le champ de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5221867561340332,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 personnes dans le champ de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5406298637390137,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 personnes dans la zone de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.4862053394317627,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 personnes détectées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5112318992614746,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 personnes dans la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5409908294677734,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 personnes détectées par la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5067052841186523,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 personnes dans la caméra.",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    },
+    {
+      "id": "count_now__car_fr",
+      "question": "Combien de voitures vois-tu là maintenant ?",
+      "notes": "",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 0.50553297996521,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement **3 voitures** visibles.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5267691612243652,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 voitures dans la vue de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5663995742797852,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement **3 voitures** visibles dans le champ de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5167355537414551,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement **3 voitures** sur la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.49762463569641113,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 voitures dans la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.49614596366882324,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement **3 voitures** visibles.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5145087242126465,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement **3 voitures** dans la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5462949275970459,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement **3 voitures** dans le champ de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5213463306427002,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 voitures dans la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5225808620452881,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement **3 voitures** dans la caméra.",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    },
+    {
+      "id": "count_now__person_en",
+      "question": "How many people are currently in frame?",
+      "notes": "Variante anglaise -- la démo est requêtée en anglais.",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 0.49984288215637207,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement **3 personnes** dans la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.4859042167663574,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement **3 personnes** dans la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5584733486175537,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 personnes dans le champ de vision de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5283219814300537,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 personnes dans le champ de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5388662815093994,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 personnes dans le cadre de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5512282848358154,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 personnes dans le champ de vision de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5689859390258789,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement **3 personnes** dans le champ de vision de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5540115833282471,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 personnes dans le champ de vision de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.4944014549255371,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 personnes dans la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.537177562713623,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 personnes dans le champ de vision de la caméra.",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    },
+    {
+      "id": "count_now__person_synonym",
+      "question": "Combien de piétons sont présents en ce moment ?",
+      "notes": "Synonyme ('piéton' au lieu de 'personne') -- teste la généralisation au-delà du mot exact du schéma.",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 0.5977151393890381,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement **3 piétons** présents dans la zone surveillée.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.48833680152893066,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 piétons détectés.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.535224199295044,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 piétons dans la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.4797196388244629,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 piétons présents.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5420544147491455,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement **3 piétons** présents dans la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5608880519866943,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 piétons dans le champ de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6039049625396729,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement **3 piétons** dans la zone vue par la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5615615844726562,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 piétons dans le champ de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.4823598861694336,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 piétons présents.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5035319328308105,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 piétons dans la caméra.",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    },
+    {
+      "id": "count_now__car_synonym",
+      "question": "Combien de véhicules sont garés là ?",
+      "notes": "Synonyme ('véhicule' au lieu de 'voiture').",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 0.5970590114593506,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 véhicules garés dans le champ de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6031699180603027,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement **3 véhicules** garés dans la zone vue par la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6107308864593506,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement **3 véhicules** garés dans la zone visible par la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.611464262008667,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement **3 véhicules** garés dans la zone visible par la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5788519382476807,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement **3 véhicules** garés dans la zone observée.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.604435920715332,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement **3 véhicules** garés dans la zone visible par la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.556023359298706,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement **3 véhicules** garés dans la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.48896265029907227,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 véhicules garés.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6332268714904785,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement **3 véhicules** garés dans la zone visible par la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6196203231811523,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement **3 véhicules** garés dans la zone visée par la caméra.",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    },
+    {
+      "id": "count_total__car",
+      "question": "Combien de voitures sont passées au total ?",
+      "notes": "",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 0.5760223865509033,
+          "recorded_calls": [
+            [
+              "count_total",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Au total, 3 voitures ont été détectées par la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5317206382751465,
+          "recorded_calls": [
+            [
+              "count_total",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Au total, 3 voitures ont été détectées par la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5606627464294434,
+          "recorded_calls": [
+            [
+              "count_total",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Au total, 3 voitures ont été détectées par la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5477080345153809,
+          "recorded_calls": [
+            [
+              "count_total",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Au total, 3 voitures ont été détectées par la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.562342643737793,
+          "recorded_calls": [
+            [
+              "count_total",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Au total, 3 voitures ont été détectées par la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5184412002563477,
+          "recorded_calls": [
+            [
+              "count_total",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Au total, 3 voitures ont été observées jusqu'à présent.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5475492477416992,
+          "recorded_calls": [
+            [
+              "count_total",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Au total, 3 voitures ont été détectées jusqu'à présent.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.47784972190856934,
+          "recorded_calls": [
+            [
+              "count_total",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Au total, 3 voitures ont été détectées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5500369071960449,
+          "recorded_calls": [
+            [
+              "count_total",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Au total, 3 voitures ont été détectées par la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.50213623046875,
+          "recorded_calls": [
+            [
+              "count_total",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Au total, 3 voitures ont été comptées.",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    },
+    {
+      "id": "count_total__person",
+      "question": "Combien de personnes différentes as-tu vues depuis le début ?",
+      "notes": "",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 0.5212509632110596,
+          "recorded_calls": [
+            [
+              "count_total",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis le début, 3 personnes différentes ont été observées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.506481409072876,
+          "recorded_calls": [
+            [
+              "count_total",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis le début, 3 personnes différentes ont été observées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5043392181396484,
+          "recorded_calls": [
+            [
+              "count_total",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis le début, 3 personnes différentes ont été observées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5130689144134521,
+          "recorded_calls": [
+            [
+              "count_total",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis le début, j’ai observé 3 personnes différentes.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5108749866485596,
+          "recorded_calls": [
+            [
+              "count_total",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis le début, 3 personnes différentes ont été identifiées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.4948008060455322,
+          "recorded_calls": [
+            [
+              "count_total",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis le début, 3 personnes différentes ont été observées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5173985958099365,
+          "recorded_calls": [
+            [
+              "count_total",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis le début, 3 personnes différentes ont été observées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5000202655792236,
+          "recorded_calls": [
+            [
+              "count_total",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis le début, 3 personnes différentes ont été observées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5093109607696533,
+          "recorded_calls": [
+            [
+              "count_total",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis le début, 3 personnes différentes ont été observées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5076828002929688,
+          "recorded_calls": [
+            [
+              "count_total",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis le début, 3 personnes différentes ont été détectées.",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    },
+    {
+      "id": "disambiguation__now_present_tense",
+      "question": "Combien de voitures y a-t-il ?",
+      "notes": "Présent -- devrait pencher vers 'maintenant', pas 'total'.",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 0.5420029163360596,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 voitures détectées par la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5326516628265381,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 voitures dans la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5232007503509521,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement **3 voitures** dans la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.4978024959564209,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 voitures détectées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5186491012573242,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 voitures détectées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5504393577575684,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement **3 voitures** dans le champ de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5370287895202637,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement 3 voitures détectées par la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5310657024383545,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement **3 voitures** sur la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5783069133758545,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement **3 voitures** dans le champ de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5339961051940918,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a actuellement **3 voitures** dans la caméra.",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    },
+    {
+      "id": "disambiguation__total_past_tense",
+      "question": "Combien de voitures sont passées ?",
+      "notes": "Passé composé -- devrait pencher vers 'total', pas 'maintenant'.",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 0.5380630493164062,
+          "recorded_calls": [
+            [
+              "count_total",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Au total, 3 voitures ont été comptées depuis le début de la session.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5623226165771484,
+          "recorded_calls": [
+            [
+              "count_total",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Au total, 3 voitures ont été détectées depuis le début de la session.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.4282417297363281,
+          "recorded_calls": [
+            [
+              "count_total",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "3 voitures au total ont été observées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5708909034729004,
+          "recorded_calls": [
+            [
+              "count_total",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Au total, 3 voitures ont été détectées depuis le début de la session.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5421931743621826,
+          "recorded_calls": [
+            [
+              "count_total",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "3 voitures ont été comptées au total depuis le début de la session.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5638666152954102,
+          "recorded_calls": [
+            [
+              "count_total",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Au total, 3 voitures ont été détectées depuis le début de la session.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5241856575012207,
+          "recorded_calls": [
+            [
+              "count_total",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Au total, 3 voitures ont été détectées jusqu'à présent.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5604074001312256,
+          "recorded_calls": [
+            [
+              "count_total",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Au total, 3 voitures ont été comptées depuis le début de la session.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5910782814025879,
+          "recorded_calls": [
+            [
+              "count_total",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Au total, 3 voitures ont été détectées depuis le début de la session.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5607740879058838,
+          "recorded_calls": [
+            [
+              "count_total",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Au total, 3 voitures ont été détectées depuis le début de la session.",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    },
+    {
+      "id": "count_since__relative_minutes",
+      "question": "Combien de personnes depuis 10 minutes ?",
+      "notes": "",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 0.6159384250640869,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "person",
+                "minutes_ago": 10
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis 10 minutes, 3 personnes ont été détectées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6231646537780762,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "person",
+                "minutes_ago": 10
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis 10 minutes, 3 personnes ont été détectées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6011059284210205,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "person",
+                "minutes_ago": 10
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis 10 minutes, 3 personnes ont été détectées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.712794303894043,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "person",
+                "minutes_ago": 10
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis 10 minutes, il y a eu 3 personnes détectées par la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6321742534637451,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "person",
+                "minutes_ago": 10
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis 10 minutes, 3 personnes ont été comptées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5752308368682861,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "person",
+                "minutes_ago": 10
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis 10 minutes, 3 personnes ont été observées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6092994213104248,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "person",
+                "minutes_ago": 10
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis 10 minutes, 3 personnes ont été comptées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6412343978881836,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "person",
+                "minutes_ago": 10
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis 10 minutes, il y a eu 3 personnes détectées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6518020629882812,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "person",
+                "minutes_ago": 10
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis 10 minutes, il y a eu **3 personnes** détectées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6294026374816895,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "person",
+                "minutes_ago": 10
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis 10 minutes, il y a eu **3 personnes** détectées.",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    },
+    {
+      "id": "count_since__relative_half_hour",
+      "question": "Combien de voitures ont été vues cette dernière demi-heure ?",
+      "notes": "",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 0.6876013278961182,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "car",
+                "minutes_ago": 30
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Au cours des 30 dernières minutes, 3 voitures ont été observées.",
+          "error": null
+        },
+        {
+          "passed": false,
+          "latency_s": 0.8260114192962646,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "car",
+                "start_time": "12:00"
+              }
+            ]
+          ],
+          "unmatched_expected": [
+            "count_since"
+          ],
+          "extra_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "car",
+                "start_time": "12:00"
+              }
+            ]
+          ],
+          "final_text": "Il y a eu **3 voitures** observées au cours des 30 minutes écoulées depuis l'heure actuelle (12h).",
+          "error": null
+        },
+        {
+          "passed": false,
+          "latency_s": 0.6524267196655273,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "car",
+                "start_time": "13:30"
+              }
+            ]
+          ],
+          "unmatched_expected": [
+            "count_since"
+          ],
+          "extra_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "car",
+                "start_time": "13:30"
+              }
+            ]
+          ],
+          "final_text": "Au cours de la dernière demi‑heure, 3 voitures ont été observées.",
+          "error": null
+        },
+        {
+          "passed": false,
+          "latency_s": 0.7049682140350342,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "car",
+                "start_time": "10:00"
+              }
+            ]
+          ],
+          "unmatched_expected": [
+            "count_since"
+          ],
+          "extra_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "car",
+                "start_time": "10:00"
+              }
+            ]
+          ],
+          "final_text": "Il y a eu **3 voitures** vues au cours de la dernière demi‑heure.",
+          "error": null
+        },
+        {
+          "passed": false,
+          "latency_s": 0.7456915378570557,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "car",
+                "start_time": "13:00"
+              }
+            ]
+          ],
+          "unmatched_expected": [
+            "count_since"
+          ],
+          "extra_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "car",
+                "start_time": "13:00"
+              }
+            ]
+          ],
+          "final_text": "Au cours de la dernière demi‑heure (à partir de 13h00), 3 voitures ont été observées.",
+          "error": null
+        },
+        {
+          "passed": false,
+          "latency_s": 0.7574942111968994,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "car",
+                "start_time": "15:00"
+              }
+            ]
+          ],
+          "unmatched_expected": [
+            "count_since"
+          ],
+          "extra_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "car",
+                "start_time": "15:00"
+              }
+            ]
+          ],
+          "final_text": "Depuis environ 15 minutes (soit la dernière demi‑heure), 3 voitures ont été observées.",
+          "error": null
+        },
+        {
+          "passed": false,
+          "latency_s": 0.6606385707855225,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "car",
+                "start_time": "10:00"
+              }
+            ]
+          ],
+          "unmatched_expected": [
+            "count_since"
+          ],
+          "extra_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "car",
+                "start_time": "10:00"
+              }
+            ]
+          ],
+          "final_text": "Depuis environ 10:00, 3 voitures ont été observées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6511199474334717,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "car",
+                "minutes_ago": 30
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Au cours des dernières 30 minutes, 3 voitures ont été observées.",
+          "error": null
+        },
+        {
+          "passed": false,
+          "latency_s": 0.6610794067382812,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "car",
+                "start_time": "10:30"
+              }
+            ]
+          ],
+          "unmatched_expected": [
+            "count_since"
+          ],
+          "extra_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "car",
+                "start_time": "10:30"
+              }
+            ]
+          ],
+          "final_text": "Au cours de la dernière demi‑heure, 3 voitures ont été observées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.642850399017334,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "car",
+                "minutes_ago": 30
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis environ une demi‑heure, 3 voitures ont été observées.",
+          "error": null
+        }
+      ],
+      "pass_rate": 0.3
+    },
+    {
+      "id": "count_since__absolute_time",
+      "question": "Combien de voitures depuis 12h15 ?",
+      "notes": "",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 0.651993989944458,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "car",
+                "start_time": "12:15"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis 12h15, 3 voitures ont été détectées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6482105255126953,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "car",
+                "start_time": "12:15"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis 12h15, 3 voitures ont été détectées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6587045192718506,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "car",
+                "start_time": "12:15"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis 12h15, il y a eu 3 voitures observées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6441817283630371,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "car",
+                "start_time": "12:15"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis 12h15, 3 voitures ont été observées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6790452003479004,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "car",
+                "start_time": "12:15"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis 12h15, il y a eu 3 voitures observées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6762242317199707,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "car",
+                "start_time": "12:15"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis 12h15, il y a eu 3 voitures détectées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6857559680938721,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "car",
+                "start_time": "12:15"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis 12h15, il y a eu **3 voitures** dans la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6584548950195312,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "car",
+                "start_time": "12:15"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis 12h15, 3 voitures ont été observées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6160933971405029,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "car",
+                "start_time": "12:15"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis 12h15, 3 voitures ont été observées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.643653154373169,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "car",
+                "start_time": "12:15"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis 12h15, il y a eu 3 voitures observées.",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    },
+    {
+      "id": "count_since__absolute_morning",
+      "question": "Depuis 9h du matin, combien de personnes ?",
+      "notes": "",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 0.6933925151824951,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "person",
+                "start_time": "09:00"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis 9h du matin, il y a eu **3 personnes** détectées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6878314018249512,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "person",
+                "start_time": "09:00"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis 9h du matin, 3 personnes ont été observées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6345937252044678,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "person",
+                "start_time": "09:00"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis 9h du matin, 3 personnes ont été observées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6633274555206299,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "person",
+                "start_time": "09:00"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis 9 heures, 3 personnes ont été détectées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6854634284973145,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "person",
+                "start_time": "09:00"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis 9h du matin, il y a eu 3 personnes détectées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6580984592437744,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "person",
+                "start_time": "09:00"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis 9 heures du matin, 3 personnes ont été observées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6926772594451904,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "person",
+                "start_time": "09:00"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis 9 h du matin, 3 personnes ont été détectées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6637556552886963,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "person",
+                "start_time": "09:00"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis 9h du matin, 3 personnes ont été comptées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7052664756774902,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "person",
+                "start_time": "09:00"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis l'aube de la matinée (9h), 3 personnes ont été comptées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7025210857391357,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "person",
+                "start_time": "09:00"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis 9h du matin, il y a eu 3 personnes détectées.",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    },
+    {
+      "id": "count_since__loose_natural_phrasing",
+      "question": "Combien de personnes depuis midi et quart ?",
+      "notes": "Formulation naturelle non standard ('midi et quart') plutôt que 'HH:MM' -- test adversarial, échec plausible et informatif.",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 0.6629648208618164,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "person",
+                "start_time": "12:15"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis midi et quart, il y a eu 3 personnes détectées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6298282146453857,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "person",
+                "start_time": "12:15"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis midi et quart, 3 personnes ont été détectées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6519017219543457,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "person",
+                "start_time": "12:15"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis midi et quart, 3 personnes ont été détectées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6531059741973877,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "person",
+                "start_time": "12:15"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis midi et quart, il y a eu 3 personnes détectées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6432123184204102,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "person",
+                "start_time": "12:15"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis midi et quart, il y a eu 3 personnes détectées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6491303443908691,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "person",
+                "start_time": "12:15"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis midi et quart, il y a eu 3 personnes détectées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6122314929962158,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "person",
+                "start_time": "12:15"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis midi et quart, 3 personnes ont été observées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6300058364868164,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "person",
+                "start_time": "12:15"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis midi et quart, 3 personnes ont été détectées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6068518161773682,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "person",
+                "start_time": "12:15"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis midi et quart, 3 personnes ont été observées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6119968891143799,
+          "recorded_calls": [
+            [
+              "count_since",
+              {
+                "object_class": "person",
+                "start_time": "12:15"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis midi et quart, 3 personnes ont été détectées.",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    },
+    {
+      "id": "count_between__afternoon",
+      "question": "Combien de voitures sont passées entre 12h15 et 12h30 ?",
+      "notes": "",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 0.8390705585479736,
+          "recorded_calls": [
+            [
+              "count_between",
+              {
+                "object_class": "car",
+                "start_time": "12:15",
+                "end_time": "12:30"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Entre 12h15 et 12h30, **3 voitures** ont été comptées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7980890274047852,
+          "recorded_calls": [
+            [
+              "count_between",
+              {
+                "object_class": "car",
+                "start_time": "12:15",
+                "end_time": "12:30"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Entre 12h15 et 12h30, 3 voitures ont été comptées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7991969585418701,
+          "recorded_calls": [
+            [
+              "count_between",
+              {
+                "object_class": "car",
+                "start_time": "12:15",
+                "end_time": "12:30"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Entre 12h15 et 12h30, 3 voitures ont été comptées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7899875640869141,
+          "recorded_calls": [
+            [
+              "count_between",
+              {
+                "object_class": "car",
+                "start_time": "12:15",
+                "end_time": "12:30"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Entre 12h15 et 12h30, 3 voitures ont été comptées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7946414947509766,
+          "recorded_calls": [
+            [
+              "count_between",
+              {
+                "object_class": "car",
+                "start_time": "12:15",
+                "end_time": "12:30"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Entre 12h15 et 12h30, 3 voitures ont été comptées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7729442119598389,
+          "recorded_calls": [
+            [
+              "count_between",
+              {
+                "object_class": "car",
+                "start_time": "12:15",
+                "end_time": "12:30"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Entre 12h15 et 12h30, 3 voitures ont été comptées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7898998260498047,
+          "recorded_calls": [
+            [
+              "count_between",
+              {
+                "object_class": "car",
+                "start_time": "12:15",
+                "end_time": "12:30"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Entre 12h15 et 12h30, 3 voitures ont été comptées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7950432300567627,
+          "recorded_calls": [
+            [
+              "count_between",
+              {
+                "object_class": "car",
+                "start_time": "12:15",
+                "end_time": "12:30"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Entre 12h15 et 12h30, 3 voitures ont été comptées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7844688892364502,
+          "recorded_calls": [
+            [
+              "count_between",
+              {
+                "object_class": "car",
+                "start_time": "12:15",
+                "end_time": "12:30"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Entre 12h15 et 12h30, 3 voitures ont été comptées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7631306648254395,
+          "recorded_calls": [
+            [
+              "count_between",
+              {
+                "object_class": "car",
+                "start_time": "12:15",
+                "end_time": "12:30"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "3 voitures ont été comptées entre 12h15 et 12h30.",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    },
+    {
+      "id": "count_between__morning",
+      "question": "Combien de personnes entre 8h et midi ?",
+      "notes": "",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 0.8092892169952393,
+          "recorded_calls": [
+            [
+              "count_between",
+              {
+                "object_class": "person",
+                "start_time": "08:00",
+                "end_time": "12:00"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a eu 3 personnes détectées entre 8 h et midi.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.8284082412719727,
+          "recorded_calls": [
+            [
+              "count_between",
+              {
+                "object_class": "person",
+                "start_time": "08:00",
+                "end_time": "12:00"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a eu 3 personnes détectées entre 8 h et 12 h.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7362728118896484,
+          "recorded_calls": [
+            [
+              "count_between",
+              {
+                "object_class": "person",
+                "start_time": "08:00",
+                "end_time": "12:00"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a eu 3 personnes détectées entre 8h et midi.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.767371416091919,
+          "recorded_calls": [
+            [
+              "count_between",
+              {
+                "object_class": "person",
+                "start_time": "08:00",
+                "end_time": "12:00"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a eu 3 personnes détectées entre 8 h et midi.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7908203601837158,
+          "recorded_calls": [
+            [
+              "count_between",
+              {
+                "object_class": "person",
+                "start_time": "08:00",
+                "end_time": "12:00"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "3 personnes ont été détectées entre 8 h et 12 h.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.8225414752960205,
+          "recorded_calls": [
+            [
+              "count_between",
+              {
+                "object_class": "person",
+                "start_time": "08:00",
+                "end_time": "12:00"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a eu 3 personnes détectées entre 8 h et 12 h.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.784412145614624,
+          "recorded_calls": [
+            [
+              "count_between",
+              {
+                "object_class": "person",
+                "start_time": "08:00",
+                "end_time": "12:00"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Entre 8 h et midi, il y a eu 3 personnes détectées.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7698657512664795,
+          "recorded_calls": [
+            [
+              "count_between",
+              {
+                "object_class": "person",
+                "start_time": "08:00",
+                "end_time": "12:00"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a eu 3 personnes détectées entre 8 h et midi.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7931857109069824,
+          "recorded_calls": [
+            [
+              "count_between",
+              {
+                "object_class": "person",
+                "start_time": "08:00",
+                "end_time": "12:00"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a eu **3 personnes** dénombrées entre 8 h et midi.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7406826019287109,
+          "recorded_calls": [
+            [
+              "count_between",
+              {
+                "object_class": "person",
+                "start_time": "08:00",
+                "end_time": "12:00"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "3 personnes ont été comptées entre 8 h et midi.",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    },
+    {
+      "id": "time_since_last_seen__car",
+      "question": "Quand la dernière voiture est-elle passée ?",
+      "notes": "",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 0.5637102127075195,
+          "recorded_calls": [
+            [
+              "time_since_last_seen",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "La dernière voiture a été observée il y a environ **3 secondes**.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5984704494476318,
+          "recorded_calls": [
+            [
+              "time_since_last_seen",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "La dernière voiture a été observée il y a environ 3 secondes.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5898833274841309,
+          "recorded_calls": [
+            [
+              "time_since_last_seen",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "La dernière voiture a été observée il y a environ **3 secondes**.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5574536323547363,
+          "recorded_calls": [
+            [
+              "time_since_last_seen",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "La dernière voiture a été observée il y a environ **3 secondes**.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5669879913330078,
+          "recorded_calls": [
+            [
+              "time_since_last_seen",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "La dernière voiture a été observée il y a environ **3 secondes**.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.582169771194458,
+          "recorded_calls": [
+            [
+              "time_since_last_seen",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "La dernière voiture quittée la caméra il y a environ **3 secondes**.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5679316520690918,
+          "recorded_calls": [
+            [
+              "time_since_last_seen",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "La dernière voiture observée a disparu il y a environ **3 secondes**.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5990116596221924,
+          "recorded_calls": [
+            [
+              "time_since_last_seen",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "La dernière voiture observée était apparue il y a environ **3 secondes**.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.589942455291748,
+          "recorded_calls": [
+            [
+              "time_since_last_seen",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "La dernière voiture observée a disparu il y a environ **3 secondes**.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5564322471618652,
+          "recorded_calls": [
+            [
+              "time_since_last_seen",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "La dernière voiture a été observée il y a environ **3 secondes**.",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    },
+    {
+      "id": "time_since_last_seen__person",
+      "question": "Ça fait combien de temps qu'on n'a pas vu de personne ?",
+      "notes": "",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 0.5809173583984375,
+          "recorded_calls": [
+            [
+              "time_since_last_seen",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a environ 3 secondes qu’on n’a pas vu de personne.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6024250984191895,
+          "recorded_calls": [
+            [
+              "time_since_last_seen",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a environ **3 secondes** qu’on n’a pas vu de personne.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5796937942504883,
+          "recorded_calls": [
+            [
+              "time_since_last_seen",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a environ **3 secondes** qu’on n’a pas vu de personne.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6448724269866943,
+          "recorded_calls": [
+            [
+              "time_since_last_seen",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a environ **3 secondes** que nous n'avons pas vu de personne sur la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6508779525756836,
+          "recorded_calls": [
+            [
+              "time_since_last_seen",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a environ 3 secondes que le dernier objet (personne) a été détecté.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5796971321105957,
+          "recorded_calls": [
+            [
+              "time_since_last_seen",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a environ **3 secondes** qu’on n’a pas vu de personne.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5619974136352539,
+          "recorded_calls": [
+            [
+              "time_since_last_seen",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis environ 3 secondes qu’on n’a pas vu de personne.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5882818698883057,
+          "recorded_calls": [
+            [
+              "time_since_last_seen",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a environ 3 secondes qu’on n’a pas vu de personne.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5614709854125977,
+          "recorded_calls": [
+            [
+              "time_since_last_seen",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis environ 3 secondes qu’on n’a pas observé de personne.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6087822914123535,
+          "recorded_calls": [
+            [
+              "time_since_last_seen",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Il y a environ **3 secondes** qu’on n’a pas vu de personne.",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    },
+    {
+      "id": "average_presence_duration__person",
+      "question": "En moyenne, combien de temps reste une personne ?",
+      "notes": "À distinguer de time_since_last_seen -- formulation proche, intention différente.",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 0.5549225807189941,
+          "recorded_calls": [
+            [
+              "average_presence_duration",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "En moyenne, une personne reste environ **3 secondes** sur la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.630591630935669,
+          "recorded_calls": [
+            [
+              "average_presence_duration",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "En moyenne, une personne reste environ 3 secondes dans le champ de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5644214153289795,
+          "recorded_calls": [
+            [
+              "average_presence_duration",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "En moyenne, une personne reste environ **3 secondes** sur la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5976388454437256,
+          "recorded_calls": [
+            [
+              "average_presence_duration",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "En moyenne, une personne reste environ **3 secondes** sur l'image de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5809183120727539,
+          "recorded_calls": [
+            [
+              "average_presence_duration",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "En moyenne, une personne reste environ **3 secondes** sur la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5724544525146484,
+          "recorded_calls": [
+            [
+              "average_presence_duration",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "En moyenne, une personne reste environ 3 secondes sur la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.57297682762146,
+          "recorded_calls": [
+            [
+              "average_presence_duration",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "En moyenne, une personne reste environ **3 secondes** sur la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.589402437210083,
+          "recorded_calls": [
+            [
+              "average_presence_duration",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "En moyenne, une personne reste environ **3 secondes** dans le champ de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6547973155975342,
+          "recorded_calls": [
+            [
+              "average_presence_duration",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "En moyenne, une personne reste approximativement **3 secondes** dans le champ de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5923891067504883,
+          "recorded_calls": [
+            [
+              "average_presence_duration",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "En moyenne, une personne reste sur l’image de la caméra environ **3 secondes**.",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    },
+    {
+      "id": "average_presence_duration__car",
+      "question": "Durée moyenne de présence des voitures ?",
+      "notes": "",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 0.6434547901153564,
+          "recorded_calls": [
+            [
+              "average_presence_duration",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "La durée moyenne de présence d'une voiture sur la caméra est d'environ **3 secondes**.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6085021495819092,
+          "recorded_calls": [
+            [
+              "average_presence_duration",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "La durée moyenne de présence des voitures est d'environ **3 secondes**.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6019768714904785,
+          "recorded_calls": [
+            [
+              "average_presence_duration",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "La durée moyenne de présence des voitures est d'environ **3 secondes**.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5905787944793701,
+          "recorded_calls": [
+            [
+              "average_presence_duration",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "La durée moyenne de présence des voitures est d'environ **3 secondes**.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6110410690307617,
+          "recorded_calls": [
+            [
+              "average_presence_duration",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "La durée moyenne de présence des voitures est d'environ **3 secondes**.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.588857889175415,
+          "recorded_calls": [
+            [
+              "average_presence_duration",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "La durée moyenne de présence des voitures est d'environ **3 secondes**.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5972745418548584,
+          "recorded_calls": [
+            [
+              "average_presence_duration",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "La durée moyenne de présence des voitures est d'environ **3 secondes**.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6379926204681396,
+          "recorded_calls": [
+            [
+              "average_presence_duration",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "La durée moyenne de présence d’une voiture sur la caméra est d’environ **3 secondes**.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7299561500549316,
+          "recorded_calls": [
+            [
+              "average_presence_duration",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "La durée moyenne de présence d'une voiture dans le champ de la caméra est d'environ **3 secondes**.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.583625078201294,
+          "recorded_calls": [
+            [
+              "average_presence_duration",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "La durée moyenne de présence des voitures est d'environ **3 secondes**.",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    },
+    {
+      "id": "peak_concurrent_count__person",
+      "question": "Quel a été le pic de personnes présentes en même temps ?",
+      "notes": "",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 0.6438984870910645,
+          "recorded_calls": [
+            [
+              "peak_concurrent_count",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Le pic de personnes présentes simultanément a été de **3** individus.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.593031644821167,
+          "recorded_calls": [
+            [
+              "peak_concurrent_count",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Le pic de personnes présentes en même temps a été de **3** individus.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5901484489440918,
+          "recorded_calls": [
+            [
+              "peak_concurrent_count",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Le pic de personnes présentes simultanément a été de **3** personnes.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5368034839630127,
+          "recorded_calls": [
+            [
+              "peak_concurrent_count",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Le pic de personnes présentes simultanément a été de **3**.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5510966777801514,
+          "recorded_calls": [
+            [
+              "peak_concurrent_count",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Le pic de personnes présentes simultanément a été de **3**.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5598185062408447,
+          "recorded_calls": [
+            [
+              "peak_concurrent_count",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Le pic de personnes présentes simultanément a été de **3** individus.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.588263988494873,
+          "recorded_calls": [
+            [
+              "peak_concurrent_count",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Le pic de personnes présentes simultanément a été de **3** individus.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5755465030670166,
+          "recorded_calls": [
+            [
+              "peak_concurrent_count",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Le pic de personnes présentes simultanément a été de **3** personnes.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5478229522705078,
+          "recorded_calls": [
+            [
+              "peak_concurrent_count",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Le pic de personnes présentes en même temps a été de **3**.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5763170719146729,
+          "recorded_calls": [
+            [
+              "peak_concurrent_count",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Le pic de personnes présentes simultanément a été de **3**.",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    },
+    {
+      "id": "peak_concurrent_count__car",
+      "question": "Combien de voitures simultanées au maximum aujourd'hui ?",
+      "notes": "",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 0.6112136840820312,
+          "recorded_calls": [
+            [
+              "peak_concurrent_count",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Le pic maximal de voitures simultanées observé aujourd'hui était de **3 véhicules**.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5901679992675781,
+          "recorded_calls": [
+            [
+              "peak_concurrent_count",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Le pic maximum de voitures simultanées observé aujourd'hui était de **3 véhicules**.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6043763160705566,
+          "recorded_calls": [
+            [
+              "peak_concurrent_count",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Le pic maximal de voitures simultanées observé aujourd'hui a été de **3 véhicules**.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6020176410675049,
+          "recorded_calls": [
+            [
+              "peak_concurrent_count",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Le pic maximum de voitures simultanément enregistré aujourd'hui est de **3 véhicules**.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6041991710662842,
+          "recorded_calls": [
+            [
+              "peak_concurrent_count",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Le pic maximum de voitures simultanément enregistré aujourd'hui est de **3 véhicules**.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.600471019744873,
+          "recorded_calls": [
+            [
+              "peak_concurrent_count",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Le pic maximum de voitures simultanément observé aujourd'hui a été de **3 véhicules**.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6032471656799316,
+          "recorded_calls": [
+            [
+              "peak_concurrent_count",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Le pic maximum de voitures simultanément enregistré aujourd'hui était de **3 véhicules**.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6075620651245117,
+          "recorded_calls": [
+            [
+              "peak_concurrent_count",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Le pic maximum de voitures simultanément observé aujourd'hui a été de **3 véhicules**.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6061019897460938,
+          "recorded_calls": [
+            [
+              "peak_concurrent_count",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Le pic maximum de voitures simultanément enregistré aujourd'hui est de **3 véhicules**.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6037635803222656,
+          "recorded_calls": [
+            [
+              "peak_concurrent_count",
+              {
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Le pic maximum de voitures simultanément enregistré aujourd'hui était de **3 véhicules**.",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    },
+    {
+      "id": "set_presence_duration_alert__person_seconds",
+      "question": "Préviens-moi si une personne reste plus de 10 secondes.",
+      "notes": "",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 0.8063220977783203,
+          "recorded_calls": [
+            [
+              "set_presence_duration_alert",
+              {
+                "object_class": "person",
+                "threshold_seconds": 10
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L'alerte a été configurée. Si une personne reste sur la caméra plus de 10 secondes, une notification sera envoyée.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7188718318939209,
+          "recorded_calls": [
+            [
+              "set_presence_duration_alert",
+              {
+                "object_class": "person",
+                "threshold_seconds": 10
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L’alerte a été configurée pour vous notifier si une personne reste plus de 10 secondes.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7752726078033447,
+          "recorded_calls": [
+            [
+              "set_presence_duration_alert",
+              {
+                "object_class": "person",
+                "threshold_seconds": 10
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L'alerte a été configurée : un message vous sera envoyé si une personne reste sur la caméra plus de 10 secondes.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7743842601776123,
+          "recorded_calls": [
+            [
+              "set_presence_duration_alert",
+              {
+                "object_class": "person",
+                "threshold_seconds": 10
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L'alerte a été configurée : un message vous sera envoyé si une personne reste dans la caméra plus de 10 secondes.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7073667049407959,
+          "recorded_calls": [
+            [
+              "set_presence_duration_alert",
+              {
+                "object_class": "person",
+                "threshold_seconds": 10
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L'alerte pour une personne restant plus de 10 secondes a été configurée avec succès.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7492215633392334,
+          "recorded_calls": [
+            [
+              "set_presence_duration_alert",
+              {
+                "object_class": "person",
+                "threshold_seconds": 10
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Une alerte a été configurée pour vous informer si une personne reste plus de 10 secondes dans la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7391736507415771,
+          "recorded_calls": [
+            [
+              "set_presence_duration_alert",
+              {
+                "object_class": "person",
+                "threshold_seconds": 10
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte a été configurée : une personne restant plus de 10 secondes déclenchera une notification.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7501528263092041,
+          "recorded_calls": [
+            [
+              "set_presence_duration_alert",
+              {
+                "object_class": "person",
+                "threshold_seconds": 10
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte a été configurée : si une personne reste plus de 10 secondes, vous recevrez un avis.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7890257835388184,
+          "recorded_calls": [
+            [
+              "set_presence_duration_alert",
+              {
+                "object_class": "person",
+                "threshold_seconds": 10
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte a été configurée. Un message vous sera envoyé si une personne reste plus de 10 secondes dans la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7108719348907471,
+          "recorded_calls": [
+            [
+              "set_presence_duration_alert",
+              {
+                "object_class": "person",
+                "threshold_seconds": 10
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte a été configurée : si une personne reste plus de 10 secondes, vous serez notifié.",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    },
+    {
+      "id": "set_presence_duration_alert__car_minutes_conversion",
+      "question": "Alerte si une voiture reste garée plus de 5 minutes.",
+      "notes": "Conversion minutes -> secondes attendue (5 min = 300s).",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 0.9549853801727295,
+          "recorded_calls": [
+            [
+              "set_presence_duration_alert",
+              {
+                "object_class": "car",
+                "threshold_seconds": 300
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L'alerte pour une voiture restant gar\\u00e9e plus de 5 minutes (300 secondes) a \\u00e9t\\u00e9 configur\\u00e9 avec succès.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7381970882415771,
+          "recorded_calls": [
+            [
+              "set_presence_duration_alert",
+              {
+                "object_class": "car",
+                "threshold_seconds": 300
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L’alerte pour les voitures restant en place plus de 5 minutes a été configurée avec succès.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.8701498508453369,
+          "recorded_calls": [
+            [
+              "set_presence_duration_alert",
+              {
+                "object_class": "car",
+                "threshold_seconds": 300
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L'alerte a été configurée pour détecter si une voiture reste plus de 5 minutes (300 secondes) dans le champ de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7262935638427734,
+          "recorded_calls": [
+            [
+              "set_presence_duration_alert",
+              {
+                "object_class": "car",
+                "threshold_seconds": 300
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L'alerte pour une voiture restant plus de 5 minutes (300 secondes) a été configurée avec succès.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.8969967365264893,
+          "recorded_calls": [
+            [
+              "set_presence_duration_alert",
+              {
+                "object_class": "car",
+                "threshold_seconds": 300
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "La configuration de l’alerte a été effectuée avec succès pour détecter si une voiture reste plus de 5 minutes (300 secondes) dans la zone de surveillance.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.8550055027008057,
+          "recorded_calls": [
+            [
+              "set_presence_duration_alert",
+              {
+                "object_class": "car",
+                "threshold_seconds": 300
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Une alerte a été configurée pour détecter si une voiture reste plus de 5 minutes (300 secondes) dans le champ de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7817599773406982,
+          "recorded_calls": [
+            [
+              "set_presence_duration_alert",
+              {
+                "object_class": "car",
+                "threshold_seconds": 300
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "✅ L'alerte pour les voitures restant plus de 5 minutes (300 secondes) a été activée.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.9887797832489014,
+          "recorded_calls": [
+            [
+              "set_presence_duration_alert",
+              {
+                "object_class": "car",
+                "threshold_seconds": 300
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "✅ L’alerte a été configurée pour détecter si une voiture reste garée plus de **5 minutes** (300 secondes). Si c’est le cas, vous recevrez une notification.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7754971981048584,
+          "recorded_calls": [
+            [
+              "set_presence_duration_alert",
+              {
+                "object_class": "car",
+                "threshold_seconds": 300
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Le paramètre d’alerte pour les voitures restant stationnées plus de 5 minutes a été configuré avec succès.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7479746341705322,
+          "recorded_calls": [
+            [
+              "set_presence_duration_alert",
+              {
+                "object_class": "car",
+                "threshold_seconds": 300
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L’alerte pour que une voiture reste garée plus de 5 minutes a été configurée avec succès.",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    },
+    {
+      "id": "set_presence_duration_alert__en",
+      "question": "Set an alert if a car stays parked for more than 2 minutes.",
+      "notes": "Variante anglaise, avec conversion minutes -> secondes.",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 0.8683032989501953,
+          "recorded_calls": [
+            [
+              "set_presence_duration_alert",
+              {
+                "object_class": "car",
+                "threshold_seconds": 120
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L'alerte a été configurée pour déclencher si un véhicule (car) reste immobile au-delà de 2 minutes (120 secondes).",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.8922264575958252,
+          "recorded_calls": [
+            [
+              "set_presence_duration_alert",
+              {
+                "object_class": "car",
+                "threshold_seconds": 120
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L'alerte a été configurée : si une voiture reste enregistrée pendant plus de 2 minutes (120 secondes), une alerte sera déclenchée.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.9265573024749756,
+          "recorded_calls": [
+            [
+              "set_presence_duration_alert",
+              {
+                "object_class": "car",
+                "threshold_seconds": 120
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L’alerte a été configurée : si une voiture reste plus de 2 minutes (120 secondes) sans bouger, un avertissement sera déclenché.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.8180069923400879,
+          "recorded_calls": [
+            [
+              "set_presence_duration_alert",
+              {
+                "object_class": "car",
+                "threshold_seconds": 120
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L'alerte a été configurée pour détecter si un véhicule (car) reste en place pendant plus de 2 minutes (120 secondes).",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.8267309665679932,
+          "recorded_calls": [
+            [
+              "set_presence_duration_alert",
+              {
+                "object_class": "car",
+                "threshold_seconds": 120
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L'alerte a été configurée pour détecter si un véhicule (car) reste en place pendant plus de 2 minutes (120 secondes).",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.9214150905609131,
+          "recorded_calls": [
+            [
+              "set_presence_duration_alert",
+              {
+                "object_class": "car",
+                "threshold_seconds": 120
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L'alerte a été configurée pour déclencher si un véhicule (car) reste enregistré pendant plus de 2 minutes (120 secondes).",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.8523468971252441,
+          "recorded_calls": [
+            [
+              "set_presence_duration_alert",
+              {
+                "object_class": "car",
+                "threshold_seconds": 120
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L'alerte a été configurée : si une voiture reste en place pendant plus de 2 minutes (120 secondes), vous serez avisé.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.8280491828918457,
+          "recorded_calls": [
+            [
+              "set_presence_duration_alert",
+              {
+                "object_class": "car",
+                "threshold_seconds": 120
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L'alerte a été configurée pour détecter si une voiture reste en place pendant plus de 2 minutes (120 secondes).",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.8161087036132812,
+          "recorded_calls": [
+            [
+              "set_presence_duration_alert",
+              {
+                "object_class": "car",
+                "threshold_seconds": 120
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L'alerte a été configurée pour détecter si une voiture reste inerte (parkée) pendant plus de 2 minutes (120 secondes).",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.9306342601776123,
+          "recorded_calls": [
+            [
+              "set_presence_duration_alert",
+              {
+                "object_class": "car",
+                "threshold_seconds": 120
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L'alerte a été configurée pour déclencher si un véhicule (car) reste immobile (présent) plus de 2 minutes (120 secondes).",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    },
+    {
+      "id": "set_co_occurrence_alert__basic",
+      "question": "Préviens-moi si 2 personnes et 1 voiture sont là en même temps.",
+      "notes": "",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 0.9187510013580322,
+          "recorded_calls": [
+            [
+              "set_co_occurrence_alert",
+              {
+                "person_threshold": 2,
+                "car_threshold": 1
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte a été configurée. Un message vous sera envoyé si simultanément **2 personnes** et **1 voiture** sont détectées dans le champ de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 1.0137405395507812,
+          "recorded_calls": [
+            [
+              "set_co_occurrence_alert",
+              {
+                "person_threshold": 2,
+                "car_threshold": 1
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte a été configurée. Un message vous sera envoyé si simultanément 2 personnes et 1 véhicule (autocar) sont présents dans le champ de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.860407829284668,
+          "recorded_calls": [
+            [
+              "set_co_occurrence_alert",
+              {
+                "person_threshold": 2,
+                "car_threshold": 1
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte a été configurée : un système alertera si simultanément **2 personnes** et **1 voiture** sont détectées dans le champ de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.9229750633239746,
+          "recorded_calls": [
+            [
+              "set_co_occurrence_alert",
+              {
+                "person_threshold": 2,
+                "car_threshold": 1
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte a été configurée. Elle vous préviendra automatiquement si **deux personnes** et **une voiture** sont présentes simultanément dans le champ de vision de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 1.0220508575439453,
+          "recorded_calls": [
+            [
+              "set_co_occurrence_alert",
+              {
+                "person_threshold": 2,
+                "car_threshold": 1
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte a été configurée. Un avertissement sera envoyé dès qu'il y a au moins 2 personnes et 1 voiture simultanément dans le champ de vision de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.9736289978027344,
+          "recorded_calls": [
+            [
+              "set_co_occurrence_alert",
+              {
+                "person_threshold": 2,
+                "car_threshold": 1
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte a été configurée. Un avertissement sera déclenché dès qu'il y a au moins **2 personnes** et **1 voiture** simultanément dans le champ de vision de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.8624279499053955,
+          "recorded_calls": [
+            [
+              "set_co_occurrence_alert",
+              {
+                "person_threshold": 2,
+                "car_threshold": 1
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte a été configurée. Elle vous préviendra si **2 personnes** et **1 voiture** sont présentes simultanément dans le champ de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.8986742496490479,
+          "recorded_calls": [
+            [
+              "set_co_occurrence_alert",
+              {
+                "person_threshold": 2,
+                "car_threshold": 1
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte a été configurée. Elle vous préviendra si **2 personnes** et **1 voiture** sont présentes simultanément dans le champ de vision de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.879969596862793,
+          "recorded_calls": [
+            [
+              "set_co_occurrence_alert",
+              {
+                "person_threshold": 2,
+                "car_threshold": 1
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L'alerte a été configurée pour vous prévenir si **2 personnes** et **1 voiture** sont présentes simultanément dans le champ de vision de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.9586348533630371,
+          "recorded_calls": [
+            [
+              "set_co_occurrence_alert",
+              {
+                "person_threshold": 2,
+                "car_threshold": 1
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte a été configurée. Elle vous préviendra si 2 personnes et 1 véhicule coexistent simultanément dans le champ de vision de la caméra.",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    },
+    {
+      "id": "set_co_occurrence_alert__at_least",
+      "question": "Alerte-moi s'il y a au moins 3 personnes et 2 véhicules simultanément.",
+      "notes": "",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 1.0073225498199463,
+          "recorded_calls": [
+            [
+              "set_co_occurrence_alert",
+              {
+                "person_threshold": 3,
+                "car_threshold": 2
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte est désormais configurée pour être déclenchée lorsque 3 personnes et 2 véhicules sont présents simultanément dans le champ de vision de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.9840481281280518,
+          "recorded_calls": [
+            [
+              "set_co_occurrence_alert",
+              {
+                "person_threshold": 3,
+                "car_threshold": 2
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L'alerte a été configurée pour vous avertir dès qu'il y a au moins **3 personnes** et **2 véhicules** présents simultanément dans le champ de vision de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7861402034759521,
+          "recorded_calls": [
+            [
+              "set_co_occurrence_alert",
+              {
+                "person_threshold": 3,
+                "car_threshold": 2
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L’alerte pour au moins 3 personnes et 2 véhicules simultanément a été configurée.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 1.1299641132354736,
+          "recorded_calls": [
+            [
+              "set_co_occurrence_alert",
+              {
+                "person_threshold": 3,
+                "car_threshold": 2
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "La configuration de l'alerte pour avoir **au moins 3 personnes** et **2 véhicules** en même temps a été effectuée. N'oubliez pas que l'alerte sera déclenchée dès que ces conditions sont remplies simultanément.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 1.021651268005371,
+          "recorded_calls": [
+            [
+              "set_co_occurrence_alert",
+              {
+                "person_threshold": 3,
+                "car_threshold": 2
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte a été configurée. Elle sera déclenchée dès qu'il y a **au moins 3 personnes** et **au moins 2 véhicules** présents simultanément dans le champ de vision de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.965843677520752,
+          "recorded_calls": [
+            [
+              "set_co_occurrence_alert",
+              {
+                "person_threshold": 3,
+                "car_threshold": 2
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "La configuration de l’alerte pour au moins **3 personnes** et **2 véhicules** en même temps a été effectuée. Si ces conditions sont remplies, une alerte sera déclenchée.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.9235808849334717,
+          "recorded_calls": [
+            [
+              "set_co_occurrence_alert",
+              {
+                "person_threshold": 3,
+                "car_threshold": 2
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L’alerte a été configurée pour vous notifier si **au moins 3 personnes** et **au moins 2 véhicules** sont présents simultanément dans le champ de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.8277451992034912,
+          "recorded_calls": [
+            [
+              "set_co_occurrence_alert",
+              {
+                "person_threshold": 3,
+                "car_threshold": 2
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L'alerte a été configurée pour vous notifier si simultanément il y a au moins 3 personnes et 2 véhicules dans la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.9590389728546143,
+          "recorded_calls": [
+            [
+              "set_co_occurrence_alert",
+              {
+                "person_threshold": 3,
+                "car_threshold": 2
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "✅ Alerte configurée : un signal sera envoyé si **3 personnes** et **2 véhicules** sont présents simultanément dans le champ de vision de la caméra.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.9169018268585205,
+          "recorded_calls": [
+            [
+              "set_co_occurrence_alert",
+              {
+                "person_threshold": 3,
+                "car_threshold": 2
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte a été configurée. Elle sera déclenchée dès qu'au moins 3 personnes et 2 véhicules sont présents simultanément dans le champ de la caméra.",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    },
+    {
+      "id": "set_surge_alert__car",
+      "question": "Préviens-moi si plus de 5 voitures arrivent en moins de 2 minutes.",
+      "notes": "'Plus de 5' tolère 5 ou 6 selon l'interprétation stricte/large.",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 0.9933781623840332,
+          "recorded_calls": [
+            [
+              "set_surge_alert",
+              {
+                "object_class": "car",
+                "count_threshold": 5,
+                "window_minutes": 2
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte a été configurée. Si plus de 5 voitures apparaissent en moins de 2 minutes, l’alerte sera déclenchée automatiquement.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.8754785060882568,
+          "recorded_calls": [
+            [
+              "set_surge_alert",
+              {
+                "object_class": "car",
+                "count_threshold": 5,
+                "window_minutes": 2
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte a été configurée. Si plus de 5 voitures apparaissent en moins de 2 minutes, une notification vous sera envoyée.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 1.020003318786621,
+          "recorded_calls": [
+            [
+              "set_surge_alert",
+              {
+                "object_class": "car",
+                "count_threshold": 5,
+                "window_minutes": 2
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L'alerte a été configurée pour détecter si plus de 5 voitures apparaissent en moins de 2 minutes. Aucune surveillance active n'est en cours actuellement.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.9896402359008789,
+          "recorded_calls": [
+            [
+              "set_surge_alert",
+              {
+                "object_class": "car",
+                "count_threshold": 5,
+                "window_minutes": 2
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte a été configurée. Si plus de 5 voitures apparaissent dans le champ de la caméra en moins de 2 minutes, un signal sera envoyé.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.9333963394165039,
+          "recorded_calls": [
+            [
+              "set_surge_alert",
+              {
+                "object_class": "car",
+                "count_threshold": 5,
+                "window_minutes": 2
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte a été configurée. Elle sera déclenchée si plus de 5 voitures sont détectées dans les 2 minutes suivantes.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.9786896705627441,
+          "recorded_calls": [
+            [
+              "set_surge_alert",
+              {
+                "object_class": "car",
+                "count_threshold": 5,
+                "window_minutes": 2
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte a été configurée. Si plus de 5 voitures apparaissent en moins de 2 minutes, l’alerte sera déclenchée.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.909501314163208,
+          "recorded_calls": [
+            [
+              "set_surge_alert",
+              {
+                "object_class": "car",
+                "count_threshold": 5,
+                "window_minutes": 2
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L'alerte a été configurée : si plus de 5 voitures apparaissent en moins de 2 minutes, une alerte sera déclenchée.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.9429481029510498,
+          "recorded_calls": [
+            [
+              "set_surge_alert",
+              {
+                "object_class": "car",
+                "count_threshold": 5,
+                "window_minutes": 2
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte est désormais configurée. Si plus de 5 voitures apparaissent dans les 2 minutes, l’alerte sera déclenchée.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.9541468620300293,
+          "recorded_calls": [
+            [
+              "set_surge_alert",
+              {
+                "object_class": "car",
+                "count_threshold": 5,
+                "window_minutes": 2
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte a été configurée. Si plus de 5 voitures apparaissent en moins de 2 minutes, vous recevrez un avis.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.9213314056396484,
+          "recorded_calls": [
+            [
+              "set_surge_alert",
+              {
+                "object_class": "car",
+                "count_threshold": 5,
+                "window_minutes": 2
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte a été configurée avec succès : un message vous sera envoyé si plus de 5 voitures apparaissent dans les 2 minutes.",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    },
+    {
+      "id": "set_surge_alert__person_or_more",
+      "question": "Alerte si 10 personnes ou plus apparaissent en 1 minute.",
+      "notes": "'Ou plus' correspond exactement à la sémantique du tool -- pas d'ambiguïté ici, contrairement au cas précédent.",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 1.04392671585083,
+          "recorded_calls": [
+            [
+              "set_surge_alert",
+              {
+                "object_class": "person",
+                "count_threshold": 10,
+                "window_minutes": 1
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Le système a été configuré pour alerter si au moins 10 personnes apparaissent simultanément dans un délai de 1 minute. Cette configuration a été enregistrée avec succès.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 1.0077931880950928,
+          "recorded_calls": [
+            [
+              "set_surge_alert",
+              {
+                "object_class": "person",
+                "count_threshold": 10,
+                "window_minutes": 1
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L'alerte a été configurée avec succès : si au moins 10 personnes apparaissent dans le champ de la caméra en 1 minute, une alerte sera déclenchée.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 1.0517423152923584,
+          "recorded_calls": [
+            [
+              "set_surge_alert",
+              {
+                "object_class": "person",
+                "count_threshold": 10,
+                "window_minutes": 1
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "✅ Alerte configurée : Si **10 ou plus** personnes apparaissent **dans une fenêtre de 1 minute**, une alerte sera déclenchée.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 1.0260732173919678,
+          "recorded_calls": [
+            [
+              "set_surge_alert",
+              {
+                "object_class": "person",
+                "count_threshold": 10,
+                "window_minutes": 1
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L'alerte a été configurée correctement : si au moins 10 personnes apparaissent dans l'espace de 1 minute, une alerte sera déclenchée.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.9329626560211182,
+          "recorded_calls": [
+            [
+              "set_surge_alert",
+              {
+                "object_class": "person",
+                "count_threshold": 10,
+                "window_minutes": 1
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "La configuration de l’alerte a été effectuée avec succès. Les paramètres demandés (10 personnes ou plus apparues en une minute) ont été enregistrés.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 1.0499911308288574,
+          "recorded_calls": [
+            [
+              "set_surge_alert",
+              {
+                "object_class": "person",
+                "count_threshold": 10,
+                "window_minutes": 1
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "La configuration de l’alerte a été effectuée avec succès. Les paramètres demandés (10 personnes en 1 minute) ont été reconnus et l’alerte est désormais activée.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 1.214719533920288,
+          "recorded_calls": [
+            [
+              "set_surge_alert",
+              {
+                "object_class": "person",
+                "count_threshold": 10,
+                "window_minutes": 1
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Le système a été configuré pour alerter si **10 personnes ou plus** apparaissent **dans une période de 1 minute**. Cette configuration est enregistrée et sera surveillée dès que le nombre d’objets correspondra à la condition.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.8779284954071045,
+          "recorded_calls": [
+            [
+              "set_surge_alert",
+              {
+                "object_class": "person",
+                "count_threshold": 10,
+                "window_minutes": 1
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "La configuration de l’alerte pour 10 personnes ou plus apparant en 1 minute a été effectuée avec succès.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.8874168395996094,
+          "recorded_calls": [
+            [
+              "set_surge_alert",
+              {
+                "object_class": "person",
+                "count_threshold": 10,
+                "window_minutes": 1
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "La configuration de l’alerte a été effectuée avec succès. Les paramètres demandés (10 personnes en une minute) ont été enregistrés.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.9059882164001465,
+          "recorded_calls": [
+            [
+              "set_surge_alert",
+              {
+                "object_class": "person",
+                "count_threshold": 10,
+                "window_minutes": 1
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L’alerte a été configurée avec succès : si au moins 10 personnes sont détectées en une seule minute, une alerte sera déclenchée.",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    },
+    {
+      "id": "set_zone_alert__car_specific_zone",
+      "question": "Préviens-moi si une voiture entre dans le quai de chargement.",
+      "notes": "",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 0.8363423347473145,
+          "recorded_calls": [
+            [
+              "set_zone_alert",
+              {
+                "zone_name": "quai_de_chargement",
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte est activée. Toute voiture détectée entrant dans le **quai de chargement** déclenchera une notification.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.765380859375,
+          "recorded_calls": [
+            [
+              "set_zone_alert",
+              {
+                "zone_name": "quai_de_chargement",
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte est désormais configurée pour vous informer dès qu’une voiture entre dans le quai de chargement.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.8008911609649658,
+          "recorded_calls": [
+            [
+              "set_zone_alert",
+              {
+                "zone_name": "quai_de_chargement",
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte a été configurée. Un message vous sera envoyé dès qu’une voiture pénètre dans le quai de chargement.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.8000912666320801,
+          "recorded_calls": [
+            [
+              "set_zone_alert",
+              {
+                "zone_name": "quai_de_chargement",
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte a été configurée. Un message vous sera envoyé dès qu’une voiture pénètre dans le quai de chargement.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.8430132865905762,
+          "recorded_calls": [
+            [
+              "set_zone_alert",
+              {
+                "zone_name": "quai_de_chargement",
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L'alerte a été configurée avec succès : vous serez avisé(e) dès qu'une voiture pénètre dans le quai de chargement.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7708995342254639,
+          "recorded_calls": [
+            [
+              "set_zone_alert",
+              {
+                "zone_name": "quai_de_chargement",
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte a été configurée. Un message vous sera envoyé si une voiture entre dans le quai de chargement.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7831730842590332,
+          "recorded_calls": [
+            [
+              "set_zone_alert",
+              {
+                "zone_name": "quai_de_chargement",
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L'alerte a été configurée. Un message vous sera envoyé si une voiture entre dans le quai de chargement.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7992503643035889,
+          "recorded_calls": [
+            [
+              "set_zone_alert",
+              {
+                "zone_name": "quai_de_chargement",
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte a été configurée. Un message vous sera envoyé dès qu’une voiture pénètre dans le quai de chargement.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.8283312320709229,
+          "recorded_calls": [
+            [
+              "set_zone_alert",
+              {
+                "zone_name": "quai_de_chargement",
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte est désormais activée : une notification vous sera envoyée dès qu’une voiture pénètre dans le quai de chargement.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7570483684539795,
+          "recorded_calls": [
+            [
+              "set_zone_alert",
+              {
+                "zone_name": "quai_de_chargement",
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte pour un véhicule entrant dans le **quai de chargement** a été configurée.",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    },
+    {
+      "id": "set_zone_alert__any_class",
+      "question": "Alerte si n'importe qui ou n'importe quoi entre dans la voie de circulation.",
+      "notes": "",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 0.8898372650146484,
+          "recorded_calls": [
+            [
+              "set_zone_alert",
+              {
+                "zone_name": "voie_de_circulation",
+                "object_class": "any"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte a été configurée. Elle sera déclenchée dès qu’un objet (personne ou véhicule) pénètre dans la zone de circulation.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7795875072479248,
+          "recorded_calls": [
+            [
+              "set_zone_alert",
+              {
+                "zone_name": "voie_de_circulation",
+                "object_class": "any"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L'alerte a été configurée pour détecter tout objet (personne ou voiture) entrant dans la zone de circulation.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.8836259841918945,
+          "recorded_calls": [
+            [
+              "set_zone_alert",
+              {
+                "zone_name": "voie_de_circulation",
+                "object_class": "any"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte a été configurée. Toute présence (personnes, voitures ou autres objets) qui entre dans la zone de circulation déclenchera une notification.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.8559856414794922,
+          "recorded_calls": [
+            [
+              "set_zone_alert",
+              {
+                "zone_name": "voie_de_circulation",
+                "object_class": "any"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte a été configurée. Elle sera déclenchée dès qu’un objet quelconque (personne ou voiture) entre dans la zone de circulation.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.8014490604400635,
+          "recorded_calls": [
+            [
+              "set_zone_alert",
+              {
+                "zone_name": "voie_de_circulation",
+                "object_class": "any"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L'alerte a été configurée pour détecter tout objet (personnes ou véhicules) entrant dans la zone de circulation.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.8069536685943604,
+          "recorded_calls": [
+            [
+              "set_zone_alert",
+              {
+                "zone_name": "voie_de_circulation",
+                "object_class": "any"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L'alerte a été configurée pour détecter tout entrée (personne ou véhicule) dans la voie de circulation.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.8031678199768066,
+          "recorded_calls": [
+            [
+              "set_zone_alert",
+              {
+                "zone_name": "voie_de_circulation",
+                "object_class": "any"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Une alerte a été configurée pour détecter tout objet (personne ou véhicule) pénétrant dans la zone de circulation.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.8586163520812988,
+          "recorded_calls": [
+            [
+              "set_zone_alert",
+              {
+                "zone_name": "voie_de_circulation",
+                "object_class": "any"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "L'alerte a été configurée pour détecter tout objet (personne, véhicule ou autre) qui entre dans la **voie de circulation**.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7782042026519775,
+          "recorded_calls": [
+            [
+              "set_zone_alert",
+              {
+                "zone_name": "voie_de_circulation",
+                "object_class": "any"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte a été configurée pour détecter toute présence (personnes ou véhicules) dans la zone de circulation.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.786597728729248,
+          "recorded_calls": [
+            [
+              "set_zone_alert",
+              {
+                "zone_name": "voie_de_circulation",
+                "object_class": "any"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Une alerte a été configurée pour détecter tout objet (personne ou voiture ou autre) qui entre dans la zone de circulation.",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    },
+    {
+      "id": "count_zone_entries__car",
+      "question": "Combien de fois une voiture est entrée dans le quai de chargement ?",
+      "notes": "",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 0.7204799652099609,
+          "recorded_calls": [
+            [
+              "count_zone_entries",
+              {
+                "zone_name": "quai_de_chargement",
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Une voiture a été enregistrée 3 fois comme ayant traversé le quai de chargement.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.682631254196167,
+          "recorded_calls": [
+            [
+              "count_zone_entries",
+              {
+                "zone_name": "quai_de_chargement",
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Une voiture a été enregistrée 3 fois dans le quai de chargement.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7767283916473389,
+          "recorded_calls": [
+            [
+              "count_zone_entries",
+              {
+                "zone_name": "quai_de_chargement",
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis le début de la session, une voiture a été enregistrée 3 fois dans le quai de chargement.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7658050060272217,
+          "recorded_calls": [
+            [
+              "count_zone_entries",
+              {
+                "zone_name": "quai_de_chargement",
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis le début de la session, une voiture a été enregistrée 3 fois dans le quai de chargement.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7424640655517578,
+          "recorded_calls": [
+            [
+              "count_zone_entries",
+              {
+                "zone_name": "quai_de_chargement",
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Une voiture a été enregistrée 3 fois comme ayant pénétré dans le quai de chargement.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7663545608520508,
+          "recorded_calls": [
+            [
+              "count_zone_entries",
+              {
+                "zone_name": "quai_de_chargement",
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis le début de la session, une voiture a été enregistrée 3 fois dans le quai de chargement.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.8034179210662842,
+          "recorded_calls": [
+            [
+              "count_zone_entries",
+              {
+                "zone_name": "quai_de_chargement",
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis le début de la session, une voiture a été enregistrée 3 fois à l'intérieur du quai de chargement.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7763171195983887,
+          "recorded_calls": [
+            [
+              "count_zone_entries",
+              {
+                "zone_name": "quai_de_chargement",
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis le début de la session, une voiture a pénétré **3** fois dans le quai de chargement.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.8053510189056396,
+          "recorded_calls": [
+            [
+              "count_zone_entries",
+              {
+                "zone_name": "quai_de_chargement",
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis le début de la session, une voiture a pénétré **3 fois** dans le quai de chargement.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.8016834259033203,
+          "recorded_calls": [
+            [
+              "count_zone_entries",
+              {
+                "zone_name": "quai_de_chargement",
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Depuis le début de la session, une voiture a pénétré 3 fois dans le quai de chargement.",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    },
+    {
+      "id": "set_zone_alert__unknown_zone",
+      "question": "Préviens-moi si une voiture entre dans le parking nord.",
+      "notes": "Piège : 'parking nord' n'existe pas dans config/zones.yaml. Depuis l'ajout de l'échappatoire 'zone_inconnue' (docs/rapport.tex section 9.1), attendu : l'appel utilise cette valeur plutôt qu'une zone réelle -- un appel avec un nom de zone réel mais halluciné reste un échec réel, pas juste un détail de formulation.",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 1.2939610481262207,
+          "recorded_calls": [
+            [
+              "set_zone_alert",
+              {
+                "zone_name": "zone_inconnue",
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Voici la configuration demandée : une alerte est activée pour détecter l’entrée d’une voiture dans la zone « parking nord ». (Note : la zone « parking nord » n’est pas une zone prédéfinie dans les outils disponibles, donc la zone correspondante est traitée comme « zone_inconnue ».)",
+          "error": null
+        },
+        {
+          "passed": false,
+          "latency_s": 0.7848849296569824,
+          "recorded_calls": [
+            [
+              "set_zone_alert",
+              {
+                "zone_name": "quai_de_chargement",
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [
+            "set_zone_alert"
+          ],
+          "extra_calls": [
+            [
+              "set_zone_alert",
+              {
+                "zone_name": "quai_de_chargement",
+                "object_class": "car"
+              }
+            ]
+          ],
+          "final_text": "Votre alerte a été configurée. Un message vous sera envoyé si une voiture entre dans le parking nord (zone de chargement).",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 1.7762069702148438,
+          "recorded_calls": [
+            [
+              "set_zone_alert",
+              {
+                "zone_name": "zone_inconnue",
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Le système a été configuré pour vous alerter si une voiture pénètre dans une zone prédéfinie. Comme le nom spécifié « parking nord » ne correspond pas à une zone reconnue (« quai_de_chargement » ou « voie_de_circulation »), la zone a été automatiquement enregistrée sous **zone_inconnue**. Une alerte sera déclenchée dès qu’une voiture sera détectée dans cette zone.",
+          "error": null
+        },
+        {
+          "passed": false,
+          "latency_s": 0.8135025501251221,
+          "recorded_calls": [
+            [
+              "set_zone_alert",
+              {
+                "zone_name": "quai_de_chargement",
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [
+            "set_zone_alert"
+          ],
+          "extra_calls": [
+            [
+              "set_zone_alert",
+              {
+                "zone_name": "quai_de_chargement",
+                "object_class": "car"
+              }
+            ]
+          ],
+          "final_text": "Votre alerte a été activée. Si une voiture entre dans le parking nord (quai_de_chargement), vous serez notifié.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 1.1143314838409424,
+          "recorded_calls": [
+            [
+              "set_zone_alert",
+              {
+                "zone_name": "zone_inconnue",
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "La zone spécifiée (parking nord) n’est pas l’une des zones prédéfinies (quai_de_chargement ou voie_de_circulation). En conséquence, l’alerte a été configurée pour la zone inconnue.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 1.1064808368682861,
+          "recorded_calls": [
+            [
+              "set_zone_alert",
+              {
+                "zone_name": "zone_inconnue",
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "La zone spécifiée (“parking nord”) n’est pas l’une des zones prédéfinies (quai_de_chargement ou voie_de_circulation). En conséquence, l’alerte a été configurée pour la zone inconnue.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 1.570885181427002,
+          "recorded_calls": [
+            [
+              "set_zone_alert",
+              {
+                "zone_name": "zone_inconnue",
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Le système a été configuré pour vous alerter en cas d’entrée d’une voiture dans la zone du **parking nord** (la zone n’était pas définie précisément, donc on a utilisé la valeur par défaut « zone_inconnue »). N’oubliez pas que l’alerte sera déclenchée uniquement si la caméra détecte effectivement une voiture pénétrant dans cette zone.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 1.041264533996582,
+          "recorded_calls": [
+            [
+              "set_zone_alert",
+              {
+                "zone_name": "zone_inconnue",
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Le système a été configuré pour alerter si une voiture entre dans le parking nord. (La zone « parking nord » n’était pas dans la liste prédéfinie, donc on a utilisé « zone_inconnue ».)",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 1.4191241264343262,
+          "recorded_calls": [
+            [
+              "set_zone_alert",
+              {
+                "zone_name": "zone_inconnue",
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Votre alerte a été configurée pour vous notifier si une voiture pénètre dans une zone appelée “parking nord”. (La zone n’est pas parmi les zones prédéfinies, donc elle a été enregistrée sous le nom “zone_inconnue”). N’oubliez pas de vérifier régulièrement les notifications pour être informé lorsque la condition sera remplie.",
+          "error": null
+        },
+        {
+          "passed": false,
+          "latency_s": 0.8928444385528564,
+          "recorded_calls": [
+            [
+              "set_zone_alert",
+              {
+                "zone_name": "quai_de_chargement",
+                "object_class": "car"
+              }
+            ]
+          ],
+          "unmatched_expected": [
+            "set_zone_alert"
+          ],
+          "extra_calls": [
+            [
+              "set_zone_alert",
+              {
+                "zone_name": "quai_de_chargement",
+                "object_class": "car"
+              }
+            ]
+          ],
+          "final_text": "Votre alerte est activée : une voiture qui entre dans le **quai de chargement** (le parking nord) déclencheront l’alerte.",
+          "error": null
+        }
+      ],
+      "pass_rate": 0.7
+    },
+    {
+      "id": "no_call__off_topic",
+      "question": "Quel temps fait-il aujourd'hui ?",
+      "notes": "Question hors périmètre -- aucun tool ne répond à ça, le modèle ne devrait rien appeler.",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 0.5340173244476318,
+          "recorded_calls": [],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Je ne dispose d’aucun outil capable de fournir l’information météorologique en temps réel. Je ne peux donc pas répondre à votre question sur le temps actuel.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7225546836853027,
+          "recorded_calls": [],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Je suis désolé, mais je ne dispose pas d’informations météorologiques. Les outils disponibles ne peuvent fournir que des données générées par la caméra ou des comptages d’objets, pas les conditions météorologales actuelles.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.6821620464324951,
+          "recorded_calls": [],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Je ne dispose pas d’informations météorologiques. Les outils disponibles ne peuvent fournir que des données liées aux objets détectés par la caméra, donc je ne peux pas répondre à votre question concernant le temps actuel.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.8408684730529785,
+          "recorded_calls": [],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Je ne dispose pas d’informations météorologiques. Les outils mis à disposition ne permettent de répondre qu’aux données visuelles capturées par la caméra, pas à la température actuelle. Je vous invite à vérifier un service météo en ligne pour connaître le temps actuel.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.9078986644744873,
+          "recorded_calls": [],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Je ne dispose pas d’informations sur le temps réel ou météo. Les outils disponibles ne peuvent fournir que des données liées aux objets détectés par la caméra, comme le nombre de personnes ou de voitures. Je vous invite à vérifier un service météorologique en ligne pour connaître le temps actuel.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.9251949787139893,
+          "recorded_calls": [],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Je ne dispose pas d’informations météorologiques. Les outils disponibles ne permettent de répondre qu’à des questions liées aux objets détectés par la caméra (comptage de personnes ou de voitures, durées de présence, alertes, etc.). Je ne peux donc pas fournir le temps réel actuel.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 1.1220099925994873,
+          "recorded_calls": [],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Je ne dispose pas d’informations météorologiques. Les outils mis à disposition ne permettent de compter des objets (personnes ou voitures) dans une caméra, pas de récupérer des données météorologiques en temps réel. Je vous recommande d’aller consulter un service météo en ligne (par exemple un site météo officiel ou une application) pour connaître le temps actuel.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7834937572479248,
+          "recorded_calls": [],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Je suis désolé, mais je ne dispose pas d’informations météorologiques. Les outils disponibles ne permettent que de compter des objets (personnes ou voitures) dans la caméra, pas de récupérer le temps réel ou les conditions météorologiques.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.7100162506103516,
+          "recorded_calls": [],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Je ne dispose d’aucun outil capable de fournir l’heure du jour en temps réel. Pour connaître la météo actuelle, je vous invite à consulter un service météorologique en ligne ou un application météo sur votre appareil.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.5268473625183105,
+          "recorded_calls": [],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Je ne dispose pas d’informations météorologiques dans les outils disponibles. Vous pouvez vérifier le temps actuel sur un site météo en ligne ou via une application de prévision.",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    },
+    {
+      "id": "no_call__greeting",
+      "question": "Bonjour, comment vas-tu ?",
+      "notes": "Échange social pur, aucune information de détection demandée.",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 0.2534480094909668,
+          "recorded_calls": [],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Bonjour! Je vais bien, merci. Comment puis-je vous aider aujourd'hui ?",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.23978447914123535,
+          "recorded_calls": [],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Bonjour ! Je vais bien, merci. Comment puis-je vous aider aujourd'hui ?",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.24729084968566895,
+          "recorded_calls": [],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Bonjour ! Je vais bien, merci. Comment puis-je vous aider aujourd'hui ?",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.23978877067565918,
+          "recorded_calls": [],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Bonjour ! Je vais bien, merci. Comment puis-je vous aider aujourd'hui ?",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.2425556182861328,
+          "recorded_calls": [],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Bonjour ! Je vais bien, merci. Comment puis-je vous aider aujourd'hui ?",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.23708462715148926,
+          "recorded_calls": [],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Bonjour! Je vais bien, merci. Comment puis-je vous aider aujourd'hui ?",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.2506716251373291,
+          "recorded_calls": [],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Bonjour ! Je vais bien, merci. Comment puis-je vous aider aujourd'hui ?",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.2371654510498047,
+          "recorded_calls": [],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Bonjour ! Je vais bien, merci. Comment puis-je vous aider aujourd'hui ?",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.2427995204925537,
+          "recorded_calls": [],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Bonjour ! Je vais bien, merci. Comment puis-je vous aider aujourd'hui ?",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.24757695198059082,
+          "recorded_calls": [],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Bonjour ! Je vais bien, merci. Comment puis-je vous aider aujourd'hui ?",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    },
+    {
+      "id": "multi__compare_now",
+      "question": "Y a-t-il plus de voitures que de personnes actuellement ?",
+      "notes": "Nécessite DEUX appels (une classe ne suffit pas à répondre à une comparaison).",
+      "runs": [
+        {
+          "passed": true,
+          "latency_s": 0.8895235061645508,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ],
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Non, il y a actuellement le même nombre de voitures et de personnes (tous deux sont à 3).",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.9635720252990723,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ],
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Actuellement, il y a 3 voitures et 3 personnes détectées dans le champ de la caméra, donc il n’y a pas de différence.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.9291841983795166,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ],
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Actuellement, il y a 3 voitures et 3 personnes détectées simultanément, donc il n’y a pas de différence.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.9765644073486328,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ],
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Actuellement, il y a 3 voitures et 3 personnes détectées, donc il n’y a pas de différence nette entre les deux.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.9291479587554932,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ],
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Actuellement, il y a 3 voitures et 3 personnes détectées, donc il n’y a pas de différence entre les deux.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.9778637886047363,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ],
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Actuellement, le nombre de voitures et celui de personnes est identique (3 chacun), il n’y a donc pas de surplus de voitures par rapport aux personnes.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.8088736534118652,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ],
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Non, il y a actuellement le même nombre de voitures et de personnes (3 chacun).",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.9550678730010986,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ],
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Actuellement, il y a 3 voitures et 3 personnes détectées, donc il n’y a pas de différence nette entre les deux.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.9418580532073975,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ],
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Actuellement, il y a 3 voitures et 3 personnes détectées, donc il n’y a pas de différence nette entre les deux.",
+          "error": null
+        },
+        {
+          "passed": true,
+          "latency_s": 0.8434586524963379,
+          "recorded_calls": [
+            [
+              "count_now",
+              {
+                "object_class": "car"
+              }
+            ],
+            [
+              "count_now",
+              {
+                "object_class": "person"
+              }
+            ]
+          ],
+          "unmatched_expected": [],
+          "extra_calls": [],
+          "final_text": "Non, actuellement il y a autant de voitures que de personnes (3 chacun).",
+          "error": null
+        }
+      ],
+      "pass_rate": 1.0
+    }
+  ]
+}
