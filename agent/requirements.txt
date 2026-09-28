@@ -9,3 +9,8 @@ openai
 numpy
 supervision
 trackers
+
+# Lecture des configs YAML (config/*.yaml) — agent, tracker, zones, et
+# aussi demo/src/common/config.py. Jusqu'ici installé seulement par
+# ricochet via les dépendances de NanoDet (pyaml/omegaconf).
+PyYAML
