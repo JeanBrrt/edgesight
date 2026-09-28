@@ -54,6 +54,10 @@ reconstituer l'environnement d'entraînement après un clone :
 
 ```bash
 git clone https://github.com/RangiLyu/nanodet.git detection/third_party/nanodet
+# figé sur le commit validé avec ce projet -- les patchs ci-dessous
+# ciblent ce code précis et pourraient ne plus s'appliquer sur un master
+# plus récent
+git -C detection/third_party/nanodet checkout be9b4a9
 
 # torch avec CUDA — ignorer le pin `torch>=1.10,<2.0` du repo (obsolète,
 # incompatible Python 3.12), installer torch 2.x à la place
@@ -123,7 +127,11 @@ curl -sL -o agent/third_party/llama.cpp/cudart.zip \
   "https://github.com/ggml-org/llama.cpp/releases/download/<tag>/cudart-llama-bin-win-cuda-12.4-x64.zip"
 # <tag> = tag du build "nightly" le plus récent, cf.
 # https://github.com/ggml-org/llama.cpp/releases (les binaires ne sont
-# plus attachés au tag "latest" mais à un tag nightly séparé, ex. b10809)
+# plus attachés au tag "latest" mais à un tag nightly séparé, ex. b10809).
+# Chaque build publie plusieurs variantes CUDA (ex. 12.4 et 13.4) : garder
+# la plus haute qui reste <= la "CUDA Version" affichée par `nvidia-smi`
+# -- ex. driver en CUDA 13.0 -> la 13.4 est exclue, prendre la 12.4
+# (vérifié avec b11238). Adapter alors le suffixe `cuda-12.4` des deux URLs.
 cd agent/third_party/llama.cpp && unzip -o llama.zip && unzip -o cudart.zip
 
 # modèle -- fichier unique (~2,1 Go), à récupérer depuis le dépôt GGUF
