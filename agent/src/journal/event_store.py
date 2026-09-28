@@ -271,12 +271,16 @@ class EventStore:
         # verrouille déjà) -- un Lock() classique n'est pas réentrant.
         return [(tid, now - first_seen) for tid, _, first_seen, _ in self.active_tracks(class_name, active_within_seconds, now)]
 
-    def most_recent_first_seen(self, class_name: str) -> float | None:
-        """Timestamp de première apparition de la piste la plus récente de
-        cette classe (None si aucune piste jamais vue). Répond à : "quand la
-        dernière voiture est-elle apparue"."""
+    def most_recent_last_seen(self, class_name: str) -> float | None:
+        """Timestamp de la dernière détection, toutes pistes de cette classe
+        confondues (None si aucune piste jamais vue). Répond à : "depuis
+        combien de temps n'a-t-on pas vu de voiture". Volontairement
+        `last_seen` et non `first_seen` : sur un flux continu, la piste la
+        plus récente peut être apparue il y a longtemps tout en étant encore
+        visible -- `MAX(first_seen)` répondait alors "il y a 1 minute" alors
+        qu'une voiture était à l'écran."""
         with self._lock:
-            cur = self.conn.execute("SELECT MAX(first_seen) FROM events WHERE class = ?", (class_name,))
+            cur = self.conn.execute("SELECT MAX(last_seen) FROM events WHERE class = ?", (class_name,))
             return cur.fetchone()[0]
 
     def average_presence_duration(self, class_name: str) -> float | None:
