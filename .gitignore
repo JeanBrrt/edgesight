@@ -35,8 +35,19 @@ agent/data/*
 agent/models/*
 !agent/models/.gitkeep
 
-# Third-Party
-detection/third_party/
+# Third-Party -- code vendored non versionné (reconstructible via le
+# README : clone + patchs pour NanoDet, téléchargement pour llama.cpp),
+# SAUF les configs NanoDet du dossier config/ (racine du clone
+# uniquement, pas les sous-dossiers d'exemples upstream comme convnext/
+# ou legacy_v0.x_configs/) : petits fichiers texte, dont nos 3 configs
+# finales (416/512/896px person-car) qu'un simple `git clone` de
+# RangiLyu/nanodet ne fournit pas.
+detection/third_party/*
+!detection/third_party/nanodet/
+detection/third_party/nanodet/*
+!detection/third_party/nanodet/config/
+detection/third_party/nanodet/config/*
+!detection/third_party/nanodet/config/*.yml
 agent/third_party/
 
 # Sorties des scripts nanodet (démo, entraînement)

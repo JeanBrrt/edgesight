@@ -49,11 +49,23 @@ uv pip install -r agent/requirements.txt   # une fois les dépendances définies
 ### Entraînement (NanoDet-Plus, vendored dans `detection/third_party/`)
 
 Le code de [NanoDet](https://github.com/RangiLyu/nanodet) est cloné dans
-`detection/third_party/nanodet/` (gitignoré, pas versionné). Pour
-reconstituer l'environnement d'entraînement après un clone :
+`detection/third_party/nanodet/` (gitignoré, pas versionné) — à
+l'exception de `detection/third_party/nanodet/config/*.yml` (racine du
+dossier de configs uniquement, pas les sous-dossiers d'exemples upstream
+comme `convnext/`/`legacy_v0.x_configs/`) : les configs d'archi de base
+livrées avec NanoDet, plus nos 3 configs finales (416/512/896px
+person-car), commitées pour ne pas dépendre d'un clone externe pour ces
+petits fichiers texte propres à ce projet. Pour reconstituer
+l'environnement d'entraînement après un clone :
 
 ```bash
-git clone https://github.com/RangiLyu/nanodet.git detection/third_party/nanodet
+# Clone à part puis fusion sans écraser (cp -n) : detection/third_party/nanodet/config/
+# contient déjà nos configs commitées (voir plus haut) -- un `git clone` direct dans
+# ce dossier échouerait ("destination path already exists and is not an empty directory").
+git clone https://github.com/RangiLyu/nanodet.git /tmp/nanodet_upstream
+mkdir -p detection/third_party/nanodet
+cp -rn /tmp/nanodet_upstream/. detection/third_party/nanodet/
+rm -rf /tmp/nanodet_upstream
 
 # torch avec CUDA — ignorer le pin `torch>=1.10,<2.0` du repo (obsolète,
 # incompatible Python 3.12), installer torch 2.x à la place
