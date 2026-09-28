@@ -13,11 +13,17 @@ from pathlib import Path
 
 import yaml
 
-_CONFIG_PATH = Path(__file__).parent.parent.parent.parent / "config" / "agent.yaml"
+PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
+_CONFIG_PATH = PROJECT_ROOT / "config" / "agent.yaml"
 with open(_CONFIG_PATH, encoding="utf-8") as _f:
     _CONFIG = yaml.safe_load(_f)
 
 LLAMA_SERVER_URL = _CONFIG["llama_server_url"]
+
+# Lancement automatique de llama-server (llm_server.py) -- voir
+# config/agent.yaml. `.get(...)` : un config/agent.yaml sans ce bloc
+# retombe sur le comportement d'origine (serveur lancé à la main).
+LLAMA_SERVER_LAUNCH = _CONFIG.get("llama_server", {"auto_start": False})
 SYSTEM_PROMPT = _CONFIG["system_prompt"]
 DEFAULT_MAX_ROUNDS = _CONFIG["max_rounds"]
 

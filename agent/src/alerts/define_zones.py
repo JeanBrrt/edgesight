@@ -5,7 +5,8 @@ minimum) par zone pour définir un polygone. Affiche le résultat en temps
 réel et imprime à la fin les blocs YAML prêts à coller dans
 config/zones.yaml (et config/demo.yaml si la scène est une nouvelle
 scène interactive) -- voir le README, section "Ajouter une scène avec
-zones de danger", pour un exemple complet.
+zones de danger", pour un exemple complet. Un aperçu des zones dessinées
+est enregistré dans demo/assets/zone_previews/<scene-name>.png.
 
 Chaque scène définie ici est INDÉPENDANTE des autres (config/zones.yaml,
 clé `scenes`) : la scène du chantier déjà fournie n'est jamais touchée
@@ -58,6 +59,7 @@ _VIDEO_EXTENSIONS = {".mp4", ".avi", ".mov", ".mkv", ".webm"}
 
 _PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 _ZONES_CONFIG_PATH = _PROJECT_ROOT / "config" / "zones.yaml"
+_PREVIEWS_DIR = _PROJECT_ROOT / "demo" / "assets" / "zone_previews"
 
 
 def _detect_screen_size(default: tuple[int, int] = (1920, 1080)) -> tuple[int, int]:
@@ -227,7 +229,8 @@ def main() -> None:
     parser.add_argument("--zones", nargs="+", required=True, help="Noms des zones à définir, dans l'ordre.")
     parser.add_argument(
         "--sprite", default=None,
-        help="PNG détouré (RGBA) qui suivra la souris -- obligatoire si 'source' est une image, ignoré si c'est une vidéo.",
+        help="PNG détouré (RGBA) qui suivra la souris, à ranger dans demo/assets/silhouettes/ "
+        "-- obligatoire si 'source' est une image, ignoré si c'est une vidéo.",
     )
     parser.add_argument(
         "--label", default=None,
@@ -356,7 +359,11 @@ def main() -> None:
         )
         print(f'  - ["{label}", "{source_str}"]')
 
-    annotated_path = source_path.with_name(source_path.stem + "_zones_preview.png")
+    # Nommé d'après la scène (pas d'après la source) : recalibrer une scène
+    # écrase son propre aperçu, et tous les aperçus restent regroupés au
+    # même endroit plutôt qu'éparpillés à côté de chaque source.
+    _PREVIEWS_DIR.mkdir(parents=True, exist_ok=True)
+    annotated_path = _PREVIEWS_DIR / f"{args.scene_name}.png"
     cv2.imwrite(str(annotated_path), drawer.render())
     print(f"\nApercu sauvegarde : {annotated_path}")
 

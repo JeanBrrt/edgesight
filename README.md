@@ -8,17 +8,13 @@ un agent conversationnel simple (LLM local).
 
 Les modèles finaux (`detection/models/*.onnx`, fp32 + INT8 pour
 416/512/896px, ~40 Mo), le checkpoint pré-entraîné COCO
-(`detection/models/pretrained/`, ~10 Mo) et les vidéos/image de démo
-(`demo/assets/`, ~97 Mo) sont commités avec le dépôt — pas besoin de
-réentraîner ni de retrouver ses propres vidéos pour lancer la démo. Ce
-qui reste à installer après un clone (dépendances Python, code NanoDet
-vendored, LLM local) est détaillé section par section plus bas ; voir
-en particulier [Entraînement](#entraînement-nanodet-plus-vendored-dans-detectionthird_party)
-pour le code NanoDet (nécessaire même pour la démo, les scripts important
-directement dessus) et [Agent](#agent-llamacpp--granite-41-3b-d2) pour le
-LLM local (uniquement pour `03_live_agent_demo.py`). Une fois ces étapes
-suivies, `uv run python setup/check_demo.py` vérifie que tout est bien
-en place (voir [Vérifier son installation](#vérifier-son-installation)).
+(`detection/models/pretrained/`, ~10 Mo), les configs NanoDet du projet
+(`detection/third_party/nanodet/config/*.yml`) et les vidéos/images de
+démo (`demo/assets/`, ~97 Mo) sont commités avec le dépôt — pas besoin
+de réentraîner ni de retrouver ses propres vidéos pour lancer la démo.
+Ce qui reste à installer après un clone (dépendances Python, code
+NanoDet, LLM local) est listé dans l'ordre dans
+[Installation pas à pas](#installation-pas-à-pas).
 
 ## Structure
 
@@ -26,25 +22,147 @@ en place (voir [Vérifier son installation](#vérifier-son-installation)).
 - `agent/` — définition des tools, journal d'événements, intégration LLM local
 - `demo/` — pipeline live (vidéos), interface de requête (3 scripts, voir
   section [Démo](#démo) plus bas)
+  - `demo/assets/` — `scenes/` (les scènes de démo, préfixées
+    `01_`...`05_` dans l'ordre du cycle : 4 vidéos, puis la scène
+    interactive du chantier, construite à partir d'une image plutôt que
+    d'une vidéo), `silhouettes/` (images
+    détourées des scènes interactives), `zone_previews/` (aperçus générés
+    par `define_zones.py`), `custom/` (vos vidéos, gitignoré)
 - `config/` — paramètres ajustables de `agent/` et `demo/` (tracker,
   agent conversationnel, démos), en YAML plutôt qu'en dur dans le code
 - `setup/` — scripts de vérification d'installation (voir plus bas)
 - `docs/` — plan de travail et notes
 
-## Environnement
+## Installation pas à pas
 
-Un venv unique à la racine (`.venv/`, Python 3.12, géré via [uv](https://github.com/astral-sh/uv))
-sert pour tout le projet pour l'instant. Chaque composant garde son propre
-`requirements.txt` — des environnements séparés pourront être introduits plus
-tard si `detection/` et `agent/` finissent par tourner sur des machines
-différentes.
+Commandes à lancer **dans l'ordre, depuis la racine du projet**, dans
+Git Bash sous Windows. Procédure vérifiée de bout en bout sur un clone
+propre (Windows 11, RTX 4060 Laptop, driver CUDA 13.0). Les étapes 5 et
+6 ne servent qu'à `03_live_agent_demo.py` ; le pourquoi de chaque étape
+est détaillé plus bas, dans [Détails de l'installation](#détails-de-linstallation).
+
+**Prérequis** : [uv](https://github.com/astral-sh/uv), `git`, `curl`,
+`unzip`, et un GPU NVIDIA (`nvidia-smi`) pour le LLM local.
+
+**1. Environnement Python**
 
 ```bash
-uv venv --python 3.12          # création (déjà fait)
+uv venv --python 3.12
 source .venv/Scripts/activate
 uv pip install -r detection/requirements.txt
-uv pip install -r agent/requirements.txt   # une fois les dépendances définies
+uv pip install -r agent/requirements.txt
 ```
+
+**2. Code NanoDet** — cloné à part, figé sur le commit validé, puis
+fusionné sans écraser les configs déjà commitées :
+
+```bash
+git clone https://github.com/RangiLyu/nanodet.git /tmp/nanodet_upstream
+git -C /tmp/nanodet_upstream checkout be9b4a9
+mkdir -p detection/third_party/nanodet
+cp -rn /tmp/nanodet_upstream/. detection/third_party/nanodet/
+rm -rf /tmp/nanodet_upstream
+```
+
+**3. torch CUDA + dépendances NanoDet**
+
+```bash
+uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cu124
+grep -viE '^torch(>=|<|==)|^torchvision' detection/third_party/nanodet/requirements.txt \
+  | uv pip install -r -
+uv pip install -e detection/third_party/nanodet
+```
+
+**4. Patchs NanoDet** (compatibilité torch 2.x, voir
+[le détail](#patchs-nanodet)) :
+
+```bash
+cd detection/third_party/nanodet
+sed -i 's/^from torch._six import string_classes$/string_classes = str/' nanodet/data/collate.py
+sed -i '/torch.backends.cudnn.benchmark = True/a\    torch.set_float32_matmul_precision("high")' tools/train.py
+sed -i 's/if "pytorch-lightning_version" not in ckpt:/if "pytorch-lightning_version" not in ckpt and "state_dict" not in ckpt:/' tools/train.py
+git diff --stat   # doit lister nanodet/data/collate.py et tools/train.py
+cd -
+```
+
+**5. llama.cpp** (binaire `llama-server`) — choisir `TAG` (build le plus
+récent sur https://github.com/ggml-org/llama.cpp/releases) et `CUDA` (la
+variante la plus haute qui reste ≤ la « CUDA Version » affichée par
+`nvidia-smi`, voir [le détail](#agent-llamacpp--granite-41-3b-d2)) :
+
+```bash
+nvidia-smi   # lire "CUDA Version" en haut à droite
+TAG=b11238
+CUDA=12.4
+mkdir -p agent/third_party/llama.cpp agent/models
+curl -L -o agent/third_party/llama.cpp/llama.zip \
+  "https://github.com/ggml-org/llama.cpp/releases/download/$TAG/llama-$TAG-bin-win-cuda-$CUDA-x64.zip"
+curl -L -o agent/third_party/llama.cpp/cudart.zip \
+  "https://github.com/ggml-org/llama.cpp/releases/download/$TAG/cudart-llama-bin-win-cuda-$CUDA-x64.zip"
+unzip -oq agent/third_party/llama.cpp/llama.zip -d agent/third_party/llama.cpp
+unzip -oq agent/third_party/llama.cpp/cudart.zip -d agent/third_party/llama.cpp
+agent/third_party/llama.cpp/llama-server.exe --version
+```
+
+**6. Modèle GGUF** (~2,1 Go) — dépôt officiel IBM
+[`ibm-granite/granite-4.1-3b-GGUF`](https://huggingface.co/ibm-granite/granite-4.1-3b-GGUF)
+(URL vérifiée le 2026-09-28). À lancer seul, pas en parallèle d'un autre
+téléchargement (voir le [point de vigilance](#point-de-vigilance-téléchargements)) :
+
+```bash
+curl -L -o agent/models/granite-4.1-3b-Q4_K_M.gguf \
+  "https://huggingface.co/ibm-granite/granite-4.1-3b-GGUF/resolve/main/granite-4.1-3b-Q4_K_M.gguf"
+ls -l agent/models/granite-4.1-3b-Q4_K_M.gguf   # attendu : 2 099 501 664 octets
+```
+
+**7. Vérifier l'installation**
+
+```bash
+uv run python setup/check_demo.py      # doit finir par "Tout est en place..."
+uv run python setup/check_project.py   # optionnel : reproduction complète du projet
+```
+
+`check_project.py` signale les annotations COCO comme `MANQUANT` tant
+que le pipeline de données n'a pas tourné — normal si on ne veut que la
+démo (voir [Vérifier son installation](#vérifier-son-installation)).
+
+**8. Lancer les démos**
+
+```bash
+uv run python demo/src/scripts/01_detection_demo.py
+uv run python demo/src/scripts/02_tracking_demo.py
+uv run python demo/src/scripts/03_live_agent_demo.py
+```
+
+`03_live_agent_demo.py` lance lui-même `llama-server` s'il ne tourne pas
+déjà (quelques secondes au démarrage, messages `[llama-server]` dans la
+console, sortie du serveur dans `agent/data/llama-server.log`), et
+l'arrête en quittant. Réglages dans le bloc `llama_server` de
+`config/agent.yaml` (`auto_start: false` pour revenir au lancement
+manuel).
+
+Pour garder le serveur ouvert entre plusieurs lancements de la démo
+(évite de recharger le modèle à chaque fois), le lancer à part : il
+sera réutilisé tel quel, et jamais arrêté par la démo.
+
+```bash
+agent/third_party/llama.cpp/llama-server.exe \
+  -m agent/models/granite-4.1-3b-Q4_K_M.gguf \
+  --jinja -ngl 99 -c 8192 --port 8080
+# prêt quand les logs affichent "model loaded"
+# (ou quand `curl localhost:8080/health` renvoie {"status":"ok"})
+```
+
+## Détails de l'installation
+
+### Environnement
+
+Un venv unique à la racine (`.venv/`, Python 3.12, géré via
+[uv](https://github.com/astral-sh/uv)) sert pour tout le projet pour
+l'instant. Chaque composant garde son propre `requirements.txt` — des
+environnements séparés pourront être introduits plus tard si
+`detection/` et `agent/` finissent par tourner sur des machines
+différentes.
 
 ### Entraînement (NanoDet-Plus, vendored dans `detection/third_party/`)
 
@@ -55,35 +173,23 @@ dossier de configs uniquement, pas les sous-dossiers d'exemples upstream
 comme `convnext/`/`legacy_v0.x_configs/`) : les configs d'archi de base
 livrées avec NanoDet, plus nos 3 configs finales (416/512/896px
 person-car), commitées pour ne pas dépendre d'un clone externe pour ces
-petits fichiers texte propres à ce projet. Pour reconstituer
-l'environnement d'entraînement après un clone :
+petits fichiers texte propres à ce projet. Il est nécessaire même pour
+la démo : les scripts importent directement dessus.
 
-```bash
-# Clone à part puis fusion sans écraser (cp -n) : detection/third_party/nanodet/config/
-# contient déjà nos configs commitées (voir plus haut) -- un `git clone` direct dans
-# ce dossier échouerait ("destination path already exists and is not an empty directory").
-git clone https://github.com/RangiLyu/nanodet.git /tmp/nanodet_upstream
-# figé sur le commit validé avec ce projet -- les patchs ci-dessous
-# ciblent ce code précis et pourraient ne plus s'appliquer sur un master
-# plus récent
-git -C /tmp/nanodet_upstream checkout be9b4a9
-mkdir -p detection/third_party/nanodet
-cp -rn /tmp/nanodet_upstream/. detection/third_party/nanodet/
-rm -rf /tmp/nanodet_upstream
+- **Clone à part puis `cp -rn`** (étape 2) : `detection/third_party/nanodet/config/`
+  contient déjà nos configs commitées — un `git clone` direct dans ce
+  dossier échouerait (« destination path already exists and is not an
+  empty directory »), et `-n` n'écrase jamais un fichier existant.
+- **Figé sur `be9b4a9`** : les patchs ci-dessous ciblent ce code précis
+  et pourraient ne plus s'appliquer sur un master plus récent.
+- **torch 2.x** (étape 3) : ignorer le pin `torch>=1.10,<2.0` du repo
+  (obsolète, incompatible Python 3.12), d'où l'installation de torch à
+  part, puis du reste des dépendances en excluant torch/torchvision.
 
-# torch avec CUDA — ignorer le pin `torch>=1.10,<2.0` du repo (obsolète,
-# incompatible Python 3.12), installer torch 2.x à la place
-uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cu124
+#### Patchs NanoDet
 
-# reste des dépendances, en excluant torch/torchvision déjà installés
-grep -viE '^torch(>=|<|==)|^torchvision' detection/third_party/nanodet/requirements.txt \
-  | uv pip install -r -
-
-uv pip install -e detection/third_party/nanodet
-```
-
-**Patchs nécessaires** (appliqués directement dans le clone local — à
-refaire si le dossier est un jour recloné) :
+Appliqués directement dans le clone local (étape 4) — à refaire si le
+dossier est un jour recloné :
 
 - `nanodet/data/collate.py` importe `from torch._six import string_classes`,
   un module interne supprimé dans torch≥2.0. Remplacer par
@@ -124,62 +230,36 @@ machine avec tout ce qui tourne en parallèle pendant une démonstration
 live (section 9.5 du rapport).
 
 Binaire `llama-server` (gitignoré) dans `agent/third_party/llama.cpp/`,
-modèle GGUF (gitignoré) dans `agent/models/`. Pour reconstituer après un
-clone :
+modèle GGUF (gitignoré) dans `agent/models/` (étapes 5 et 6).
 
-```bash
-mkdir -p agent/third_party/llama.cpp agent/models
+**Choix du tag et de la variante CUDA** (étape 5) : les binaires ne sont
+plus attachés au tag "latest" mais à un tag nightly séparé (ex. `b11238`),
+à prendre sur https://github.com/ggml-org/llama.cpp/releases. Chaque
+build publie plusieurs variantes CUDA (ex. 12.4 et 13.4) : garder la
+plus haute qui reste ≤ la "CUDA Version" affichée par `nvidia-smi` —
+ex. driver en CUDA 13.0 → la 13.4 est exclue, prendre la 12.4 (vérifié
+avec `b11238`).
 
-# binaires Windows CUDA 12.4 (adapter la version CUDA à ton driver —
-# `nvidia-smi` indique la version max supportée ; prendre une version
-# CUDA du binaire inférieure ou égale à celle-ci)
-curl -sL -o agent/third_party/llama.cpp/llama.zip \
-  "https://github.com/ggml-org/llama.cpp/releases/download/<tag>/llama-<tag>-bin-win-cuda-12.4-x64.zip"
-curl -sL -o agent/third_party/llama.cpp/cudart.zip \
-  "https://github.com/ggml-org/llama.cpp/releases/download/<tag>/cudart-llama-bin-win-cuda-12.4-x64.zip"
-# <tag> = tag du build "nightly" le plus récent, cf.
-# https://github.com/ggml-org/llama.cpp/releases (les binaires ne sont
-# plus attachés au tag "latest" mais à un tag nightly séparé, ex. b10809).
-# Chaque build publie plusieurs variantes CUDA (ex. 12.4 et 13.4) : garder
-# la plus haute qui reste <= la "CUDA Version" affichée par `nvidia-smi`
-# -- ex. driver en CUDA 13.0 -> la 13.4 est exclue, prendre la 12.4
-# (vérifié avec b11238). Adapter alors le suffixe `cuda-12.4` des deux URLs.
-cd agent/third_party/llama.cpp && unzip -o llama.zip && unzip -o cudart.zip
+**Options de lancement** (étape 8) : `--jinja` est indispensable — active
+le tool-calling compatible OpenAI. `-ngl 99` décharge toutes les couches
+sur GPU (~2,8-3,3 Go de VRAM avec ce modèle en Q4_K_M, cf.
+[docs/rapport.tex](docs/rapport.tex) section 9.2 pour le comparatif de
+modèles candidats). Contrairement à Hermes-3 et Functionary (deux des
+candidats écartés), Granite ne nécessite **aucun** `--chat-template-file`
+--- son template de tool-calling survit correctement à la conversion
+GGUF. Le port 8080 correspond à `llama_server_url` dans
+`config/agent.yaml`.
 
-# modèle -- fichier unique (~2,1 Go), à récupérer depuis le dépôt GGUF
-# officiel d'IBM (org `ibm-granite` sur Hugging Face) : chercher
-# "granite-4.1-3b" + quantification Q4_K_M, et l'enregistrer sous
-# agent/models/granite-4.1-3b-Q4_K_M.gguf. Lien exact non recopié ici
-# volontairement -- vérifier l'URL sur huggingface.co avant de curl,
-# plutôt que de faire confiance à un lien recopié qui peut devenir
-# obsolète (déplacement de repo, renommage de fichier).
-```
+#### Point de vigilance (téléchargements)
 
-**Lancer le serveur** (depuis la racine du projet) :
-
-```bash
-agent/third_party/llama.cpp/llama-server.exe \
-  -m agent/models/granite-4.1-3b-Q4_K_M.gguf \
-  --jinja -ngl 99 -c 8192 --port 8080
-```
-
-`--jinja` est indispensable — active le tool-calling compatible OpenAI.
-`-ngl 99` décharge toutes les couches sur GPU (~2,8-3,3 Go de VRAM avec ce
-modèle en Q4_K_M, cf. [docs/rapport.tex](docs/rapport.tex) section 9.2
-pour le comparatif de modèles candidats). Contrairement à Hermes-3 et
-Functionary (deux des candidats écartés), Granite ne nécessite
-**aucun** `--chat-template-file` --- son template de tool-calling
-survit correctement à la conversion GGUF.
-
-**Point de vigilance vérifié** (rencontré en téléchargeant les modèles
-candidats pendant le comparatif) : en téléchargeant plusieurs gros
-fichiers en parallèle (binaires + modèle en même temps), un fichier
-GGUF s'est retrouvé tronqué silencieusement (`curl` n'a pas remonté
-d'erreur). Symptôme : `llama-server` refuse de charger le modèle
-(`tensor ... data is not within the file bounds, model is corrupted or
-incomplete`). Vérifier la taille du fichier téléchargé contre le header
-`Content-Length` de l'URL (`curl -sI <url>`) en cas de doute plutôt que de
-supposer que le téléchargement s'est bien passé.
+Rencontré en téléchargeant les modèles candidats pendant le comparatif :
+en téléchargeant plusieurs gros fichiers en parallèle (binaires + modèle
+en même temps), un fichier GGUF s'est retrouvé tronqué silencieusement
+(`curl` n'a pas remonté d'erreur). Symptôme : `llama-server` refuse de
+charger le modèle (`tensor ... data is not within the file bounds, model
+is corrupted or incomplete`). Vérifier la taille du fichier téléchargé
+contre le header `Content-Length` de l'URL (`curl -sIL <url>`) en cas de
+doute plutôt que de supposer que le téléchargement s'est bien passé.
 
 **Modèles alternatifs évalués** (non retenus, détail et justification
 dans [docs/rapport.tex](docs/rapport.tex) section 9.2/9.5) :
@@ -197,10 +277,10 @@ veuilles juste lancer la démo ou reproduire tout le projet.
 
 | Ignoré | Nécessaire ? | Comment l'obtenir |
 |---|---|---|
-| `detection/third_party/` (code NanoDet) | Oui, toujours — les scripts importent directement dessus | [Entraînement](#entraînement-nanodet-plus-vendored-dans-detectionthird_party) : clone + patchs |
-| `agent/third_party/llama.cpp/` (binaire) | Oui, pour `03_live_agent_demo.py` seulement | [Agent](#agent-llamacpp--granite-41-3b-d2) |
-| `agent/models/*.gguf` (poids du LLM) | Oui, pour `03_live_agent_demo.py` seulement | [Agent](#agent-llamacpp--granite-41-3b-d2) |
-| `.venv/` | Oui, toujours | `uv venv` + `uv pip install -r ...` (section [Environnement](#environnement)) |
+| `.venv/` | Oui, toujours | [Étape 1](#installation-pas-à-pas) |
+| `detection/third_party/` (code NanoDet, hors configs commitées) | Oui, toujours — les scripts importent directement dessus | [Étapes 2 à 4](#installation-pas-à-pas) : clone + patchs |
+| `agent/third_party/llama.cpp/` (binaire) | Oui, pour `03_live_agent_demo.py` seulement | [Étape 5](#installation-pas-à-pas) |
+| `agent/models/*.gguf` (poids du LLM) | Oui, pour `03_live_agent_demo.py` seulement | [Étape 6](#installation-pas-à-pas) |
 | `demo/assets/custom/*` | Non, optionnel | Vidéos personnelles, voir `custom_videos_dir` plus bas |
 
 **En plus, pour reproduire tout le projet** (préparation des données,
@@ -213,8 +293,8 @@ entraînement, quantification, banc de test agent) :
 | `workspace/` (checkpoints/logs d'entraînement, ~14 Go) | Régénéré par un réentraînement (`nanodet/tools/train.py`) |
 
 Rien à télécharger pour `detection/models/*.onnx`,
-`detection/models/pretrained/*.pth` ni `demo/assets/*.mp4`/`.jpg`/`.webp`
-— commités avec le dépôt (voir [Ce qui est inclus dans le
+`detection/models/pretrained/*.pth` ni `demo/assets/` (`scenes/`,
+`silhouettes/`, `zone_previews/`) — commités avec le dépôt (voir [Ce qui est inclus dans le
 clone](#ce-qui-est-inclus-dans-le-clone) en haut).
 
 ### Vérifier son installation
@@ -229,7 +309,7 @@ Chaque script liste ce qui manque — `MANQUANT` bloque, `absent
 réentraîner, LLM local pour `03_live_agent_demo.py`) — plutôt que de
 planter avec une trace Python à la première étape oubliée.
 
-### Démo
+## Démo
 
 3 scripts, une brique de plus à chaque fois — pratique pour présenter le
 système en le construisant sous les yeux plutôt que de balancer le
@@ -237,8 +317,8 @@ pipeline complet d'un coup. Rangés dans `demo/src/scripts/`, préfixés
 par leur ordre (`01_`...`03_`) pour ne jamais avoir à deviner lequel
 lancer en premier ; `demo/src/common/` regroupe les 3 fichiers partagés
 entre eux (`config.py`, `fps_counter.py`, `source_cycle.py`). Seul le
-dernier (`03_live_agent_demo.py`) a besoin de `llama-server` (section
-précédente) ; tous importent `agent/src/` (tracker, journal, alerte
+dernier (`03_live_agent_demo.py`) a besoin de `llama-server`, qu'il lance
+lui-même au besoin (étape 8 de l'[installation](#installation-pas-à-pas)) ; tous importent `agent/src/` (tracker, journal, alerte
 selon le script) en plus de la détection ONNX INT8. Lancer depuis la
 racine du projet. Touche `c` dans la fenêtre vidéo pour changer de
 source (une des vidéos de démo, en cycle), `r` pour redémarrer la vidéo
@@ -310,7 +390,7 @@ plutôt que chacun individuellement) :
    #   combien de personnes maintenant ?
    ```
 
-### Ajouter une scène avec zones de danger
+## Ajouter une scène avec zones de danger
 
 D3 (alerte de zone) surveille des zones de danger définies **par scène**
 (`config/zones.yaml`, clé `scenes`) : chaque scène associe un chemin de
@@ -331,10 +411,13 @@ Deux types de scène :
 - **Scène interactive** (image + silhouette détourée qui suit la
   souris, comme le chantier fourni) — passer `--sprite` :
   ```bash
-  uv run python agent/src/alerts/define_zones.py demo/assets/mon_fond.jpg \
+  uv run python agent/src/alerts/define_zones.py demo/assets/scenes/06_mon_fond.jpg \
     --scene-name mon_site --zones zone_a zone_b \
-    --sprite demo/assets/ma_silhouette.png
+    --sprite demo/assets/silhouettes/ma_silhouette.png
   ```
+  Ranger l'image de fond dans `demo/assets/scenes/` (préfixe suivant
+  dans l'ordre du cycle) et la silhouette (image détourée RGBA) dans
+  `demo/assets/silhouettes/`.
   Colle le premier bloc imprimé sous `scenes:` dans `config/zones.yaml`,
   et le second sous `demo_sources:` dans `config/demo.yaml` (obligatoire
   pour cette scène : c'est la seule façon de la rendre sélectionnable
@@ -359,6 +442,10 @@ seulement deux. `--frame-index N` choisit une autre frame qu'un
 lancement à froid d'une vidéo. Recalibrer une scène déjà définie
 (`--scene-name` déjà utilisé) est un usage normal : le script prévient
 juste que cette scène existe déjà, sans bloquer.
+
+À la fin, un aperçu des zones dessinées est enregistré dans
+`demo/assets/zone_previews/<scene-name>.png` (ex. `chantier.png` pour la
+scène fournie) — recalibrer une scène écrase son propre aperçu.
 
 ## Licence
 

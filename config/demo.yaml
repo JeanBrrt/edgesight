@@ -53,11 +53,11 @@ active_model: "896px"
 # séquence longue avec entrées/sorties (bus_stop_long, 48s).
 # Les scripts bouclent automatiquement sur un fichier vidéo en fin de clip.
 demo_sources:
-  - ["rue automnale - voiture", "demo/assets/autumn_street_car.mp4"]
-  - ["autoroute - flux faible", "demo/assets/highway_low_traffic.mp4"]
-  - ["autoroute - flux variable", "demo/assets/highway_long_traffic.mp4"]
-  - ["chantier interactif", "INTERACTIVE:demo/assets/construction_site_access.jpg|demo/assets/construction_worker.webp"]
-  - ["pont pieton", "demo/assets/pedestrian_bridge.mp4"]
+  - ["rue automnale - voiture", "demo/assets/scenes/01_autumn_street_car.mp4"]
+  - ["autoroute - flux faible", "demo/assets/scenes/02_highway_low_traffic.mp4"]
+  - ["autoroute - flux variable", "demo/assets/scenes/03_highway_long_traffic.mp4"]
+  - ["pont pieton", "demo/assets/scenes/04_pedestrian_bridge.mp4"]
+  - ["chantier interactif", "INTERACTIVE:demo/assets/scenes/05_construction_site_access.jpg|demo/assets/silhouettes/construction_worker.webp"]
 
 # Dossier scanné automatiquement au démarrage (demo/src/common/config.py) pour
 # des vidéos ajoutées par l'utilisateur -- déposer un fichier vidéo
