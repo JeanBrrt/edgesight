@@ -43,7 +43,9 @@ Architecture à trois threads/boucles :
     (verrou interne, voir event_store.py) : tous ces threads
     lisent/écrivent le même journal.
 
-Prérequis : llama-server doit déjà tourner (voir README).
+llama-server est lancé automatiquement s'il ne tourne pas déjà, puis
+arrêté à la sortie (agent/src/agent/llm_server.py, bloc `llama_server`
+de config/agent.yaml).
 Lancer depuis la racine du projet :
     uv run python demo/src/scripts/03_live_agent_demo.py
 """
@@ -74,6 +76,7 @@ from agent.src.journal.event_store import EventStore
 from agent.src.alerts.alerts import AlertMonitor
 from agent.src.alerts.zones import ZoneMonitor, scene_for_source
 from agent.src.agent.agent import Agent, Session
+from agent.src.agent.llm_server import llama_server
 
 sys.path.insert(0, "demo/src/common")  # config.py/fps_counter.py/source_cycle.py
 # vivent à part des scripts, partagés par les 3 (voir demo/src/common/)
@@ -101,22 +104,43 @@ COLORS = [
     (66, 245, 233), (197, 66, 245), (245, 66, 66), (144, 245, 66),
 ]
 
-EXAMPLE_QUESTIONS = [
-    "Combien de personnes y a-t-il actuellement ?",
-    "Combien de voitures sont passées au total ?",
-    "Combien de personnes depuis 10 minutes ?",
-    "Quand la dernière voiture est-elle passée ?",
-]
+# Un exemple par famille de tools (agent/src/agent/tool_schemas.py), pour
+# montrer d'entrée l'étendue de ce que l'agent sait faire plutôt que
+# quatre variantes du même comptage. Regroupés par usage dans le message
+# d'accueil (titre de groupe -> questions).
+EXAMPLE_QUESTIONS = {
+    "Compter": [
+        "Combien de personnes y a-t-il en ce moment ?",
+        "Combien de voitures sont passées depuis 5 minutes ?",
+        "Combien de personnes entre 14h00 et 14h30 ?",
+    ],
+    "Analyser": [
+        "Depuis quand n'a-t-on pas vu de voiture ?",
+        "Combien de temps une personne reste-t-elle en moyenne ?",
+        "Quel est le maximum de voitures vues en même temps ?",
+    ],
+    "Surveiller (alertes)": [
+        "Préviens-moi si une personne reste plus de 10 secondes",
+        "Alerte-moi si plus de 5 voitures passent en 1 minute",
+        "Préviens-moi s'il y a au moins 2 personnes et 1 voiture en même temps",
+    ],
+    "Zones (scène chantier)": [
+        "Alerte-moi si quelqu'un entre dans la zone centrale",
+        "Combien de personnes sont entrées dans la zone latérale ?",
+    ],
+}
 
 WELCOME_MESSAGE = (
-    "Bienvenue -- Assistant VISEIO\n"
+    "Bienvenue -- Assistant EdgeSight\n"
     "\n"
     "Raccourcis (fenêtre vidéo) :\n"
     "  c = changer de source, r = redémarrer la vidéo, q = quitter\n"
     "\n"
     "Exemples de questions :\n"
-    + "\n".join(f"  - {q}" for q in EXAMPLE_QUESTIONS)
-    + "\n"
+    + "".join(
+        f"\n  {group}\n" + "".join(f"    - {q}\n" for q in questions)
+        for group, questions in EXAMPLE_QUESTIONS.items()
+    )
 )
 
 
@@ -249,7 +273,7 @@ def confirmed_only(tracked: dict) -> dict:
     }
 
 
-WINDOW_NAME = "Démo VISEIO"
+WINDOW_NAME = "Démo EdgeSight"
 LOG_PATH = "agent/data/03_live_agent_demo.log"
 
 
@@ -332,13 +356,13 @@ def main():
     # bibliothèque) -- la boucle vidéo (cv2) tourne donc dans son propre
     # thread (video_loop, plus bas), et root.mainloop() reste ici.
     root = tk.Tk()
-    root.title("VISEIO — Logs")
+    root.title("EdgeSight — Logs")
     root.geometry("700x300")
     log_widget = scrolledtext.ScrolledText(root, state=tk.DISABLED, wrap=tk.WORD)
     log_widget.pack(fill=tk.BOTH, expand=True)
 
     chat_win = tk.Toplevel(root)
-    chat_win.title("VISEIO — Assistant")
+    chat_win.title("EdgeSight — Assistant")
     chat_win.geometry("950x500")
 
     # Conversation (gauche) + outils appelés par l'agent (droite, D2) --
@@ -687,4 +711,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # Lance llama-server s'il ne tourne pas déjà, et l'arrête à la
+    # sortie (voir agent/src/agent/llm_server.py, config/agent.yaml).
+    with llama_server():
+        main()

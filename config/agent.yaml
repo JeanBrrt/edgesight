@@ -4,6 +4,29 @@
 
 llama_server_url: "http://127.0.0.1:8080/v1"
 
+# Lancement automatique de llama-server par 03_live_agent_demo.py
+# (agent/src/agent/llm_server.py). Si un serveur répond déjà sur
+# llama_server_url, il est réutilisé tel quel (et laissé tourner à la
+# sortie) ; sinon il est lancé avec ces paramètres, attendu jusqu'à ce
+# que /health réponde, puis arrêté à la fermeture de la démo. Hôte et port
+# toujours déduits de llama_server_url (une seule source de vérité) --
+# ne pas les répéter dans `args`. Chemins relatifs à la racine du projet.
+# `auto_start: false` = comportement d'origine (serveur à lancer à la main,
+# voir README étape 8).
+llama_server:
+  auto_start: true
+  binary: "agent/third_party/llama.cpp/llama-server.exe"
+  model: "agent/models/granite-4.1-3b-Q4_K_M.gguf"
+  # --jinja indispensable (tool-calling), -ngl 99 = tout sur GPU, -c 8192 =
+  # contexte (cf. memory.max_turns plus bas) -- voir README, section Agent.
+  args: ["--jinja", "-ngl", "99", "-c", "8192"]
+  # Chargement mesuré à ~4s (RTX 4060) -- large marge pour un premier
+  # lancement à froid (lecture du GGUF de 2,1 Go depuis le disque).
+  startup_timeout_seconds: 120
+  # Sortie de llama-server (gitignoré, comme tout agent/data/) -- à
+  # consulter si le démarrage échoue.
+  log_path: "agent/data/llama-server.log"
+
 system_prompt: >-
   Tu es un assistant qui répond à des questions sur des personnes et
   véhicules détectés par une caméra. Utilise toujours les tools

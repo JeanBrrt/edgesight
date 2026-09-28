@@ -24,10 +24,12 @@ detection/models/*
 # d'ajouts personnels (custom/) et l'ancien lot archivé restent ignorés.
 demo/assets/*
 !demo/assets/.gitkeep
-!demo/assets/*.mp4
-!demo/assets/*.jpg
-!demo/assets/*.webp
-!demo/assets/*.png
+# Scènes (vidéos + image de fond du chantier), silhouettes détourées des
+# scènes interactives, et aperçus des zones générés par
+# agent/src/alerts/define_zones.py
+!demo/assets/scenes/
+!demo/assets/silhouettes/
+!demo/assets/zone_previews/
 agent/data/*
 !agent/data/.gitkeep
 # GGUF du LLM (~2 Go, dépasse largement la limite GitHub par fichier) --

@@ -32,12 +32,12 @@ scenes:
     # Scène interactive (image de fond + silhouette qui suit la souris,
     # cf. InteractiveOverlaySource dans demo/src/source_cycle.py) -- pas
     # une vraie vidéo. Zones calibrées sur
-    # demo/assets/construction_site_access.jpg via
+    # demo/assets/scenes/05_construction_site_access.jpg via
     # agent/src/alerts/define_zones.py (clic manuel sur l'image, coordonnées
     # normalisées imprimées automatiquement). Aperçu visuel :
-    # demo/assets/construction_site_access_zones_preview.png. À
+    # demo/assets/zone_previews/chantier.png. À
     # recalibrer si la scène de fond change.
-    source: "demo/assets/construction_site_access.jpg"
+    source: "demo/assets/scenes/05_construction_site_access.jpg"
     zones:
       zone_centrale:
         - [0.639, 0.85]
