@@ -16,7 +16,9 @@ vendored, LLM local) est détaillé section par section plus bas ; voir
 en particulier [Entraînement](#entraînement-nanodet-plus-vendored-dans-detectionthird_party)
 pour le code NanoDet (nécessaire même pour la démo, les scripts important
 directement dessus) et [Agent](#agent-llamacpp--granite-41-3b-d2) pour le
-LLM local (uniquement pour `03_live_agent_demo.py`).
+LLM local (uniquement pour `03_live_agent_demo.py`). Une fois ces étapes
+suivies, `uv run python setup/check_demo.py` vérifie que tout est bien
+en place (voir [Vérifier son installation](#vérifier-son-installation)).
 
 ## Structure
 
@@ -26,6 +28,7 @@ LLM local (uniquement pour `03_live_agent_demo.py`).
   section [Démo](#démo) plus bas)
 - `config/` — paramètres ajustables de `agent/` et `demo/` (tracker,
   agent conversationnel, démos), en YAML plutôt qu'en dur dans le code
+- `setup/` — scripts de vérification d'installation (voir plus bas)
 - `docs/` — plan de travail et notes
 
 ## Environnement
@@ -165,6 +168,47 @@ commandes de lancement de chacun (avec leur `--chat-template-file`
 respectif pour Hermes-3/Functionary) sont documentées dans
 [docs/justifications.md](docs/justifications.md).
 
+### Ce qui n'est pas dans le clone
+
+Tout ce que `.gitignore` exclut, et comment l'obtenir — selon que tu
+veuilles juste lancer la démo ou reproduire tout le projet.
+
+**Pour la démo uniquement :**
+
+| Ignoré | Nécessaire ? | Comment l'obtenir |
+|---|---|---|
+| `detection/third_party/` (code NanoDet) | Oui, toujours — les scripts importent directement dessus | [Entraînement](#entraînement-nanodet-plus-vendored-dans-detectionthird_party) : clone + patchs |
+| `agent/third_party/llama.cpp/` (binaire) | Oui, pour `03_live_agent_demo.py` seulement | [Agent](#agent-llamacpp--granite-41-3b-d2) |
+| `agent/models/*.gguf` (poids du LLM) | Oui, pour `03_live_agent_demo.py` seulement | [Agent](#agent-llamacpp--granite-41-3b-d2) |
+| `.venv/` | Oui, toujours | `uv venv` + `uv pip install -r ...` (section [Environnement](#environnement)) |
+| `demo/assets/custom/*` | Non, optionnel | Vidéos personnelles, voir `custom_videos_dir` plus bas |
+
+**En plus, pour reproduire tout le projet** (préparation des données,
+entraînement, quantification, banc de test agent) :
+
+| Ignoré | Comment l'obtenir |
+|---|---|
+| `detection/data/01_annotations/` (COCO brut) | `detection/src/01_data/data_download.py` (télécharge depuis les annotations COCO officielles) |
+| `detection/data/02_filtered/` à `05_checks/` | Régénérés par le pipeline `detection/src/01_data/` (`data_filter.py` → `data_download.py` → `data_prepare.py`) |
+| `workspace/` (checkpoints/logs d'entraînement, ~14 Go) | Régénéré par un réentraînement (`nanodet/tools/train.py`) |
+
+Rien à télécharger pour `detection/models/*.onnx`,
+`detection/models/pretrained/*.pth` ni `demo/assets/*.mp4`/`.jpg`/`.webp`
+— commités avec le dépôt (voir [Ce qui est inclus dans le
+clone](#ce-qui-est-inclus-dans-le-clone) en haut).
+
+### Vérifier son installation
+
+```bash
+uv run python setup/check_demo.py      # tout ce qu'il faut pour la démo
+uv run python setup/check_project.py   # + tout le pipeline détection/agent (inclut check_demo.py)
+```
+
+Chaque script liste ce qui manque — `MANQUANT` bloque, `absent
+(optionnel)` dépend de ce que tu comptes faire (GPU CUDA pour
+réentraîner, LLM local pour `03_live_agent_demo.py`) — plutôt que de
+planter avec une trace Python à la première étape oubliée.
+
 ### Démo
 
 3 scripts, une brique de plus à chaque fois — pratique pour présenter le
@@ -295,3 +339,12 @@ seulement deux. `--frame-index N` choisit une autre frame qu'un
 lancement à froid d'une vidéo. Recalibrer une scène déjà définie
 (`--scene-name` déjà utilisé) est un usage normal : le script prévient
 juste que cette scène existe déjà, sans bloquer.
+
+## Licence
+
+[MIT](LICENSE) pour le code de ce dépôt (`agent/`, `demo/`,
+`detection/src/`, `config/`). Ne couvre ni le code vendored
+(`detection/third_party/`, `agent/third_party/`, sous leurs licences
+respectives), ni les vidéos de démo (licence Pixabay, voir
+`config/demo.yaml`), ni les poids de modèles tiers (NanoDet-Plus,
+Granite — voir leurs dépôts d'origine).
