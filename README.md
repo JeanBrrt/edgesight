@@ -1,15 +1,18 @@
 # EdgeSight — Détection embarquée et agent conversationnel
 
-Projet vitrine personnel, conçu pour démontrer et explorer, de bout en
-bout, une chaîne de vision par ordinateur pensée pour l'embarqué :
+Projet personnel, conçu pour démontrer et explorer, de bout en bout, une chaîne de vision par ordinateur pensée pour l'embarqué :
 détection de personnes et de véhicules par un modèle full CNN quantifié
 INT8 (≤5 Mo), suivi multi-objets, journal d'événements et alertes en
 temps réel, le tout interrogeable en langage naturel via un agent
 conversationnel qui s'appuie sur un LLM local (tool calling).
 
 Compétences mises en œuvre : préparation de données (COCO),
-fine-tuning et évaluation d'un détecteur (NanoDet-Plus), export ONNX et
-quantification INT8, benchmark de latence, tracking (ByteTrack),
+fine-tuning et évaluation d'un détecteur (NanoDet-Plus), une toolchain
+de quantification INT8 maison, sans outil clé en main (export ONNX et
+validation numérique contre PyTorch, lecteur de calibration dédié,
+quantification statique QDQ par canal, comparaison des méthodes de
+calibration, calibration par tranches pour borner la RAM, évaluation
+mAP fp32 vs INT8), benchmark de latence, tracking (ByteTrack),
 conception d'outils pour un agent LLM et banc de test comparatif de
 modèles. Les choix et mesures sont détaillés dans
 [docs/rapport.tex](docs/rapport.tex) et
@@ -62,6 +65,7 @@ uv venv --python 3.12
 source .venv/Scripts/activate
 uv pip install -r detection/requirements.txt
 uv pip install -r agent/requirements.txt
+uv pip install -r demo/requirements.txt
 ```
 
 **2. Code NanoDet** — cloné à part, figé sur le commit validé, puis
@@ -75,10 +79,20 @@ cp -rn /tmp/nanodet_upstream/. detection/third_party/nanodet/
 rm -rf /tmp/nanodet_upstream
 ```
 
-**3. torch CUDA + dépendances NanoDet**
+**3. torch + dépendances NanoDet** — une seule des deux lignes torch,
+selon l'usage :
+
+- **CPU** : suffit pour les 3 démos. La détection tourne en ONNX sur
+  CPU et le LLM utilise le GPU via llama.cpp, pas via torch.
+- **CUDA** (~2,5 Go) : nécessaire seulement pour réentraîner le
+  détecteur. Si le driver n'accepte pas CUDA 12.4, changer le `cu124`
+  du fichier (voir `nvidia-smi`).
 
 ```bash
-uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cu124
+uv pip install -r detection/requirements-torch-cpu.txt     # démo seule
+# ou
+uv pip install -r detection/requirements-torch-cu124.txt   # réentraînement
+
 grep -viE '^torch(>=|<|==)|^torchvision' detection/third_party/nanodet/requirements.txt \
   | uv pip install -r -
 uv pip install -e detection/third_party/nanodet
@@ -196,6 +210,13 @@ la démo : les scripts importent directement dessus.
 - **torch 2.x** (étape 3) : ignorer le pin `torch>=1.10,<2.0` du repo
   (obsolète, incompatible Python 3.12), d'où l'installation de torch à
   part, puis du reste des dépendances en excluant torch/torchvision.
+  torch a son propre fichier de requirements, séparé de
+  `detection/requirements.txt` : les roues CUDA ne sont publiées que sur
+  l'index de PyTorch (d'où la ligne `--index-url` dans
+  `requirements-torch-cu124.txt`), et le choix CPU/CUDA dépend de
+  l'usage. Il doit être installé **avant** les dépendances NanoDet :
+  `pytorch-lightning` et `torchmetrics` dépendent de torch, et sans
+  torch déjà présent, uv installerait la version CPU de PyPI.
 
 #### Patchs NanoDet
 
