@@ -1166,7 +1166,35 @@
     mesure architecture-only de la section 4.3 (28,1 IPS), cohérent avec la
     variance déjà observée entre sessions de mesure distinctes sur ce poste
     de développement (section 7).
-    
+
+    Les deux figures ci-dessous montrent ce que ces chiffres donnent sur
+    des images du jeu de test (modèle INT8 déployé, seuil de score 0,5) :
+    détections du modèle en orange, vérité terrain COCO en vert.
+
+    \begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/predictions_reussites.jpg}
+    \caption{Cas réussis : personnes et voitures de taille moyenne à
+    grande, toutes détectées sans faux positif. Le bus (en bas à gauche)
+    n'appartient pas aux classes apprises et n'est pas détecté, comme
+    attendu.}
+    \end{figure}
+
+    \begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/predictions_limites.jpg}
+    \caption{Limite principale : les objets proches sont détectés, les
+    petits objets lointains (piétons et voitures au fond, rive du canal,
+    promeneurs sous le cerf-volant) sont largement manqués --- cohérent
+    avec l'AP petits objets de 0,310 contre 0,652 pour les grands
+    (section 5.6).}
+    \end{figure}
+
+    {\small Images COCO val2017 (Flickr, licences CC BY et CC BY-NC),
+    identifiants 160864, 377588, 17207, 78823, 210273, 309391, 228436 et
+    433515 ; générées avec
+    \texttt{detection/src/04\_evaluate/visualize\_test\_predictions.py}.}
+
     
     \section{Bilan de la partie détection}
     

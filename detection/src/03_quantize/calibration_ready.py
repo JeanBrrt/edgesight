@@ -31,12 +31,8 @@ class NanoDetCalibrationDataReader(CalibrationDataReader):
         return len(self.image_paths)
 
     def set_range(self, start_index: int, end_index: int):
-        """Requis pour `extra_options={"CalibStridedMinMax": N}` (quantize_static) :
-        limite get_next() à une tranche, appelée plusieurs fois de suite avec des
-        tranches croissantes -- permet à HistogramCalibrater.collect_data() de
-        traiter les images par petits lots plutôt que de tout accumuler en RAM
-        avant de calculer le moindre histogramme (cf. justifications.md, cause
-        du crash RAM/disque avec `Percentile`)."""
+        """Limite get_next() à une tranche d'images. Requis par CalibStridedMinMax
+        pour calibrer par petits lots au lieu de tout garder en RAM."""
         self._active_paths = self.image_paths[start_index:end_index]
         self.index = 0
 

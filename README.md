@@ -21,6 +21,12 @@ mAP fp32 vs INT8), benchmark de latence, tracking (ByteTrack),
 conception d'outils pour un agent LLM et banc de test comparatif de
 modèles.
 
+![Détections du modèle INT8 (orange) face à la vérité terrain COCO (vert)](docs/figures/predictions_reussites.jpg)
+
+*Modèle INT8 déployé sur des images du jeu de test : détections en
+orange, vérité terrain COCO en vert. Le rapport montre aussi ses limites
+(petits objets lointains, section « Arbitrage final »).*
+
 ## Sommaire
 
 - [Structure du dépôt](#structure-du-dépôt)
@@ -42,7 +48,7 @@ modèles.
   `silhouettes/`, `zone_previews/`, `custom/` pour vos vidéos)
 - `config/` — réglages en YAML (démo, agent, tracker, zones)
 - `setup/` — scripts de vérification de l'installation
-- `docs/` — rapport technique et justifications des choix
+- `docs/` — rapport technique (PDF et source LaTeX)
 
 Déjà inclus dans le clone : les modèles ONNX (fp32 + INT8, 416/512/896px),
 le checkpoint pré-entraîné, les configs NanoDet et les vidéos de démo.
@@ -287,9 +293,6 @@ Le rapport est disponible en PDF, [`docs/rapport.pdf`](docs/rapport.pdf),
 à côté de sa source LaTeX, [`docs/rapport.tex`](docs/rapport.tex)
 (figures dans `docs/figures/`). Pour le recompiler après modification,
 depuis `docs/` : `tectonic rapport.tex` ou `latexmk -pdf rapport.tex`.
-[`docs/justifications.md`](docs/justifications.md) complète le rapport
-avec les notes de travail détaillées (commandes, tableaux comparatifs
-bruts).
 
 ## Aller plus loin
 
@@ -297,6 +300,11 @@ bruts).
   quantification) : installer torch CUDA à l'étape 3, puis vérifier avec
   `uv run python setup/check_project.py`. Les scripts sont dans
   `detection/src/`, dans l'ordre (`01_data/` → `04_evaluate/`).
+- **Comparer les détections à la vérité terrain** sur le jeu de test
+  (données COCO de `01_data/` requises) :
+  `uv run python detection/src/04_evaluate/visualize_test_predictions.py`
+  affiche 4 images au hasard (`r` : nouvelles images, `g` : vérité
+  terrain, `q` : quitter) ; `--save fichier.png` enregistre la grille.
 
 ## Contact
 
@@ -307,4 +315,6 @@ Pour toute question technique : jean02800@gmail.com
 [MIT](LICENSE) pour le code de ce dépôt. Ne couvre ni le code tiers
 (`detection/third_party/`, `agent/third_party/`), ni les vidéos de démo
 (licence Pixabay), ni les poids de modèles tiers (NanoDet-Plus, Granite),
-chacun sous sa propre licence.
+chacun sous sa propre licence. Les figures `docs/figures/predictions_*.jpg`
+reprennent des images COCO val2017 issues de Flickr (licences CC BY et
+CC BY-NC, identifiants listés dans le rapport).

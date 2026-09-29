@@ -1,10 +1,11 @@
-# Dépendances des scripts de démo (demo/src/scripts/*.py) -- assemblage
-# détection ONNX INT8 + tracking/journal/alertes/agent, sur vidéos.
+# Dépendances des scripts de démo
 numpy
 opencv-python
 onnxruntime
-# Lecture de config/demo.yaml (demo/src/common/config.py)
+
+# Lecture de config/demo.yaml
 PyYAML
+
 # Texte lissé, avec accents, sur les images (demo/src/common/text_render.py)
 Pillow
 

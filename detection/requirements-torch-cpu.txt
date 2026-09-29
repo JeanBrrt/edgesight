@@ -3,7 +3,5 @@
 # (NanoDet), et le GPU du LLM passe par llama.cpp, pas par torch.
 # Bien plus léger que la version CUDA (~2,5 Go) ; pour réentraîner, installer
 # requirements-torch-cu124.txt à la place.
-# Figé sur la version validée avec ce projet (patchs NanoDet, démo,
-# entraînement) -- l'index cu124 plafonne à 2.6, PyPI irait bien au-delà.
 torch==2.6.*
 torchvision==0.21.*

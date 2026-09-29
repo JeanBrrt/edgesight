@@ -10,14 +10,10 @@ from nanodet.data.batch_process import stack_batch_img
 from nanodet.data.collate import naive_collate
 
 CONFIG_PATH = "detection/third_party/nanodet/config/nanodet-plus-m-1.5x_896-person-car.yml"
-# Génération 4 (896px) toujours EN COURS au moment de ce passage toolchain
-# (epoch 37+/50) -- model_best avance donc encore à chaque validation
-# (epoch multiple de 4). Chemin canonique quand même : model_best reflète
-# le meilleur checkpoint connu à l'instant de l'export, pas un run figé.
+# Meilleur checkpoint au moment de l'export.
 MODEL_PATH = "workspace/nanodet-plus-m-1.5x_896-person-car/model_best/nanodet_model_best.pth"
 ONNX_PATH = "detection/models/nanodet-plus-m-1.5x_896-person-car-fp32.onnx"
-# En dur, indépendant de cfg.data.val.input_size : ONNX_PATH est figé à
-# 896px depuis son export, explicite plutôt qu'implicite.
+# Doit correspondre à la résolution d'export du modèle ONNX.
 INPUT_SIZE = (896, 896)
 TEST_IMAGES = [
     "detection/data/03_raw/test/000000186873.jpg",
@@ -33,7 +29,7 @@ logger = Logger(0, use_tensorboard=False)
 model = build_model(cfg.model)
 ckpt = torch.load(MODEL_PATH, map_location="cpu")
 load_model_weight(model, ckpt, logger)
-model.eval()  # CPU volontairement, pour une comparaison propre sans bruit GPU/CPU
+model.eval()  # sur CPU, comme ONNX Runtime, pour comparer à l'identique
 
 session = ort.InferenceSession(ONNX_PATH, providers=["CPUExecutionProvider"])
 
@@ -53,11 +49,11 @@ def preprocess(img_path):
 
 def pytorch_raw_output(img_tensor):
     with torch.no_grad():
-        raw = model(img_tensor)  # chemin normal, PAS _forward_onnx
+        raw = model(img_tensor)  # forward PyTorch, pas _forward_onnx
     cls, reg = raw.split(
         [cfg.model.arch.head.num_classes, raw.shape[-1] - cfg.model.arch.head.num_classes], dim=-1
     )
-    cls = cls.sigmoid()  # reproduit manuellement ce que fait _forward_onnx
+    cls = cls.sigmoid()  # comme dans l'export ONNX
     return torch.cat([cls, reg], dim=-1).numpy()
 
 

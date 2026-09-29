@@ -1,16 +1,21 @@
-"""Démo statique : 4 images aléatoires de test.json, détections du modèle
-INT8 final (896px) face à la vérité terrain COCO.
+"""Affiche 4 images au hasard de test.json : détections du modèle INT8
+(896px) et vérité terrain COCO.
 
 Touches :
-    'r' -- retire 4 nouvelles images au hasard (relance l'inférence)
-    'g' -- active/désactive l'affichage de la vérité terrain (pas de
-           nouvelle inférence, juste un redessin)
+    'r' -- 4 nouvelles images
+    'g' -- afficher/masquer la vérité terrain
     'q' -- quitter
 
 Lancer depuis la racine du projet :
     uv run python detection/src/04_evaluate/visualize_test_predictions.py
+
+Pour enregistrer une grille en PNG sans ouvrir de fenêtre (images choisies
+par leur id COCO, ou au hasard si --ids est omis) :
+    uv run python detection/src/04_evaluate/visualize_test_predictions.py \\
+        --save docs/figures/predictions_reussites.jpg --ids 160864 377588 17207 78823
 """
 
+import argparse
 import random
 
 import cv2
@@ -25,10 +30,9 @@ from nanodet.data.transform import Pipeline
 from nanodet.model.arch import build_model
 from nanodet.util import cfg, load_config
 
-CONFIG_PATH = "detection/third_party/nanodet/config/nanodet-plus-m-1.5x_416-person-car.yml"
-# ONNX_PATH et INPUT_SIZE toujours groupés ensemble (voir config/demo.yaml
-# pour la même précaution) : ce fichier ONNX est figé à 896px depuis son
-# export, indépendamment de ce que dit CONFIG_PATH.
+CONFIG_PATH = "detection/third_party/nanodet/config/nanodet-plus-m-1.5x_896-person-car.yml"
+# INPUT_SIZE doit correspondre à la résolution d'export du modèle ONNX,
+# quelle que soit celle de CONFIG_PATH.
 ONNX_PATH = "detection/models/nanodet-plus-m-1.5x_896-person-car-int8-QDQ-u8s8.onnx"
 INPUT_SIZE = (896, 896)
 TEST_ANN = "detection/data/04_processed/test.json"
@@ -50,9 +54,7 @@ WINDOW_NAME = "Détections vs vérité terrain (test set) -- 'r' reroll, 'g' GT,
 
 
 def undo_export_sigmoid(raw_output, num_classes):
-    """L'export ONNX applique déjà un sigmoid sur la partie classification ;
-    post_process en applique un second en interne -- correction déjà
-    utilisée dans evaluate_int8.py/les scripts de démo."""
+    """Annule le sigmoid de l'export ONNX, que post_process réapplique."""
     cls, reg = np.split(raw_output, [num_classes], axis=-1)
     cls = np.clip(cls, 1e-7, 1 - 1e-7)
     logits = np.log(cls / (1 - cls))
@@ -60,9 +62,7 @@ def undo_export_sigmoid(raw_output, num_classes):
 
 
 def run_detection(session, model, pipeline, img_path, num_classes):
-    """Renvoie (dets, image_originale) pour une image -- dets déjà dans le
-    référentiel de coordonnées de l'image d'origine (post_process gère la
-    conversion), directement comparable aux boîtes COCO de test.json."""
+    """Renvoie (dets, image), dets en coordonnées de l'image d'origine."""
     img = cv2.imread(img_path)
     img_info = {"id": 0, "file_name": None, "height": img.shape[0], "width": img.shape[1]}
     meta = dict(img_info=img_info, raw_img=img, img=img)
@@ -92,7 +92,8 @@ def draw_detections(frame, dets: dict, class_names: list[str]):
 
 
 def draw_ground_truth(frame, coco_gt: COCO, img_id: int, class_names: list[str], cat_id_to_idx: dict):
-    for ann in coco_gt.loadAnns(coco_gt.getAnnIds(imgIds=[img_id])):
+    # Sans les boîtes de foule (iscrowd), ignorées par l'évaluation COCO.
+    for ann in coco_gt.loadAnns(coco_gt.getAnnIds(imgIds=[img_id], iscrowd=False)):
         x, y, w, h = map(int, ann["bbox"])
         cls_idx = cat_id_to_idx[ann["category_id"]]
         cv2.rectangle(frame, (x, y), (x + w, y + h), GT_COLOR, 2)
@@ -100,16 +101,26 @@ def draw_ground_truth(frame, coco_gt: COCO, img_id: int, class_names: list[str],
     return frame
 
 
+def fit_cell(img):
+    """Redimensionne sans déformer, bandes noires pour compléter."""
+    h, w = img.shape[:2]
+    scale = min(CELL_WIDTH / w, CELL_HEIGHT / h)
+    new_w, new_h = int(w * scale), int(h * scale)
+    cell = np.zeros((CELL_HEIGHT, CELL_WIDTH, 3), dtype=np.uint8)
+    x, y = (CELL_WIDTH - new_w) // 2, (CELL_HEIGHT - new_h) // 2
+    cell[y : y + new_h, x : x + new_w] = cv2.resize(img, (new_w, new_h), interpolation=cv2.INTER_AREA)
+    return cell
+
+
 def build_grid(cells: list):
-    resized = [cv2.resize(cell, (CELL_WIDTH, CELL_HEIGHT)) for cell in cells]
+    resized = [fit_cell(cell) for cell in cells]
     rows = [np.hstack(resized[i : i + GRID_COLS]) for i in range(0, len(resized), GRID_COLS)]
     return np.vstack(rows)
 
 
 def compute_sample(session, model, pipeline, coco_gt: COCO, sample_ids: list, num_classes: int):
-    """Lance l'inférence une fois par image de l'échantillon -- mis en
-    cache par l'appelant pour que 'g' (bascule GT) ne relance jamais
-    l'inférence, seulement 'r' (nouvel échantillon)."""
+    """Inférence sur l'échantillon. Le résultat est gardé en cache : seul
+    'r' relance l'inférence, pas 'g'."""
     sample = []
     for img_id in sample_ids:
         file_name = coco_gt.loadImgs([img_id])[0]["file_name"]
@@ -122,22 +133,27 @@ def compute_sample(session, model, pipeline, coco_gt: COCO, sample_ids: list, nu
 def render(sample: list, coco_gt: COCO, class_names: list[str], cat_id_to_idx: dict, show_gt: bool):
     cells = []
     for frame, dets, img_id, file_name in sample:
-        cell = frame.copy()  # jamais dessiner sur l'original mis en cache
+        cell = frame.copy()  # ne pas dessiner sur l'image en cache
         cell = draw_detections(cell, dets, class_names)
         if show_gt:
             cell = draw_ground_truth(cell, coco_gt, img_id, class_names, cat_id_to_idx)
-        cv2.putText(cell, file_name, (8, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
         cv2.putText(cell, file_name, (8, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 3)
+        cv2.putText(cell, file_name, (8, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
         cells.append(cell)
     return build_grid(cells)
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--save", help="enregistre la grille dans ce PNG au lieu d'ouvrir une fenêtre")
+    parser.add_argument("--ids", type=int, nargs="+", help="ids COCO des images (défaut : au hasard)")
+    args = parser.parse_args()
+
     load_config(cfg, CONFIG_PATH)
     cfg.defrost()
     cfg.data.val.input_size = INPUT_SIZE
     cfg.freeze()
-    model = build_model(cfg.model)  # config seule, pour post_process -- pas de poids à charger
+    model = build_model(cfg.model)  # sans poids, seul post_process sert
     pipeline = Pipeline(cfg.data.val.pipeline, cfg.data.val.keep_ratio)
     session = ort.InferenceSession(ONNX_PATH, providers=["CPUExecutionProvider"])
     num_classes = cfg.model.arch.head.num_classes
@@ -148,14 +164,17 @@ def main():
     cat_id_to_idx = {cat_id: i for i, cat_id in enumerate(sorted(coco_gt.getCatIds()))}
 
     show_gt = True
-    sample = compute_sample(session, model, pipeline, coco_gt, random.sample(img_ids, SAMPLE_SIZE), num_classes)
+    sample_ids = args.ids or random.sample(img_ids, SAMPLE_SIZE)
+    sample = compute_sample(session, model, pipeline, coco_gt, sample_ids, num_classes)
+
+    if args.save:
+        cv2.imwrite(args.save, render(sample, coco_gt, class_names, cat_id_to_idx, show_gt))
+        print(f"{args.save} écrit (images {sample_ids})")
+        return
 
     print(f"{len(img_ids)} images dans test.json -- 'r' nouvel échantillon, 'g' vérité terrain, 'q' quitter.")
 
-    # WINDOW_NORMAL (plutôt que le défaut WINDOW_AUTOSIZE de imshow) rend la
-    # fenêtre redimensionnable à la souris -- OpenCV rééchantillonne alors
-    # l'image affichée à la taille de la fenêtre plutôt que de la figer à
-    # la résolution native de la grille (2*CELL_WIDTH x 2*CELL_HEIGHT).
+    # Fenêtre redimensionnable à la souris.
     cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
 
     try:
