@@ -1,30 +1,17 @@
-# Zones de danger, regroupées PAR SCÈNE (agent/src/alerts/zones.py) -- chaque
-# scène (une vidéo précise, ou l'image de fond d'une scène interactive
-# silhouette+souris) a son propre jeu de zones nommées, sélectionné
-# automatiquement selon la source actuellement affichée (`source:`
-# ci-dessous, comparé au chemin résolu de la source active -- voir
-# SourceCycler.zone_source_key dans demo/src/source_cycle.py). Une source
-# sans scène correspondante n'a simplement aucune zone surveillée --
-# comportement par défaut, pas une erreur.
+# Zones de danger, par scène (agent/src/alerts/zones.py). Une scène est
+# reconnue par sa source (vidéo, ou image de fond d'une scène
+# interactive) ; une source sans scène n'a aucune zone surveillée.
 #
-# Coordonnées de chaque zone NORMALISÉES (fraction de la largeur/hauteur
-# de l'image, 0.0-1.0), volontairement PAS en pixels bruts : un polygone
-# en pixels ne serait valide que pour une seule résolution, un polygone
-# normalisé se reprojette correctement quelle que soit la résolution
-# réelle de la frame. Chaque zone est un polygone simple (liste de
-# [x_frac, y_frac], dans l'ordre, non auto-intersectant -- testé par un
-# lancer de rayon classique, cf. zones.py:_point_in_polygon).
+# Coordonnées normalisées (fraction de la largeur/hauteur, 0.0-1.0), pour
+# rester valides quelle que soit la résolution. Chaque zone est un
+# polygone simple, points dans l'ordre.
 #
-# Ajouter une scène (vidéo réelle ou image+silhouette interactive) :
-# agent/src/alerts/define_zones.py -- voir le README, section "Ajouter une
-# scène avec zones de danger", pour l'usage complet.
+# Pour ajouter une scène : agent/src/alerts/define_zones.py (voir le
+# README, « Ajouter une scène avec zones de danger »).
 
-# Fraction minimale (0.0-1.0) de la SURFACE de la boîte (personne/voiture)
-# qui doit recouvrir le polygone de la zone pour compter comme "entrée" --
-# évite qu'un simple effleurement du bord de la zone (quelques % de la
-# boîte) déclenche une alerte. Voir zones.py:_box_coverage_fraction.
-# Valeur par défaut, applicable à toute scène qui ne la surcharge pas
-# explicitement (clé min_coverage_fraction au niveau de la scène).
+# Part minimale de la boîte qui doit recouvrir la zone pour compter comme
+# une entrée, pour qu'un simple effleurement ne déclenche rien.
+# Surchargeable par scène (clé min_coverage_fraction).
 min_coverage_fraction: 0.2
 
 scenes:

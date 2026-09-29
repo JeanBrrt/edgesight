@@ -1,41 +1,14 @@
-"""C2 — Store d'événements : log horodaté des pistes, interrogeable par
-plage de temps, plus les règles d'alerte (4 types) et le journal des
-entrées en zone.
+"""Journal d'événements (SQLite)
 
-Entrée de `update()` : la sortie de `MultiClassByteTracker.update()`
-(tracker.py) — {class_idx: [[x1, y1, x2, y2, score, track_id, ...], ...]}
-
-Une ligne par (classe, track_id) dans `events`, avec `first_seen`/
-`last_seen` mis à jour à chaque frame où la piste est vue. Pas de champ
-"actif" stocké : une piste est considérée active si `last_seen` est
-récent (voir `active_within_seconds`) — évite d'avoir à décider frame
-par frame si une piste doit être "close" (le tracker peut la faire
-réapparaître avec le même ID après une brève absence grâce à son propre
-buffer).
-
-`alerts` couvre 4 types de règles hétérogènes (durée de présence,
-co-occurrence de deux classes, rafale sur fenêtre glissante, entrée en
-zone) dans une seule table à colonnes creuses plutôt que 4 tables ou un
-blob JSON — chaque règle a un type + les seuls champs qui la concernent,
-les autres restant NULL. La clé naturelle est composite
-(alert_type, object_class, zone_name) : `object_class`/`zone_name`
-utilisent une chaîne vide '' (jamais NULL) comme sentinelle pour les
-types qui ne s'en servent pas, parce que SQLite ne fait JAMAIS
-collisionner deux NULL dans une contrainte UNIQUE — avec NULL comme
-sentinelle, plusieurs lignes "co_occurrence" auraient pu s'accumuler
-silencieusement au lieu de se remplacer (ON CONFLICT ne se déclenche
-jamais entre deux NULL).
-
-`zone_events` journalise chaque ENTRÉE (transition dehors -> dedans,
-pas une ligne par frame passé dans la zone) détectée par `ZoneMonitor`
-(zones.py) — sert à la fois à `count_zone_entries` et, en amont, au
-déclenchement des alertes de type "zone".
-
-Accédé depuis deux threads à partir de E1/E2 (la boucle vidéo d'un côté,
-le thread agent de l'autre) : `check_same_thread=False` + un verrou
-autour de chaque accès à `self.conn` pour sérialiser nous-mêmes les
-écritures/lectures plutôt que de compter sur le comportement par défaut
-du module sqlite3.
+- `events` : une ligne par piste, avec sa première et sa dernière
+  apparition. Une piste est "active" si elle a été vue récemment : pas
+  besoin de décider quand elle se termine.
+- `alerts` : les 4 types de règles dans une seule table, chaque règle ne
+  remplissant que ses colonnes. Les colonnes inutilisées de la clé
+  valent '' et non NULL : SQLite ne considère jamais deux NULL comme
+  égaux, et une règle reposée se serait ajoutée au lieu de remplacer
+  l'ancienne.
+- `zone_events` : une ligne par entrée dans une zone.
 """
 
 import sqlite3
@@ -44,8 +17,7 @@ import time
 
 DEFAULT_DB_PATH = "agent/data/events.db"
 
-# Colonnes de la table `alerts`, dans l'ordre utilisé par _upsert_alert
-# et get_alerts() -- un seul endroit à mettre à jour si on ajoute un type.
+# Colonnes de valeurs de la table `alerts`.
 _ALERT_VALUE_COLUMNS = (
     "threshold_seconds", "person_threshold", "car_threshold",
     "count_threshold", "window_minutes",
@@ -68,11 +40,8 @@ class EventStore:
                 )
                 """
             )
-            # Ancien schéma (une ligne par classe, alerte de durée
-            # uniquement, pas de colonne alert_type) : reconstruit plutôt
-            # que migré -- c'est un état de configuration jetable,
-            # recréé par les set_*_alert au prochain lancement de la
-            # démo, pas une donnée à préserver.
+            # Table d'une ancienne version (sans alert_type) : recréée, les
+            # règles n'étant pas des données à conserver.
             cur = self.conn.execute("PRAGMA table_info(alerts)")
             existing_columns = {row[1] for row in cur.fetchall()}
             if existing_columns and "alert_type" not in existing_columns:
@@ -107,9 +76,7 @@ class EventStore:
             self.conn.commit()
 
     # ------------------------------------------------------------------
-    # Alertes -- une méthode publique par type de règle, toutes appuyées
-    # sur le même upsert générique (clé composite décrite dans le
-    # docstring du module).
+    # Règles d'alerte (une méthode par type)
     # ------------------------------------------------------------------
 
     def _upsert_alert(
@@ -154,18 +121,15 @@ class EventStore:
             self.conn.commit()
 
     def set_duration_alert(self, object_class: str, threshold_seconds: float, timestamp: float | None = None):
-        """Alerte si un objet de cette classe reste présent en continu plus
-        longtemps que `threshold_seconds` (généralise l'ancien set_alert,
-        limité à `person`)."""
+        """Alerte si un objet reste plus de `threshold_seconds` secondes."""
         self._upsert_alert(
             "duration", object_class=object_class, threshold_seconds=threshold_seconds, timestamp=timestamp
         )
 
     def set_co_occurrence_alert(self, person_threshold: int, car_threshold: int, timestamp: float | None = None):
-        """Alerte si au moins `person_threshold` personnes ET au moins
-        `car_threshold` voitures sont présentes simultanément. Une seule
-        règle active à la fois (object_class fixé à la sentinelle 'both',
-        une reconfiguration remplace la précédente)."""
+        """Alerte si au moins `person_threshold` personnes et
+        `car_threshold` voitures sont présentes en même temps. Une seule
+        règle de ce type : la reposer remplace l'ancienne."""
         self._upsert_alert(
             "co_occurrence",
             object_class="both",
@@ -175,9 +139,8 @@ class EventStore:
         )
 
     def set_surge_alert(self, object_class: str, count_threshold: int, window_minutes: float, timestamp: float | None = None):
-        """Alerte si `count_threshold` objets de cette classe ou plus
-        apparaissent en moins de `window_minutes` (une règle active par
-        classe)."""
+        """Alerte si `count_threshold` objets ou plus apparaissent en moins
+        de `window_minutes` (une règle par classe)."""
         self._upsert_alert(
             "surge",
             object_class=object_class,
@@ -188,14 +151,11 @@ class EventStore:
 
     def set_zone_alert(self, zone_name: str, object_class: str, timestamp: float | None = None):
         """Alerte si un objet de cette classe (ou 'any') entre dans la zone
-        nommée (une règle active par couple zone/classe -- plusieurs zones
-        distinctes coexistent normalement)."""
+        (une règle par couple zone/classe)."""
         self._upsert_alert("zone", object_class=object_class, zone_name=zone_name, timestamp=timestamp)
 
     def get_alerts(self) -> list[dict]:
-        """Toutes les règles configurées, quel que soit leur type -- à
-        `AlertMonitor`/`ZoneMonitor` de filtrer par `alert_type` et de lire
-        les champs qui les concernent (les autres valent None)."""
+        """Toutes les règles, tous types confondus (champs inutilisés à None)."""
         with self._lock:
             cur = self.conn.execute(
                 "SELECT alert_type, object_class, zone_name, threshold_seconds, "
@@ -209,7 +169,7 @@ class EventStore:
         return [dict(zip(columns, row)) for row in rows]
 
     # ------------------------------------------------------------------
-    # Journal des pistes (C2 d'origine)
+    # Journal des pistes
     # ------------------------------------------------------------------
 
     def update(self, tracked: dict, class_names: list[str], timestamp: float | None = None):
@@ -231,8 +191,7 @@ class EventStore:
             self.conn.commit()
 
     def count_between(self, class_name: str, start_ts: float, end_ts: float) -> int:
-        """Nombre de pistes distinctes de cette classe apparues entre deux horodatages.
-        Répond à : "combien de voitures sont passées entre 12h15 et 12h30"."""
+        """Nombre de pistes apparues entre deux instants."""
         with self._lock:
             cur = self.conn.execute(
                 "SELECT COUNT(*) FROM events WHERE class = ? AND first_seen BETWEEN ? AND ?",
@@ -243,8 +202,7 @@ class EventStore:
     def active_tracks(
         self, class_name: str | None = None, active_within_seconds: float = 1.0, now: float | None = None
     ) -> list[tuple[int, str, float, float]]:
-        """Pistes considérées actives = vues il y a moins de `active_within_seconds`.
-        Répond à : "combien de véhicules sont dans le champ maintenant"."""
+        """Pistes vues il y a moins de `active_within_seconds`."""
         now = now if now is not None else time.time()
         cutoff = now - active_within_seconds
         with self._lock:
@@ -263,34 +221,22 @@ class EventStore:
     def active_durations(
         self, class_name: str, active_within_seconds: float = 1.0, now: float | None = None
     ) -> list[tuple[int, float]]:
-        """Pour chaque piste active de cette classe : (track_id, durée en secondes
-        depuis sa première apparition). Répond à : "personne présente depuis plus
-        de 10 secondes"."""
+        """(track_id, secondes depuis sa première apparition) des pistes actives."""
         now = now if now is not None else time.time()
-        # Ne prend pas self._lock ici : délègue entièrement à active_tracks (qui
-        # verrouille déjà) -- un Lock() classique n'est pas réentrant.
+        # Pas de verrou ici : active_tracks le prend déjà, et il n'est pas réentrant.
         return [(tid, now - first_seen) for tid, _, first_seen, _ in self.active_tracks(class_name, active_within_seconds, now)]
 
     def most_recent_last_seen(self, class_name: str) -> float | None:
-        """Timestamp de la dernière détection, toutes pistes de cette classe
-        confondues (None si aucune piste jamais vue). Répond à : "depuis
-        combien de temps n'a-t-on pas vu de voiture". Volontairement
-        `last_seen` et non `first_seen` : sur un flux continu, la piste la
-        plus récente peut être apparue il y a longtemps tout en étant encore
-        visible -- `MAX(first_seen)` répondait alors "il y a 1 minute" alors
-        qu'une voiture était à l'écran."""
+        """Instant de la dernière détection de cette classe (None si jamais
+        vue). Sur last_seen et non first_seen : une voiture présente depuis
+        une minute est toujours visible."""
         with self._lock:
             cur = self.conn.execute("SELECT MAX(last_seen) FROM events WHERE class = ?", (class_name,))
             return cur.fetchone()[0]
 
     def average_presence_duration(self, class_name: str) -> float | None:
-        """Durée moyenne (last_seen - first_seen) des pistes de cette classe
-        vues depuis le début de la session (None si aucune piste). Une piste
-        encore active est comptée avec sa durée "jusqu'ici", pas sa durée
-        finale -- légère sous-estimation tant qu'elle reste présente,
-        approximation jugée suffisante plutôt qu'une notion de piste
-        "terminée" qui n'existe pas ailleurs dans ce store (cf. absence de
-        champ "actif", même raisonnement)."""
+        """Durée moyenne de présence (None si aucune piste). Une piste encore
+        présente compte pour sa durée jusqu'ici : légère sous-estimation."""
         with self._lock:
             cur = self.conn.execute("SELECT first_seen, last_seen FROM events WHERE class = ?", (class_name,))
             rows = cur.fetchall()
@@ -299,12 +245,9 @@ class EventStore:
         return sum(last_seen - first_seen for first_seen, last_seen in rows) / len(rows)
 
     def peak_concurrent_count(self, class_name: str) -> int:
-        """Nombre maximal de pistes de cette classe actives SIMULTANÉMENT à
-        un instant quelconque depuis le début de la session -- balayage des
-        intervalles (first_seen, last_seen), pas un simple COUNT. À
-        égalité de timestamp, une arrivée est comptée avant un départ
-        (deux pistes vues au même instant exact ont bien coexisté à ce
-        frame-là)."""
+        """Nombre maximal de pistes présentes en même temps, par balayage des
+        intervalles de présence. À instant égal, une arrivée compte avant un
+        départ : les deux pistes ont coexisté."""
         with self._lock:
             cur = self.conn.execute("SELECT first_seen, last_seen FROM events WHERE class = ?", (class_name,))
             rows = cur.fetchall()
@@ -327,9 +270,7 @@ class EventStore:
     # ------------------------------------------------------------------
 
     def log_zone_entry(self, zone_name: str, class_name: str, track_id: int, timestamp: float | None = None):
-        """Journalise une ENTRÉE en zone (transition dehors -> dedans,
-        détectée en amont par ZoneMonitor -- pas une ligne par frame passé
-        dans la zone)."""
+        """Enregistre une entrée dans une zone (détectée par ZoneMonitor)."""
         ts = timestamp if timestamp is not None else time.time()
         with self._lock:
             self.conn.execute(
@@ -339,9 +280,7 @@ class EventStore:
             self.conn.commit()
 
     def count_zone_entries(self, zone_name: str, class_name: str | None = None) -> int:
-        """Nombre d'entrées journalisées dans cette zone depuis le début de
-        la session. `class_name=None` ou `'any'` : toutes classes
-        confondues."""
+        """Nombre d'entrées dans la zone (`None` ou 'any' : toutes classes)."""
         with self._lock:
             if class_name is not None and class_name != "any":
                 cur = self.conn.execute(
@@ -355,30 +294,18 @@ class EventStore:
     # ------------------------------------------------------------------
 
     def clear_events(self):
-        """Vide le journal des pistes ET des entrées en zone (garde les
-        règles d'alerte). À appeler quand le tracker est réinitialisé
-        (changement de source vidéo, MultiClassByteTracker.reset()) : les
-        tracker_id qu'il va réémettre repartent de 0 par classe, ce qui
-        entrerait en collision avec d'anciennes lignes (class, track_id)
-        déjà présentes sinon -- une piste de la nouvelle source se
-        retrouverait fusionnée avec une piste sans rapport de l'ancienne,
-        faussant sa durée de présence (et, de la même façon, ses éventuelles
-        entrées en zone passées). Garde volontairement les règles d'alerte
-        (table `alerts`) -- voir `clear_alerts()` pour les effacer, séparément,
-        à un vrai changement de vidéo/démo."""
+        """Vide les pistes et les entrées en zone, sans toucher aux règles.
+        À appeler avec MultiClassByteTracker.reset() : les identifiants
+        repartent de 0 et se mélangeraient aux anciennes pistes."""
         with self._lock:
             self.conn.execute("DELETE FROM events")
             self.conn.execute("DELETE FROM zone_events")
             self.conn.commit()
 
     def clear_alerts(self):
-        """Supprime toutes les règles d'alerte configurées (set_*_alert).
-        À appeler en plus de `clear_events()`, mais seulement à un vrai
-        changement de vidéo/démo (pas un simple redémarrage de la même
-        vidéo, RESTART_KEY) -- une alerte posée par l'agent sur une scène
-        ("préviens-moi si une voiture entre dans le quai de chargement")
-        n'a plus de sens sur une scène sans rapport, et ne doit jamais
-        se reporter automatiquement dessus."""
+        """Supprime toutes les règles. Au changement de scène seulement (pas
+        au redémarrage d'une vidéo) : une alerte posée sur une scène n'a
+        pas de sens sur une autre."""
         with self._lock:
             self.conn.execute("DELETE FROM alerts")
             self.conn.commit()

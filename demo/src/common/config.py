@@ -1,14 +1,3 @@
-"""Configuration partagée par les 3 scripts de démo (demo/src/scripts/*.py).
-
-Les valeurs vivent dans config/demo.yaml (racine du projet, voir ce
-fichier pour le détail des justifications) -- ce module ne fait que
-charger ce YAML et dériver les quelques valeurs qui en découlent
-(ONNX_PATH/INPUT_SIZE selon ACTIVE_MODEL, DEMO_SOURCES enrichi des
-vidéos personnelles déposées dans custom_videos_dir). Modifier une
-valeur dans le YAML s'applique aux 3 scripts d'un coup, sans toucher au
-code.
-"""
-
 from pathlib import Path
 
 import yaml
@@ -19,8 +8,7 @@ with open(_CONFIG_PATH, encoding="utf-8") as _f:
 
 CONFIG_PATH = _CONFIG["config_path"]
 
-# input_size vient du YAML comme une liste -- reconverti en tuple pour
-# rester identique à ce qu'attend le reste du code (ex. cfg.data.val.input_size).
+# input_size : liste dans le YAML, tuple attendu par NanoDet
 MODELS = _CONFIG["models"]
 for _model in MODELS.values():
     _model["input_size"] = tuple(_model["input_size"])
@@ -33,11 +21,6 @@ _PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 _CUSTOM_VIDEOS_DIR = _PROJECT_ROOT / _CONFIG["custom_videos_dir"]
 _CUSTOM_VIDEO_EXTENSIONS = (".mp4", ".avi", ".mov", ".mkv", ".webm")
 
-# Vidéos personnelles : n'importe quel fichier vidéo déposé dans ce
-# dossier est repris automatiquement au démarrage, sans éditer le YAML --
-# le dossier est créé s'il n'existe pas encore, pour que son emplacement
-# soit visible même avant la première utilisation. Triées par nom pour un
-# ordre stable d'un lancement à l'autre.
 _CUSTOM_VIDEOS_DIR.mkdir(parents=True, exist_ok=True)
 _custom_sources = [
     (f"perso - {path.stem.replace('_', ' ').replace('-', ' ')}", str(path))

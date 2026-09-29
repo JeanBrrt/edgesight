@@ -1,10 +1,8 @@
-"""Démo minimale : détection brute (ONNX INT8), sans tracker ni
-journal ni agent — juste le modèle affiché tel quel, pour juger sa
-sortie indépendamment de tout le reste du pipeline (C1/C2/D3/D1/D2).
+"""Détection seule : les boîtes du modèle INT8 telles quelles
 
-Lancer depuis la racine du projet :
+Usage :
     uv run python demo/src/scripts/01_detection_demo.py
-Appuyer sur 'q' pour quitter.
+Touches : 'c' changer de source, 'r' redémarrer la vidéo, 'q' quitter.
 """
 
 import sys
@@ -15,17 +13,21 @@ import numpy as np
 import onnxruntime as ort
 import torch
 
+sys.path.insert(0, "demo/src/common")  # modules partagés par les 3 démos
+from nanodet_setup import build_postprocessor  # avant nanodet : filtre ses avertissements
+
 from nanodet.data.batch_process import stack_batch_img
 from nanodet.data.collate import naive_collate
 from nanodet.data.transform import Pipeline
-from nanodet.model.arch import build_model
-from nanodet.util import cfg, load_config
+from nanodet.util import cfg
 
-sys.path.insert(0, "demo/src/common")  # config.py/fps_counter.py/source_cycle.py
-# vivent à part des scripts, partagés par les 3 (voir demo/src/common/)
+sys.path.insert(0, ".")  # zones de danger : agent/src/
+from agent.src.alerts.zones import scene_for_source
+
 from fps_counter import FPSCounter, draw_fps
-from source_cycle import SourceCycler, CYCLE_KEY, RESTART_KEY, draw_source_label, draw_interactive_help, resize_for_display, ui_scale
+from source_cycle import SourceCycler, CYCLE_KEY, RESTART_KEY, draw_source_label, draw_controls, draw_interactive_help, draw_zones, resize_for_display, ui_scale
 from text_render import draw_box_label
+from power import disable_power_throttling
 
 from config import (
     CONFIG_PATH,
@@ -58,30 +60,33 @@ def draw_detections(frame, dets: dict, class_names: list[str]):
     return frame
 
 
+def scene_zones(cycler) -> dict:
+    """Zones de danger de la source active ({} si elle n'en a pas)."""
+    scene = scene_for_source(cycler.zone_source_key)
+    return scene.zones if scene else {}
+
+
 WINDOW_NAME = "Détection brute (sans tracker) [q pour quitter]"
 
 
 def main():
-    load_config(cfg, CONFIG_PATH)
-    model = build_model(cfg.model)  # config seule, pour post_process
+    disable_power_throttling()
+    model = build_postprocessor(CONFIG_PATH)
     pipeline = Pipeline(cfg.data.val.pipeline, cfg.data.val.keep_ratio)
     session = ort.InferenceSession(ONNX_PATH, providers=["CPUExecutionProvider"])
     fps_counter = FPSCounter()
     cycler = SourceCycler()
+    zones = scene_zones(cycler)
 
-    # WINDOW_NORMAL + resizeWindow explicite à chaque frame (plus bas) :
-    # WINDOW_AUTOSIZE (le défaut) ne redimensionne pas toujours la fenêtre
-    # de façon fiable en changeant de source vers une image de dimensions
-    # différentes -- un bandeau bas ajouté après coup s'est déjà retrouvé
-    # rogné hors de la fenêtre dans ce cas, alors qu'il était bien dessiné
-    # sur l'image elle-même.
+    # WINDOW_NORMAL + resizeWindow à chaque frame : en mode AUTOSIZE, la
+    # fenêtre ne suit pas toujours un changement de taille de source.
+    # Le callback souris sert à la scène interactive.
     cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
     cv2.setMouseCallback(WINDOW_NAME, lambda event, x, y, flags, param: cycler.on_mouse(event, x, y, flags))
 
     print(f"Détection brute, seuil={RAW_SCORE_THRESHOLD} — 'c' pour changer de source, 'r' pour redémarrer la vidéo, 'q' pour quitter.")
 
-    # Tolère quelques échecs de lecture consécutifs (hoquet transitoire)
-    # avant d'abandonner, plutôt que de s'arrêter sur le premier raté.
+    # Tolère quelques échecs de lecture consécutifs avant d'abandonner.
     camera_fail_streak = 0
     MAX_CAMERA_FAIL_STREAK = 30
 
@@ -94,7 +99,7 @@ def main():
                     continue
                 camera_fail_streak += 1
                 if camera_fail_streak >= MAX_CAMERA_FAIL_STREAK:
-                    print("Lecture caméra échouée, arrêt.")
+                    print("Lecture de la source échouée, arrêt.")
                     break
                 time.sleep(0.03)
                 continue
@@ -118,8 +123,10 @@ def main():
                     dets[cls_idx] = []
 
             result_frame = draw_detections(frame, dets, cfg.class_names)
+            draw_zones(result_frame, zones)
             draw_fps(result_frame, fps_counter.tick())
             draw_source_label(result_frame, cycler.label)
+            draw_controls(result_frame)
             draw_interactive_help(result_frame, cycler.is_interactive())
             result_frame = resize_for_display(result_frame)
             cv2.resizeWindow(WINDOW_NAME, result_frame.shape[1], result_frame.shape[0])
@@ -129,9 +136,10 @@ def main():
             if key == ord("q"):
                 break
             if key == CYCLE_KEY:
-                cycler.next()  # pas de tracker/journal à nettoyer ici
+                cycler.next()
+                zones = scene_zones(cycler)
             if key == RESTART_KEY:
-                cycler.loop_if_file()  # no-op pour source interactive
+                cycler.loop_if_file()  # sans effet sur la scène interactive
     finally:
         cycler.release()
         cv2.destroyAllWindows()

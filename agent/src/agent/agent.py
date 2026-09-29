@@ -1,9 +1,6 @@
-"""D2 — Boucle agent : envoie la question au LLM local (llama-server, API
-compatible OpenAI), exécute les tools qu'il demande, renvoie le résultat,
-récupère la réponse finale en langage naturel.
-
-Suppose que `llama-server` tourne déjà (voir la commande de lancement de
-la section Démo du README).
+"""Boucle de l'agent : envoie la question au LLM local (llama-server, API
+compatible OpenAI), exécute les outils demandés et renvoie la réponse
+finale
 """
 
 import json
@@ -24,37 +21,20 @@ from ._config import (
     MEMORY_MAX_TURNS,
 )
 
-# Silencieux par défaut (aucun handler configuré ici) -- l'appelant décide
-# où va ce log en configurant logging lui-même (cf.
-# demo/src/scripts/03_live_agent_demo.py, qui l'écrit dans un fichier pour garder
-# la console libre pour la saisie au clavier). Sans configuration
-# explicite côté appelant, ces logger.info() n'affichent rien nulle part
-# -- aucun risque de polluer un usage qui ne s'y attend pas (ex. le banc
-# de test agent/eval/, qui utilise sa propre boucle et jamais cette
-# classe directement).
+# Aucun handler ici : c'est l'appelant qui décide où vont les logs.
 logger = logging.getLogger(__name__)
 
 
 class Session:
-    """Historique conversationnel persistant pour UN appelant donné (D2,
-    mémoire -- section correspondante de config/agent.yaml).
-
-    Précaution de conception : chaque appelant crée et garde SA PROPRE
-    instance -- `input_worker` (demo/src/scripts/03_live_agent_demo.py) en garde
-    une pour toute la durée du script, `alert_notifier` n'en crée jamais
-    (chaque notification d'alerte reste un appel isolé, sans historique,
-    passé sans `session` à `Agent.ask()`). Deux threads concurrents ne se
-    retrouvent donc jamais à muter la même liste `messages` en même temps
-    -- contrairement à un historique unique porté par `Agent` lui-même,
-    qui aurait exposé une vraie condition de course entre le thread de
-    saisie utilisateur et celui des alertes."""
+    """Historique d'une conversation. Chaque appelant garde la sienne (la
+    démo en a une, les alertes n'en ont pas) : deux threads ne modifient
+    jamais le même historique."""
 
     def __init__(self):
         self.messages: list[dict] = [{"role": "system", "content": SYSTEM_PROMPT}]
 
     def reset(self) -> None:
-        """Repart d'un historique vierge (ex. changement de source vidéo,
-        où le contexte de la conversation précédente n'a plus de sens)."""
+        """Vide l'historique (ex. changement de source vidéo)."""
         self.messages = [{"role": "system", "content": SYSTEM_PROMPT}]
 
 
@@ -62,7 +42,6 @@ class Agent:
     def __init__(self, store: EventStore):
         self.client = OpenAI(base_url=LLAMA_SERVER_URL, api_key="not-needed")
         self.tools = AgentTools(store)
-        # Table de dispatch nom_tool -> méthode réelle
         self._dispatch = {
             "count_now": self.tools.count_now,
             "count_total": self.tools.count_total,
@@ -79,14 +58,11 @@ class Agent:
         }
 
     def _execute_tool(self, name: str, arguments: dict, now: float) -> str:
-        """Exécute un tool ; renvoie toujours une chaîne (résultat ou message
-        d'erreur lisible) — jamais d'exception qui remonterait jusqu'à l'appelant,
-        pour que le LLM puisse réagir à une erreur plutôt que de planter.
+        """Exécute un outil et renvoie toujours une chaîne, erreur comprise,
+        pour que le LLM puisse y réagir.
 
-        `now` est injecté ici, jamais demandé au LLM (absent de
-        `tool_schemas.py`) — c'est l'heure de la question de l'utilisateur,
-        pas l'heure d'exécution réelle du tool, pour que le résultat ne
-        dépende pas de la latence d'inférence du LLM."""
+        `now` est l'heure de la question, pas celle de l'exécution : le
+        résultat ne dépend pas de la latence du LLM."""
         if name not in self._dispatch:
             return f"Erreur : tool inconnu '{name}'."
         try:
@@ -102,69 +78,34 @@ class Agent:
         max_rounds: int = DEFAULT_MAX_ROUNDS,
         tool_calls_log: list[tuple[str, dict, str]] | None = None,
     ) -> str:
-        """`session` optionnelle (défaut `None`) : sans elle, comportement
-        D'ORIGINE inchangé -- une liste [system, user] neuve à chaque
-        appel, aucun historique (c'est le cas d'`alert_notifier`, qui ne
-        passe jamais de session, volontairement -- voir `Session`).
+        """Répond à `question`.
 
-        Avec une `session`, ET `memory.enabled: true` dans
-        config/agent.yaml (les DEUX conditions sont nécessaires), la
-        question s'ajoute à l'historique de cette session plutôt que d'en
-        repartir de zéro -- pour qu'une question elliptique ("et de
-        voitures ?") soit comprise à la lumière de l'échange précédent.
-        Repasser `memory.enabled` à `false` désactive ce comportement
-        PARTOUT instantanément, même si l'appelant continue de passer une
-        `session` -- aucun code à toucher ailleurs pour revenir en arrière.
-
-        `tool_calls_log` optionnelle : si fournie, chaque appel d'outil
-        (nom, arguments, résultat renvoyé au LLM -- chaîne, éventuellement
-        un message d'erreur) de CET échange y est ajouté au fur et à mesure --
-        pour un appelant qui veut afficher les tools utilisés sans dépendre
-        du fichier de log (cf. le panneau "Outils appelés" de
-        demo/src/scripts/03_live_agent_demo.py). Sans elle (défaut), le
-        comportement est inchangé : une liste interne jetable, utilisée
-        uniquement pour le résumé loggé en fin d'échange."""
+        `session` : historique à prolonger, si la mémoire est activée dans
+        config/agent.yaml. Sans session, la question est traitée seule.
+        `tool_calls_log` : reçoit chaque appel d'outil (nom, arguments,
+        résultat), pour l'afficher (panneau "Outils appelés" de la démo)."""
         use_memory = MEMORY_ENABLED and session is not None
         if tool_calls_log is None:
             tool_calls_log = []
 
-        # Capturé avant tout appel au LLM — pas au moment où le tool s'exécute
-        # réellement (qui dépend de la latence d'inférence, mesurée ~1,6s).
+        # Heure de la question, avant l'appel au LLM (~1,6 s de latence).
         request_ts = time.time()
         logger.info("Question : %s", question)
 
         if use_memory:
             messages = session.messages
-            # Filet de sécurité : si l'échange en cours échoue (erreur
-            # réseau ou abandon après max_rounds), on revient exactement à
-            # cette longueur avant de renvoyer une erreur -- une question
-            # sans réponse ne doit jamais polluer l'historique des tours
-            # suivants avec un message "user" sans "assistant" en réponse.
+            # En cas d'échec, l'historique revient à cette longueur : pas de
+            # question sans réponse dans la mémoire.
             #
-            # Concurrence (`session.reset()` peut être appelé depuis le
-            # thread vidéo principal pendant qu'un `ask()` tourne ici, cf.
-            # 03_live_agent_demo.py au changement de source) : `messages`
-            # capture la liste actuelle une fois pour toutes ; toute
-            # écriture PLUS BAS revérifie `session.messages is messages`
-            # avant de committer, pour ne jamais écraser un reset survenu
-            # entre-temps avec les données de l'échange en cours. Pas de
-            # verrou : le pire cas concret est la perte silencieuse d'un
-            # seul échange tombé pile sur un changement de scène (fenêtre
-            # de quelques secondes, déclenchement manuel) -- un verrou
-            # bloquerait la boucle vidéo pendant l'appel LLM (~1,5-2s),
-            # exactement ce que le thread séparé sert à éviter.
+            # La démo peut vider la session pendant cet appel (changement de
+            # source). Chaque écriture vérifie donc `session.messages is
+            # messages`, pour ne pas écraser ce reset. Pas de verrou : il
+            # bloquerait la vidéo pendant l'appel au LLM.
             rollback_len = len(messages)
         else:
             messages = [{"role": "system", "content": SYSTEM_PROMPT}]
-            rollback_len = 0  # jamais utilisé (liste jetable), valeur sans effet
+            rollback_len = 0
         messages.append({"role": "user", "content": question})
-
-        # `tool_calls_log` accumule CHAQUE appel d'outil (nom, arguments, résultat) sur
-        # toute la durée de cette question, tous rounds confondus -- sert au
-        # résumé loggé ci-dessous (_log_summary) et, si l'appelant a fourni
-        # sa propre liste, à son propre affichage (voir docstring ci-dessus).
-        # Chaque appel est aussi déjà tracé round par round via les
-        # logger.info existants "Tool %s(%s) -> %s", indépendamment de ceci.
 
         def _log_summary(attempts: int, outcome: str) -> None:
             logger.info(
@@ -172,9 +113,7 @@ class Agent:
                 question, outcome, attempts, max_rounds, tool_calls_log,
             )
 
-        # Passe à True dès qu'un tool renvoie un résultat "ordinaire" (pas une
-        # FinalAnswer) à N'IMPORTE QUEL tour de cet échange -- voir le
-        # court-circuit plus bas.
+        # Vrai dès qu'un outil renvoie autre chose qu'une FinalAnswer (voir plus bas).
         had_ordinary_result = False
 
         def _finish(answer: str, round_idx: int, outcome: str) -> str:
@@ -197,13 +136,8 @@ class Agent:
                     **request_options,
                 )
             except OpenAIError as exc:
-                # Couvre les erreurs réseau (llama-server pas lancé/injoignable),
-                # timeout, réponse malformée, etc. -- sans ce garde-fou,
-                # l'exception remonte non gérée jusqu'à l'appelant. Pour
-                # input_worker/alert_notifier (demo/src/scripts/03_live_agent_demo.py),
-                # ça plantait le thread avec une trace complète imprimée sur
-                # la console -- exactement ce qu'on essaie d'éviter en gardant
-                # la console propre pour la saisie.
+                # Serveur injoignable, délai dépassé, réponse invalide :
+                # message d'erreur plutôt qu'un thread qui plante.
                 logger.error("Echec de connexion au serveur LLM (round %d) : %s", round_idx, exc)
                 _log_summary(round_idx + 1, "echec de connexion")
                 if use_memory and session.messages is messages:
@@ -212,9 +146,7 @@ class Agent:
             choice = response.choices[0]
             message = choice.message
 
-            # Plafond max_tokens atteint : le modèle est parti en boucle
-            # (une réponse normale en est très loin, cf. config/agent.yaml).
-            # Réponse tronquée jamais montrée ni gardée en mémoire.
+            # Plafond max_tokens atteint : le modèle boucle. Réponse écartée.
             if choice.finish_reason == "length":
                 logger.warning("Plafond max_tokens=%s atteint (round %d) -- reponse abandonnee.", MAX_TOKENS, round_idx)
                 _log_summary(round_idx + 1, "plafond max_tokens atteint")
@@ -244,15 +176,10 @@ class Agent:
                     had_ordinary_result = True
                 messages.append({"role": "tool", "tool_call_id": call.id, "content": result})
 
-            # Tous les tools de l'échange ont renvoyé une réponse déjà rédigée
-            # (FinalAnswer, voir tools.py) : renvoyée telle quelle, sans tour
-            # de reformulation par le LLM -- qui s'est montré capable d'en
-            # inverser le sens. Un seul résultat "ordinaire" dans l'échange,
-            # même à un tour précédent, suffit à revenir au fonctionnement
-            # normal (question mixte, ex. "combien de voitures maintenant et
-            # depuis quand... ?", que le modèle peut répartir sur deux tours
-            # -- sans cette vérification sur tout l'échange, le chiffre du
-            # premier tour était perdu).
+            # Si tous les outils ont renvoyé une réponse déjà rédigée
+            # (FinalAnswer), on la renvoie telle quelle : le LLM en inversait
+            # parfois le sens en la reformulant. Un seul résultat ordinaire,
+            # même à un tour précédent, et le LLM reformule normalement.
             if final_answers and not had_ordinary_result:
                 return _finish(" ".join(final_answers), round_idx, "reponse finale directe, sans reformulation")
 
@@ -264,18 +191,10 @@ class Agent:
 
     @staticmethod
     def _trim_session(session: "Session", messages: list[dict]) -> None:
-        """Fenêtre glissante (config/agent.yaml, memory.max_turns) : ne
-        garde que les N derniers échanges complets, plus le message
-        système en position 0. Coupe systématiquement à une frontière
-        d'échange (juste avant un message 'user'), jamais au milieu d'une
-        séquence de tool calls -- un historique tronqué en plein milieu
-        d'un échange laisserait des messages 'tool' sans le tool_call
-        assistant correspondant, que l'API rejetterait.
-
-        `messages` : la liste réellement utilisée par CET appel (pas
-        re-dérivée de `session.messages`, cf. note de concurrence dans
-        `ask()`) -- l'appelant a déjà vérifié `session.messages is
-        messages` avant d'appeler cette méthode."""
+        """Ne garde que les memory.max_turns derniers échanges, plus le
+        message système. Coupe toujours avant un message "user" : couper au
+        milieu d'appels d'outils laisserait des réponses orphelines, que
+        l'API refuse."""
         user_indices = [i for i, m in enumerate(messages) if m["role"] == "user"]
         if len(user_indices) <= MEMORY_MAX_TURNS:
             return

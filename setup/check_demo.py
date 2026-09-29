@@ -155,7 +155,7 @@ def demo_checks() -> list[CheckResult]:
         except Exception as exc:  # config malformée -- signaler, ne jamais planter le script
             results.append(CheckResult("Lecture de config/demo.yaml", False, f"{type(exc).__name__}: {exc}"))
 
-    # Configs partagées nécessaires même sans LLM (C1 tracking, D3 zones)
+    # Configs du suivi et des zones, nécessaires même sans LLM
     results.append(check_file("config/tracker.yaml"))
     results.append(check_file("config/zones.yaml"))
 

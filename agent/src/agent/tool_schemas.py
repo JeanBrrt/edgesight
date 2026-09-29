@@ -1,23 +1,4 @@
-"""D2 — Schémas JSON des tools, écrits à la main (décision prise : un
-volume qui reste raisonnable à la main, pas besoin d'un générateur par
-introspection).
-
-Format attendu par l'API compatible OpenAI de llama-server (`tools` dans la
-requête `/v1/chat/completions`). Les `enum` sont utilisés partout où
-l'ensemble des valeurs valides est fermé et connu à l'avance (classes,
-zones) -- guide le LLM et réduit le risque de valeur hallucinée ;
-`_ZONE_NAMES` est dérivé de `config/zones.yaml` (via zones.py) plutôt que
-recopié en dur, pour qu'ajouter une zone dans la config suffise à la
-refléter ici automatiquement.
-
-Échappatoire zone inconnue : un enum fermé sur les seules zones réelles
-empêche le LLM d'écrire un nom de zone arbitraire, mais ne lui laisse
-aucune option légitime quand l'utilisateur en nomme une qui n'existe pas
-("parking nord") -- il est alors forcé de choisir la zone réelle la plus
-proche, un nom halluciné mais syntaxiquement valide (bug identique observé
-sur les 4 modèles évalués, cf. docs/rapport.tex section 9.1).
-`zones.UNKNOWN_ZONE` est ajoutée à l'enum comme échappatoire explicite ;
-`tools.py` la traite spécifiquement plutôt que comme une zone réelle.
+"""Schémas des outils envoyés au LLM (format OpenAI, écrits à la main)
 """
 
 from ..alerts.zones import UNKNOWN_ZONE, ZONES
@@ -34,7 +15,7 @@ _ZONE_NAME_DESCRIPTION = (
 )
 
 TOOL_SCHEMAS = [
-    # --- Comptage, généralisé à n'importe quelle classe -------------------
+    # --- Comptage ----------------------------------------------------------
     {
         "type": "function",
         "function": {
@@ -124,9 +105,8 @@ TOOL_SCHEMAS = [
         "function": {
             "name": "time_since_last_seen",
             "description": (
-                "Renvoie depuis combien de temps (en secondes) aucun objet "
-                "d'une classe donnée n'a été détecté (0 si un objet de "
-                "cette classe est dans le champ en ce moment). À utiliser pour 'depuis combien de temps "
+                "Renvoie depuis combien de secondes aucun objet d'une classe "
+                "donnée n'a été détecté. À utiliser pour 'depuis combien de temps "
                 "n'a-t-on pas vu de voiture' ou 'quand la dernière voiture "
                 "est-elle passée'."
             ),
@@ -169,7 +149,7 @@ TOOL_SCHEMAS = [
             },
         },
     },
-    # --- Alertes (configuration uniquement) -------------------------------
+    # --- Alertes -----------------------------------------------------------
     {
         "type": "function",
         "function": {

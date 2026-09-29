@@ -1,30 +1,4 @@
-"""D3 — Mécanisme d'alerte temps réel, 3 des 4 types de règles (voir
-event_store.py) : présence continue (`duration`), co-occurrence de deux
-classes (`co_occurrence`), rafale sur fenêtre glissante (`surge`). Le 4e
-type (`zone`) est géré séparément par `ZoneMonitor` (zones.py) : il a
-besoin des boîtes suivies du frame courant (position), pas seulement du
-journal `EventStore` -- une dépendance différente qui justifie de ne pas
-tout regrouper dans une seule classe.
-
-Boucle de surveillance continue (pas un tool d'agent) : consomme
-`EventStore.get_alerts()` (les règles configurées par D1/D2) et l'état
-vivant du tracking (C1/C2). Conçu pour tourner dans la même boucle live
-que C1/C2 (donc avec la tolérance de fraîcheur *serrée* d'`EventStore`
-par défaut, 1,0s -- volontairement plus stricte que celle de D1,
-agent/src/agent/tools.py : réagir vite à une vraie disparition importe plus
-ici qu'en conversationnel. Pas une question de latence LLM à compenser
-dans un sens ou l'autre : `now` est de toute façon ancré sur l'heure de
-l'appel des deux côtés).
-
-Chaque type a sa propre logique de "ne pas re-notifier en boucle" :
-- `duration` : une fois par (classe, track_id) tant que la piste reste
-  active -- état gardé dans `self._notified_duration` (mémoire du
-  processus, pas persisté, comme avant).
-- `co_occurrence`/`surge` : condition globale (ou par classe pour
-  `surge`) à FRONT MONTANT -- notifiée au moment où la condition devient
-  vraie, pas à chaque tick tant qu'elle le reste, puis réarmée dès
-  qu'elle redevient fausse (`self._co_occurrence_active`/
-  `self._surge_active`).
+"""Surveillance des alertes posées par l'agent
 """
 
 import time
@@ -40,21 +14,15 @@ class AlertMonitor:
         self._surge_active: set[str] = set()
 
     def reset(self):
-        """Réinitialise tout l'état de dédup interne (mémoire du processus,
-        jamais persistée -- voir docstring du module). À appeler à un vrai
-        changement de vidéo/démo, en plus de `EventStore.clear_alerts()` :
-        sans ça, un track_id réutilisé depuis 0 par la nouvelle scène
-        pourrait hériter à tort du statut "déjà notifié" d'une piste sans
-        rapport de l'ancienne."""
+        """À appeler au changement de vidéo : les identifiants de piste
+        repartent de 0 et ne doivent pas hériter de "déjà notifié"."""
         self._notified_duration.clear()
         self._co_occurrence_active = False
         self._surge_active.clear()
 
     def check(self, now: float | None = None) -> list[dict]:
-        """À appeler à chaque frame/tick de la boucle live. Renvoie la
-        liste des alertes qui viennent de se déclencher CE tick-ci
-        (typiquement vide) : chaque élément est un dict avec au moins
-        `alert_type` et `detail` (message lisible prêt à afficher/logguer)."""
+        """À appeler à chaque image. Renvoie les alertes qui viennent de se
+        déclencher (souvent aucune), chacune avec `alert_type` et `detail`."""
         now = now if now is not None else time.time()
         newly_fired = []
         alerts = self.store.get_alerts()
@@ -76,9 +44,7 @@ class AlertMonitor:
                             "detail": f"{class_name} #{track_id} présent(e) depuis {duration:.1f}s",
                         }
                     )
-        # Oublie les pistes qui ne sont plus actives du tout -- si un futur
-        # track_id venait à être réutilisé, il repart sans mémoire d'un
-        # ancien déclenchement.
+        # Oublie les pistes disparues.
         self._notified_duration &= still_active_keys
 
         # --- co_occurrence (au plus une règle active, cf. event_store.py) ---

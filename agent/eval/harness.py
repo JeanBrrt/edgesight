@@ -1,15 +1,4 @@
-"""Moteur du banc de test LLM : rejoue la boucle de function-calling
-d'`Agent.ask()` (agent/src/agent/agent.py) SANS exécuter réellement les tools,
-et note si les appels effectués correspondent à ceux attendus
-(cases.py).
-
-Découplage volontaire de l'exécution réelle : ce banc évalue la capacité
-du LLM à CHOISIR le bon tool avec les bons arguments à partir d'une
-question en langage naturel -- pas le comportement d'EventStore/
-AlertMonitor/ZoneMonitor, déjà couverts par un test fonctionnel séparé.
-Pas besoin d'un EventStore réel ni de données de scénario pour ça : un
-résultat de tool factice suffit à laisser le modèle poursuivre jusqu'à
-une réponse finale.
+"""Moteur du banc de test 
 """
 
 import json
@@ -22,11 +11,8 @@ logger = logging.getLogger(__name__)
 
 
 class RecordingAgent:
-    """Comme `Agent` (agent/src/agent/agent.py), mais chaque tool_call est
-    enregistré (nom + arguments parsés) plutôt qu'exécuté. Renvoie un
-    résultat factice constant en réponse à chaque appel -- jamais
-    interprété par le scoring, seulement là pour permettre au modèle de
-    continuer la conversation jusqu'à un texte final."""
+    """Comme Agent, mais les appels d'outils sont enregistrés au lieu
+    d'être exécutés, avec un résultat factice pour que le modèle continue."""
 
     DUMMY_TOOL_RESULT = "3"
 
@@ -42,28 +28,17 @@ class RecordingAgent:
         self.tool_schemas = tool_schemas
         self.system_prompt = system_prompt
         self.max_rounds = max_rounds
-        # Sans plafond, `llama-server` génère par défaut sans limite
-        # (max_tokens=-1 côté serveur) -- observé en pratique : un modèle
-        # qui part en boucle sur une question difficile (ex. le cas
-        # multi__compare_now) a continué à générer au-delà de 4000 tokens
-        # pour une seule réponse, sans jamais atteindre de token de fin.
-        # 1024 est très large pour un tool call + une courte phrase de
-        # réponse -- un modèle qui en a besoin de plus est déjà en train
-        # de dérailler, pas juste verbeux.
+        # Sans plafond, un modèle qui boucle génère sans fin (vu : plus de
+        # 4 000 tokens sur multi__compare_now). 1024 est très large.
         self.max_tokens = max_tokens
 
     def ask(self, question: str) -> tuple[list[tuple[str, dict]], float, str | None, str | None]:
-        """Renvoie (appels_enregistrés, latence_secondes, texte_final_ou_None,
-        erreur_ou_None).
+        """Renvoie (appels enregistrés, latence en s, texte final, erreur).
 
-        `erreur` n'est renseignée QUE si l'appel API lui-même a échoué
-        (serveur indisponible, requête rejetée, réponse mal formée) --
-        distinct d'un mauvais choix de tool par le LLM, qui n'est pas une
-        erreur au sens de cette méthode (c'est le rôle de `score_case`).
-        Ne lève JAMAIS d'exception : un serveur qui plante sur une seule
-        question ne doit pas interrompre tout le banc de test (`traceback`
-        complet tout de même écrit dans le log DEBUG via `logger.exception`,
-        pour pouvoir diagnostiquer après coup)."""
+        `erreur` ne concerne que l'appel à l'API (serveur indisponible,
+        réponse invalide), pas un mauvais choix d'outil. Ne lève jamais :
+        une question qui plante ne doit pas arrêter le banc (trace dans le
+        log)."""
         recorded: list[tuple[str, dict]] = []
         messages = [
             {"role": "system", "content": self.system_prompt},
@@ -115,21 +90,12 @@ class RecordingAgent:
     def ask_continuing(
         self, question: str, messages: list[dict]
     ) -> tuple[list[tuple[str, dict]], float, str | None, str | None]:
-        """Comme `ask()` ci-dessus, mais POURSUIT un historique existant
-        (`messages`, modifié EN PLACE) au lieu d'en reconstruire un neuf --
-        pour les cas multi-tours (cases.py:MULTI_TURN_CASES), qui testent
-        la mémoire conversationnelle (agent/src/agent/agent.py:Session).
+        """Comme ask(), mais prolonge l'historique `messages` (modifié sur
+        place, message système déjà présent), pour tester la mémoire
+        (MULTI_TURN_CASES).
 
-        Duplique volontairement le corps de `ask()` plutôt que de le
-        factoriser : `ask()` reste intouchée, donc aucun risque de
-        régression sur les 36 cas mono-tour existants qui en dépendent
-        (run_benchmark.py) -- le prix (un peu de code répété) est jugé
-        largement inférieur au risque d'un refactor qui casserait
-        silencieusement le banc de test principal.
-
-        `messages` doit déjà contenir au moins le message système (voir
-        run_memory_benchmark.py, qui l'initialise une fois par séquence,
-        avant le premier appel)."""
+        Copie volontaire du corps d'ask() plutôt qu'une factorisation, pour
+        ne pas risquer de fausser les 36 cas mono-tour."""
         recorded: list[tuple[str, dict]] = []
         messages.append({"role": "user", "content": question})
         start = time.time()
@@ -200,18 +166,10 @@ def _call_matches(expected, actual_name: str, actual_args: dict) -> bool:
 
 
 def score_calls(expected_calls: tuple, actual_calls: list[tuple[str, dict]], label: str = "") -> dict:
-    """Appariement glouton, indépendant de l'ordre : chaque appel attendu
-    cherche un appel réel correspondant parmi ceux encore disponibles.
-    `passed` est STRICT : tous les appels attendus doivent être trouvés
-    ET aucun appel réel ne doit rester non apparié (un tool superflu,
-    ex. compter les deux classes quand une seule était demandée, est une
-    vraie erreur de comportement, pas un détail cosmétique).
-
-    Logique partagée par `score_case` (cas mono-tour, ALL_CASES) et le
-    scoring par tour des cas multi-tours (MULTI_TURN_CASES,
-    run_memory_benchmark.py) -- extraite ici pour ne pas dupliquer
-    l'appariement lui-même, seulement les boucles qui l'appellent tour
-    par tour restent séparées (voir docstring d'`ask_continuing`)."""
+    """Associe chaque appel attendu à un appel réel, sans tenir compte de
+    l'ordre. Réussite stricte : tous les appels attendus trouvés, et aucun
+    appel en trop (compter les deux classes quand une seule était demandée
+    est une erreur)."""
     remaining = list(actual_calls)
     unmatched_expected = []
 
@@ -235,7 +193,5 @@ def score_calls(expected_calls: tuple, actual_calls: list[tuple[str, dict]], lab
 
 
 def score_case(case: TestCase, actual_calls: list[tuple[str, dict]]) -> dict:
-    """Cas mono-tour (ALL_CASES) -- fine couche au-dessus de `score_calls`
-    pour garder EXACTEMENT la même signature qu'avant cette extraction
-    (aucun appelant, ex. run_benchmark.py, n'a besoin d'être modifié)."""
+    """score_calls pour un cas mono-tour."""
     return score_calls(case.expected_calls, actual_calls, label=f"'{case.id}'")

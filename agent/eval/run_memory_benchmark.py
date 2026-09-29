@@ -1,22 +1,6 @@
-"""Banc de test dédié à la mémoire conversationnelle (config/agent.yaml
-memory.enabled, agent/src/agent/agent.py:Session) -- rejoue des SÉQUENCES de
-questions partageant un historique (cases.py:MULTI_TURN_CASES), séparé du
-banc mono-tour (run_benchmark.py, jamais modifié par ce fichier).
+"""Banc de test de la mémoire conversationnelle 
 
-Vérifie concrètement ce que la mémoire doit apporter : qu'une question
-elliptique ("et de voitures ?") soit comprise à la lumière du tour
-précédent, et qu'une question répétée sur l'état "maintenant" redéclenche
-bien le tool plutôt que de réutiliser un chiffre déjà donné (risque
-identifié lors du bilan -- voir la consigne ajoutée au prompt système
-dans config/agent.yaml).
-
-Ce banc teste le comportement de HAUT NIVEAU (choix de tool par tour, à
-la lumière de l'historique) via `RecordingAgent.ask_continuing` -- pas la
-mécanique interne de Session/_trim_session dans agent/src/agent/agent.py,
-couverte par des tests fonctionnels dédiés (voir la conversation de
-conception, aucun test unitaire committé séparément à ce stade).
-
-Usage (llama-server déjà lancé, voir README) :
+Usage :
     uv run python agent/eval/run_memory_benchmark.py --model-label granite-4.1-3b
 """
 
@@ -38,9 +22,7 @@ from harness import RecordingAgent, score_calls  # noqa: E402
 
 logger = logging.getLogger(__name__)
 
-# Même prompt système que la production -- pas recopié en dur, pour ne
-# jamais tester un prompt différent de celui réellement déployé (y compris
-# la consigne anti-réutilisation de valeur périmée ajoutée pour la mémoire).
+# Prompt système lu dans config/agent.yaml : le même que la démo.
 _AGENT_CONFIG_PATH = Path("config/agent.yaml")
 with open(_AGENT_CONFIG_PATH, encoding="utf-8") as _f:
     _AGENT_CONFIG = yaml.safe_load(_f)
@@ -70,7 +52,7 @@ def main():
     parser.add_argument("--out-dir", default="agent/eval/results")
     parser.add_argument(
         "--max-tokens", type=int, default=1024,
-        help="Plafond de tokens générés par réponse -- même garde-fou que run_benchmark.py.",
+        help="Plafond de tokens générés par réponse (comme run_benchmark.py).",
     )
     parser.add_argument("--timeout", type=float, default=120.0, help="Timeout HTTP par requête, en secondes.")
     args = parser.parse_args()
@@ -90,9 +72,7 @@ def main():
 
     case_results = []
     for case in MULTI_TURN_CASES:
-        # Un historique NEUF par séquence -- les séquences ne partagent
-        # jamais leur contexte entre elles, seulement les tours À
-        # L'INTÉRIEUR d'une même séquence (comme une vraie session).
+        # Historique neuf pour chaque séquence.
         messages = [{"role": "system", "content": SYSTEM_PROMPT}]
         turn_results = []
         sequence_passed = True
@@ -123,11 +103,8 @@ def main():
             log_fn("  [%s] tour %d : %-55s%s", status, turn_idx, turn.question, suffix)
 
             if error is not None:
-                # Un échec de transport arrête la séquence -- les tours
-                # suivants dépendent d'un historique que ce tour n'a pas
-                # pu compléter correctement (cf. rollback dans le vrai
-                # Agent.ask(), reproduit ici en s'arrêtant net plutôt
-                # qu'en continuant sur un historique incomplet).
+                # Échec de l'API : la suite de la séquence dépendrait d'un
+                # historique incomplet, on s'arrête là.
                 break
 
         case_results.append(

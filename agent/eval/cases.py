@@ -1,29 +1,17 @@
-"""Banque de questions du banc de test LLM (voir run_benchmark.py).
+"""Questions du banc de test (run_benchmark.py) et appels d'outils attendus.
 
-Chaque `TestCase` décrit une question en langage naturel et le ou les
-appels de tool attendus (`agent/src/agent/tool_schemas.py`). Les valeurs
-d'argument peuvent être :
-  - une valeur exacte (str/int/float) ;
-  - `ANY`   -- n'importe quelle valeur acceptée (le paramètre existe mais
-    on ne veut pas contraindre sa formulation exacte) ;
-  - `Approx(target, tol)` -- tolérance numérique (utile pour les seuils
-    convertis, ex. "5 minutes" -> 300 secondes, qu'un modèle pourrait
-    arrondir légèrement différemment) ;
-  - `OneOf((v1, v2, ...))` -- accepte plusieurs formulations correctes
-    (ex. "plus de 5" peut raisonnablement donner 5 ou 6 selon
-    l'interprétation stricte/large de "plus de").
+Valeur attendue d'un argument :
+  - une valeur exacte ;
+  - ANY : n'importe quelle valeur ;
+  - Approx(cible, tolérance) : pour les conversions ("5 minutes" -> 300 s) ;
+  - OneOf((v1, v2)) : plusieurs réponses justes ("plus de 5" : 5 ou 6).
+`expected_calls = ()` : aucun appel attendu (question hors sujet).
 
-`expected_calls = ()` signifie qu'AUCUN appel de tool n'est attendu (la
-question est hors périmètre, ou délibérément un piège -- ex. une zone
-qui n'existe pas dans config/zones.yaml).
+Ids : "<outil>__<variante>" (ou no_call__, multi__), pour que
+compare_models.py regroupe les résultats par outil.
 
-Convention d'id : "<nom_du_tool>__<variante>" (ou "no_call__<variante>"
-/ "multi__<variante>" pour les cas particuliers) -- utilisée par
-compare_models.py pour regrouper les résultats par tool.
-
-Couplage assumé avec la config actuelle : les noms de zone
-("quai_de_chargement", "voie_de_circulation") viennent de
-config/zones.yaml -- à mettre à jour ici si cette config change.
+Les cas de zone utilisent les zones de config/zones.yaml (zone_centrale,
+zone_laterale) : à mettre à jour si elles changent.
 """
 
 from dataclasses import dataclass, field
@@ -64,7 +52,7 @@ class TestCase:
 
 ALL_CASES: list[TestCase] = [
     # ------------------------------------------------------------------
-    # count_now -- présence actuelle, formulations variées + synonymes
+    # count_now -- formulations variées et synonymes
     # ------------------------------------------------------------------
     TestCase(
         "count_now__person_fr",
@@ -108,7 +96,7 @@ ALL_CASES: list[TestCase] = [
         (ExpectedCall("count_total", {"object_class": "person"}),),
     ),
     # ------------------------------------------------------------------
-    # Disambiguïsation now vs total (piège classique, cf. D1)
+    # "maintenant" contre "au total"
     # ------------------------------------------------------------------
     TestCase(
         "disambiguation__now_present_tense",
@@ -136,8 +124,7 @@ ALL_CASES: list[TestCase] = [
         (ExpectedCall("count_since", {"object_class": "car", "minutes_ago": 30}),),
     ),
     # ------------------------------------------------------------------
-    # count_since -- absolu (start_time), le cas qui a motivé la fusion
-    # avec count_since plutôt qu'un tool séparé
+    # count_since -- absolu (start_time)
     # ------------------------------------------------------------------
     TestCase(
         "count_since__absolute_time",
@@ -251,27 +238,25 @@ ALL_CASES: list[TestCase] = [
     ),
     TestCase(
         "set_zone_alert__car_specific_zone",
-        "Préviens-moi si une voiture entre dans le quai de chargement.",
-        (ExpectedCall("set_zone_alert", {"zone_name": "quai_de_chargement", "object_class": "car"}),),
+        "Préviens-moi si une voiture entre dans la zone centrale.",
+        (ExpectedCall("set_zone_alert", {"zone_name": "zone_centrale", "object_class": "car"}),),
     ),
     TestCase(
         "set_zone_alert__any_class",
-        "Alerte si n'importe qui ou n'importe quoi entre dans la voie de circulation.",
-        (ExpectedCall("set_zone_alert", {"zone_name": "voie_de_circulation", "object_class": "any"}),),
+        "Alerte si n'importe qui ou n'importe quoi entre dans la zone latérale.",
+        (ExpectedCall("set_zone_alert", {"zone_name": "zone_laterale", "object_class": "any"}),),
     ),
     TestCase(
         "count_zone_entries__car",
-        "Combien de fois une voiture est entrée dans le quai de chargement ?",
-        (ExpectedCall("count_zone_entries", {"zone_name": "quai_de_chargement", "object_class": "car"}),),
+        "Combien de fois une voiture est entrée dans la zone centrale ?",
+        (ExpectedCall("count_zone_entries", {"zone_name": "zone_centrale", "object_class": "car"}),),
     ),
     TestCase(
         "set_zone_alert__unknown_zone",
         "Préviens-moi si une voiture entre dans le parking nord.",
         (ExpectedCall("set_zone_alert", {"zone_name": "zone_inconnue", "object_class": "car"}),),
-        notes="Piège : 'parking nord' n'existe pas dans config/zones.yaml. Depuis l'ajout de "
-        "l'échappatoire 'zone_inconnue' (docs/rapport.tex section 9.1), attendu : l'appel utilise "
-        "cette valeur plutôt qu'une zone réelle -- un appel avec un nom de zone réel mais halluciné "
-        "reste un échec réel, pas juste un détail de formulation.",
+        notes="Piège : 'parking nord' n'existe pas dans config/zones.yaml. Attendu : 'zone_inconnue' "
+        "plutôt qu'une zone réelle choisie par approximation.",
     ),
     # ------------------------------------------------------------------
     # Hors périmètre / robustesse
@@ -304,13 +289,8 @@ ALL_CASES: list[TestCase] = [
 
 
 # ==========================================================================
-# Cas MULTI-TOURS -- mémoire conversationnelle (agent/src/agent/agent.py:Session,
-# config/agent.yaml:memory). Séparés de ALL_CASES ci-dessus à dessein : ces
-# cas partagent un historique d'un tour à l'autre (voir
-# harness.py:RecordingAgent.ask_continuing), un mode d'exécution différent
-# du banc mono-tour existant -- volontairement AUCUNE modification de
-# ALL_CASES/TestCase/score_case pour ces cas, zéro risque de régression sur
-# les 36 cas mono-tour déjà validés (run_benchmark.py, inchangé).
+# Cas multi-tours (run_memory_benchmark.py) : les questions d'une séquence
+# partagent l'historique, pour tester la mémoire conversationnelle.
 # ==========================================================================
 
 

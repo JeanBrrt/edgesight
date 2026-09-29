@@ -1,25 +1,4 @@
-"""Lancement automatique de llama-server pour 03_live_agent_demo.py --
-évite d'avoir à ouvrir un second terminal avant chaque démo.
-
-`llama_server()` est un context manager :
-  - un serveur répond déjà sur llama_server_url -> réutilisé tel quel,
-    jamais arrêté à la sortie (il a été lancé par quelqu'un d'autre) ;
-  - sinon, si `llama_server.auto_start` est vrai dans config/agent.yaml ->
-    lancé en sous-processus, attendu jusqu'à ce que /health réponde, puis
-    arrêté à la sortie du `with` (même sur exception) ;
-  - dans tous les autres cas (auto_start désactivé, binaire/modèle
-    absent, démarrage en échec) -> simple avertissement, la démo continue
-    quand même : la vidéo, le tracking et les alertes n'ont pas besoin du
-    LLM, seules les questions à l'assistant échoueront.
-
-Stdlib uniquement (subprocess/urllib/ctypes) : pas de dépendance ajoutée
-pour un simple appel HTTP de santé.
-
-Sous Windows, le serveur lancé ici est rattaché à un Job Object
-"kill on close" : il meurt avec la démo même si celle-ci ne passe pas
-par le `finally` (plantage, console fermée, processus tué). Sans ça, un
-llama-server orphelin garderait ~3 Go de VRAM, et le lancement suivant
-le "réutiliserait" sans jamais l'arrêter.
+"""Lance llama-server pour 03_live_agent_demo.py, sans second terminal
 """
 
 import contextlib
@@ -36,22 +15,18 @@ from ._config import LLAMA_SERVER_LAUNCH, LLAMA_SERVER_URL, PROJECT_ROOT
 _HEALTH_POLL_SECONDS = 0.5
 _STOP_TIMEOUT_SECONDS = 10.0
 
-# Handle du Job Object (Windows) -- gardé en global : c'est sa fermeture,
-# à la fin du processus Python quelle qu'en soit la cause, qui tue le
-# serveur rattaché.
+# Gardé ouvert jusqu'à la fin du processus : sa fermeture tue le serveur.
 _job_handle = None
 
 
 def _log(message: str) -> None:
-    # flush : visible immédiatement même si stdout est redirigé vers un
-    # fichier (sinon bufferisé, et perdu si le processus est tué).
+    # flush : pour ne rien perdre si le processus est tué.
     print(f"[llama-server] {message}", flush=True)
 
 
 def _kill_with_parent(process: subprocess.Popen) -> None:
-    """Windows uniquement -- rattache `process` à un Job Object configuré
-    avec JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE. Échec silencieux (simple
-    avertissement) : l'arrêt normal via `_stop_server` reste en place."""
+    """Windows : lie la vie de `process` à celle de la démo (Job Object).
+    En cas d'échec, simple avertissement : l'arrêt normal reste en place."""
     global _job_handle
     if sys.platform != "win32":
         return
@@ -110,15 +85,13 @@ def _kill_with_parent(process: subprocess.Popen) -> None:
 
 
 def _health_url() -> str:
-    """http://host:port/v1 -> http://host:port/health (/health est à la
-    racine du serveur, pas sous le préfixe OpenAI /v1)."""
+    """http://host:port/v1 -> http://host:port/health."""
     parts = urlsplit(LLAMA_SERVER_URL)
     return f"{parts.scheme}://{parts.netloc}/health"
 
 
 def is_server_ready() -> bool:
-    """Vrai seulement quand le modèle est chargé : /health renvoie 503
-    pendant le chargement, 200 une fois prêt."""
+    """Vrai une fois le modèle chargé (/health répond 200, 503 avant)."""
     try:
         with urllib.request.urlopen(_health_url(), timeout=1.0) as response:
             return response.status == 200
@@ -149,8 +122,7 @@ def _start_server() -> subprocess.Popen | None:
     log_path = _resolve(LLAMA_SERVER_LAUNCH.get("log_path", "agent/data/llama-server.log"))
     log_path.parent.mkdir(parents=True, exist_ok=True)
     _log(f"démarrage ({model.name}), sortie dans {log_path}")
-    # Le fichier reste ouvert côté parent le temps de passer le handle au
-    # sous-processus, qui en garde sa propre copie -- fermé aussitôt ici.
+    # Le serveur garde sa propre copie du fichier : on peut le fermer ici.
     with open(log_path, "w", encoding="utf-8") as log_file:
         process = subprocess.Popen(command, stdout=log_file, stderr=subprocess.STDOUT, cwd=PROJECT_ROOT)
         _kill_with_parent(process)

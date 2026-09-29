@@ -1,14 +1,8 @@
-"""Vérification visuelle de C1 (tracking) seul, en direct sur les vidéos
-de démo — sans journal d'événements (C2) ni alerte (D3).
+"""Détection et tracking 
 
-Affiche les détections avec leur tracker_id persistant : permet de juger
-la stabilité du tracker (ID qui ne change pas quand une piste est
-momentanément perdue, ré-association après occlusion brève) isolément du
-reste du pipeline.
-
-Lancer depuis la racine du projet :
+Usage :
     uv run python demo/src/scripts/02_tracking_demo.py
-Appuyer sur 'q' pour quitter.
+Touches : 'c' changer de source, 'r' redémarrer la vidéo, 'q' quitter.
 """
 
 import sys
@@ -19,25 +13,25 @@ import numpy as np
 import onnxruntime as ort
 import torch
 
+sys.path.insert(0, "demo/src/common")  # modules partagés par les 3 démos
+from nanodet_setup import build_postprocessor  # avant nanodet : filtre ses avertissements
+
 from nanodet.data.batch_process import stack_batch_img
 from nanodet.data.collate import naive_collate
 from nanodet.data.transform import Pipeline
-from nanodet.model.arch import build_model
-from nanodet.util import cfg, load_config
+from nanodet.util import cfg
 
-sys.path.insert(0, ".")  # tracker.py vit dans agent/src/ (C1 est un
-# composant du système, pas du glue code de démo)
+sys.path.insert(0, ".")  # tracker et zones de danger : agent/src/
 from agent.src.tracking.tracker import MultiClassByteTracker
+from agent.src.alerts.zones import scene_for_source
 
-sys.path.insert(0, "demo/src/common")  # config.py/fps_counter.py/source_cycle.py
-# vivent à part des scripts, partagés par les 3 (voir demo/src/common/)
 from fps_counter import FPSCounter, draw_fps
-from source_cycle import SourceCycler, CYCLE_KEY, RESTART_KEY, draw_source_label, draw_interactive_help, resize_for_display, ui_scale
+from source_cycle import SourceCycler, CYCLE_KEY, RESTART_KEY, draw_source_label, draw_controls, draw_interactive_help, draw_zones, resize_for_display, ui_scale
 from text_render import draw_box_label
+from power import disable_power_throttling
 from config import CONFIG_PATH, ONNX_PATH, INPUT_SIZE, DISABLED_CLASSES
 
-# Une couleur stable par tracker_id (modulo), pour repérer visuellement
-# la persistance d'une piste d'un coup d'œil.
+# Une couleur fixe par identifiant, pour suivre une piste d'un coup d'œil.
 COLORS = [
     (66, 135, 245), (66, 245, 111), (245, 66, 197), (245, 173, 66),
     (66, 245, 233), (197, 66, 245), (245, 66, 66), (144, 245, 66),
@@ -52,10 +46,8 @@ def undo_export_sigmoid(raw_output, num_classes):
 
 
 def draw_dashed_rect(frame, pt1, pt2, color, thickness=2, dash_length=10):
-    """Pas de primitive rectangle pointille native dans OpenCV -- dessine
-    quatre bords en segments. Utilise pour distinguer visuellement une
-    boite 'coasted' (position extrapolee par le filtre de Kalman du
-    tracker, pas une vraie detection ce frame-ci) d'une boite confirmee."""
+    """Rectangle en pointillés (absent d'OpenCV), pour les détections
+    faibles."""
     x1, y1 = pt1
     x2, y2 = pt2
     for x in range(x1, x2, dash_length * 2):
@@ -70,12 +62,8 @@ def draw_tracked(frame, tracked: dict, class_names: list[str]):
     s = ui_scale(frame)
     for cls_idx, boxes in tracked.items():
         for x1, y1, x2, y2, score, tid, is_coasted, origin in boxes:
-            # "predicted" (extrapolation Kalman pure, aucune detection ce
-            # frame-ci) n'est jamais affiche : une piste "en roue libre" ne
-            # doit pas laisser croire a une detection reelle sur l'ecran de
-            # demo. "weak" (detection reelle mais rejetee par l'hysteresis,
-            # score trop faible) reste affichee en pointille -- cas
-            # different, une detection a bien eu lieu ce frame-ci.
+            # Position seulement prédite (aucune détection) : non affichée.
+            # Détection réelle mais sous le seuil ("weak") : en pointillés.
             if is_coasted and origin == "predicted":
                 continue
             color = COLORS[tid % len(COLORS)]
@@ -90,34 +78,34 @@ def draw_tracked(frame, tracked: dict, class_names: list[str]):
     return frame
 
 
-WINDOW_NAME = "C1 - tracking seul [q pour quitter]"
+def scene_zones(cycler) -> dict:
+    """Zones de danger de la source active ({} si elle n'en a pas)."""
+    scene = scene_for_source(cycler.zone_source_key)
+    return scene.zones if scene else {}
+
+
+WINDOW_NAME = "Suivi multi-objets [q pour quitter]"
 
 
 def main():
-    load_config(cfg, CONFIG_PATH)
-    model = build_model(cfg.model)  # config seule, pour post_process
+    disable_power_throttling()
+    model = build_postprocessor(CONFIG_PATH)
     pipeline = Pipeline(cfg.data.val.pipeline, cfg.data.val.keep_ratio)
     session = ort.InferenceSession(ONNX_PATH, providers=["CPUExecutionProvider"])
     tracker = MultiClassByteTracker(cfg.class_names)
     fps_counter = FPSCounter()
     cycler = SourceCycler()
+    zones = scene_zones(cycler)
 
-    # Fenêtre créée explicitement (plutôt que par le premier cv2.imshow)
-    # pour pouvoir y attacher un callback souris -- sans effet tant que la
-    # source active n'est pas interactive (voir SourceCycler.on_mouse).
-    # WINDOW_NORMAL + resizeWindow explicite à chaque frame (plus bas) :
-    # WINDOW_AUTOSIZE (le défaut) ne redimensionne pas toujours la fenêtre
-    # de façon fiable en changeant de source vers une image de dimensions
-    # différentes -- un bandeau bas ajouté après coup s'est déjà retrouvé
-    # rogné hors de la fenêtre dans ce cas, alors qu'il était bien dessiné
-    # sur l'image elle-même.
+    # WINDOW_NORMAL + resizeWindow à chaque frame : en mode AUTOSIZE, la
+    # fenêtre ne suit pas toujours un changement de taille de source.
+    # Le callback souris sert à la scène interactive.
     cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
     cv2.setMouseCallback(WINDOW_NAME, lambda event, x, y, flags, param: cycler.on_mouse(event, x, y, flags))
 
     print("Tracking seul — 'c' pour changer de source, 'r' pour redémarrer la vidéo, 'q' pour quitter.")
 
-    # Tolère quelques échecs de lecture consécutifs (hoquet transitoire)
-    # avant d'abandonner, plutôt que de s'arrêter sur le premier raté.
+    # Tolère quelques échecs de lecture consécutifs avant d'abandonner.
     camera_fail_streak = 0
     MAX_CAMERA_FAIL_STREAK = 30
 
@@ -130,7 +118,7 @@ def main():
                     continue
                 camera_fail_streak += 1
                 if camera_fail_streak >= MAX_CAMERA_FAIL_STREAK:
-                    print("Lecture caméra échouée, arrêt.")
+                    print("Lecture de la source échouée, arrêt.")
                     break
                 time.sleep(0.03)
                 continue
@@ -156,8 +144,10 @@ def main():
             tracked = tracker.update(dets, timestamp=time.time())
 
             result_frame = draw_tracked(frame, tracked, cfg.class_names)
+            draw_zones(result_frame, zones)
             draw_fps(result_frame, fps_counter.tick())
             draw_source_label(result_frame, cycler.label)
+            draw_controls(result_frame)
             draw_interactive_help(result_frame, cycler.is_interactive())
             result_frame = resize_for_display(result_frame)
             cv2.resizeWindow(WINDOW_NAME, result_frame.shape[1], result_frame.shape[0])
@@ -168,11 +158,10 @@ def main():
                 break
             if key == CYCLE_KEY:
                 cycler.next()
-                tracker.reset()  # nouvelle scène : les anciennes pistes n'ont plus de sens
+                zones = scene_zones(cycler)
+                tracker.reset()  # nouvelle scène, anciennes pistes caduques
             if key == RESTART_KEY and cycler.is_file():
-                # No-op pour source interactive (pas de "début" à
-                # rejouer) -- mêmes resets que CYCLE_KEY, la vidéo repart
-                # de zéro donc les anciennes pistes aussi.
+                # La vidéo repart de zéro, les pistes aussi.
                 cycler.loop_if_file()
                 tracker.reset()
     finally:

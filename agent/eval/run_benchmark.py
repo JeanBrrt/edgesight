@@ -1,28 +1,10 @@
-"""Banc de test custom : mesure la capacité d'un LLM servi par
-llama-server à choisir/paramétrer les tools de l'agent (agent/src/
-tool_schemas.py), sur le jeu de questions de cases.py (couvre les 12
-tools + variantes/pièges : synonymes, anglais, désambiguïsation
-now/total, formulation de temps absolue/relative, appels multiples,
-zone inconnue, hors périmètre).
-
-Ne teste PAS l'exécution réelle des tools (EventStore/AlertMonitor/
-ZoneMonitor -- déjà couverts par un test fonctionnel séparé), seulement
-le comportement du LLM face au langage naturel.
-
-Chaque question est rejouée `--repeats` fois (défaut 10) : la
-sortie d'un LLM n'est pas déterministe d'un tick à l'autre (sampling),
-un cas qui échoue une fois sur trois n'est pas équivalent à un cas qui
-échoue toujours -- distinction perdue par un seul essai.
+"""Banc de test
 
 Usage :
-    1. Lancer llama-server avec le modèle à tester (voir README pour la
-       commande complète), ex. :
+    1. Lancer llama-server avec le modèle à tester, par exemple :
          llama-server.exe -m <chemin_du_modele>.gguf -c 4096 --jinja
     2. Depuis la racine du projet :
          uv run python agent/eval/run_benchmark.py --model-label qwen2.5-7b
-
-Écrit agent/eval/results/<model-label>.json -- à comparer ensuite avec
-compare_models.py une fois plusieurs modèles benchmarkés.
 """
 
 import argparse
@@ -44,9 +26,7 @@ from harness import RecordingAgent, score_case  # noqa: E402
 
 logger = logging.getLogger(__name__)
 
-# Même prompt système que la production (config/agent.yaml) -- pas
-# recopié en dur, pour ne jamais tester un prompt différent de celui
-# réellement déployé.
+# Prompt système lu dans config/agent.yaml : le même que la démo.
 _AGENT_CONFIG_PATH = Path("config/agent.yaml")
 with open(_AGENT_CONFIG_PATH, encoding="utf-8") as _f:
     _AGENT_CONFIG = yaml.safe_load(_f)
@@ -54,11 +34,7 @@ SYSTEM_PROMPT = _AGENT_CONFIG["system_prompt"]
 
 
 def _setup_logging(log_path: Path) -> None:
-    """Console à INFO (résumé lisible, ce qui s'affichait déjà avant) +
-    fichier à DEBUG (question par question : tool_calls bruts, latence par
-    round, raison précise d'un échec -- cf. harness.py) sur le logger
-    racine, pour que les deux modules (celui-ci + harness.py) y écrivent
-    sans configuration séparée."""
+    """Résumé sur la console, détail de chaque question dans `log_path`."""
     root = logging.getLogger()
     root.setLevel(logging.DEBUG)
     root.handlers.clear()
@@ -83,7 +59,7 @@ def _build_summary(model_label: str, repeats: int, case_results: list[dict], com
         "repeats": repeats,
         "n_cases_total": len(ALL_CASES),
         "n_cases_done": len(case_results),
-        "complete": complete,  # False si écrit après une interruption (Ctrl+C) -- résultats partiels
+        "complete": complete,  # False après une interruption (Ctrl+C)
         "overall_pass_rate": sum(r["pass_rate"] for r in case_results) / len(case_results) if case_results else 0.0,
         "n_errored_runs": sum(1 for run in all_runs if run["error"]),
         "latency_mean_s": statistics.mean(all_latencies) if all_latencies else 0.0,
@@ -137,10 +113,7 @@ def main():
             for _ in range(args.repeats):
                 recorded, latency, final_text, error = agent.ask(case.question)
                 if error is not None:
-                    # Un échec de transport/API n'est pas un mauvais choix de
-                    # tool -- pas la peine de faire scorer par score_case, qui
-                    # comparerait des appels vides aux attendus (toujours faux,
-                    # mais pour la mauvaise raison).
+                    # Échec de l'API : compté comme raté, sans score.
                     outcome = {"passed": False, "unmatched_expected": list(case.expected_calls), "extra_calls": []}
                 else:
                     outcome = score_case(case, recorded)
@@ -173,10 +146,7 @@ def main():
             suffix = f" -- ERREUR: {next(r['error'] for r in runs if r['error'])}" if n_errored else ""
             log_fn("[%s] %-45s %d/%d  -- %s%s", status, case.id, n_passed, args.repeats, case.question, suffix)
 
-            # Écrit après CHAQUE cas, pas seulement à la fin -- une
-            # interruption (Ctrl+C sur une génération qui part en boucle,
-            # cf. le cas multi__compare_now) ne doit pas faire perdre tout
-            # le run déjà accompli.
+            # Écrit après chaque cas, pour ne rien perdre en cas d'interruption.
             _write_results(out_path, args.model_label, args.repeats, case_results, complete=False)
     except KeyboardInterrupt:
         interrupted = True
