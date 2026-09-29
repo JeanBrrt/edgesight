@@ -47,3 +47,6 @@ workspace/
 # IDE
 .vscode/
 .idea/
+
+# Notes de travail personnelles, gardées hors du dépôt
+docs/justifications.md
