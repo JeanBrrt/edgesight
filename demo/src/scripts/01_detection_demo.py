@@ -24,7 +24,8 @@ from nanodet.util import cfg, load_config
 sys.path.insert(0, "demo/src/common")  # config.py/fps_counter.py/source_cycle.py
 # vivent à part des scripts, partagés par les 3 (voir demo/src/common/)
 from fps_counter import FPSCounter, draw_fps
-from source_cycle import SourceCycler, CYCLE_KEY, RESTART_KEY, draw_source_label, draw_interactive_help, resize_for_display
+from source_cycle import SourceCycler, CYCLE_KEY, RESTART_KEY, draw_source_label, draw_interactive_help, resize_for_display, ui_scale
+from text_render import draw_box_label
 
 from config import (
     CONFIG_PATH,
@@ -45,14 +46,15 @@ def undo_export_sigmoid(raw_output, num_classes):
 
 
 def draw_detections(frame, dets: dict, class_names: list[str]):
+    s = ui_scale(frame)
     for cls_idx, boxes in dets.items():
         for x1, y1, x2, y2, score in boxes:
             if score < RAW_SCORE_THRESHOLD:
                 continue
             x1, y1, x2, y2 = map(int, (x1, y1, x2, y2))
-            cv2.rectangle(frame, (x1, y1), (x2, y2), COLOR, 2)
+            cv2.rectangle(frame, (x1, y1), (x2, y2), COLOR, max(2, round(2 * s)))
             label = f"{class_names[cls_idx]} {score:.2f}"
-            cv2.putText(frame, label, (x1, max(0, y1 - 8)), cv2.FONT_HERSHEY_SIMPLEX, 0.6, COLOR, 2)
+            draw_box_label(frame, label, x1, y1, COLOR, scale=s)
     return frame
 
 

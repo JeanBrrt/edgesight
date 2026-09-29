@@ -89,7 +89,9 @@ from source_cycle import (
     draw_interactive_help,
     draw_banner,
     resize_for_display,
+    ui_scale,
 )
+from text_render import draw_box_label
 from config import (
     CONFIG_PATH,
     ONNX_PATH,
@@ -206,6 +208,7 @@ def draw_dashed_rect(frame, pt1, pt2, color, thickness=2, dash_length=10):
 
 
 def draw_tracked(frame, tracked: dict, class_names: list[str]):
+    s = ui_scale(frame)
     for cls_idx, boxes in tracked.items():
         for x1, y1, x2, y2, score, tid, is_coasted, origin in boxes:
             # "predicted" (extrapolation Kalman pure, aucune detection ce
@@ -219,12 +222,12 @@ def draw_tracked(frame, tracked: dict, class_names: list[str]):
             color = COLORS[tid % len(COLORS)]
             x1, y1, x2, y2 = map(int, (x1, y1, x2, y2))
             if is_coasted:
-                draw_dashed_rect(frame, (x1, y1), (x2, y2), color, 2)
+                draw_dashed_rect(frame, (x1, y1), (x2, y2), color, max(2, round(2 * s)), round(10 * s))
                 label = f"#{tid} {class_names[cls_idx]} (faible)"
             else:
-                cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
+                cv2.rectangle(frame, (x1, y1), (x2, y2), color, max(2, round(2 * s)))
                 label = f"#{tid} {class_names[cls_idx]} {score:.2f}"
-            cv2.putText(frame, label, (x1, max(0, y1 - 8)), cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
+            draw_box_label(frame, label, x1, y1, color, scale=s)
     return frame
 
 
@@ -258,10 +261,15 @@ def draw_zones(frame, zones: dict):
     -- coordonnées normalisées reconverties en pixels selon la taille réelle
     de la frame courante (voir zones.py)."""
     h, w = frame.shape[:2]
+    s = ui_scale(frame)
     for name, polygon_frac in zones.items():
         pts = np.array([[int(x * w), int(y * h)] for x, y in polygon_frac], dtype=np.int32)
-        cv2.polylines(frame, [pts], isClosed=True, color=(0, 0, 255), thickness=2)
-        cv2.putText(frame, name, tuple(pts[0]), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
+        cv2.polylines(frame, [pts], isClosed=True, color=(0, 0, 255), thickness=max(2, int(round(2 * s))),
+                      lineType=cv2.LINE_AA)
+        # Étiquette au sommet le plus haut du polygone, plutôt qu'au premier
+        # point cliqué (souvent en bas, sur les autres boîtes).
+        top = pts[np.argmin(pts[:, 1])]
+        draw_box_label(frame, name, int(top[0]), int(top[1]), (0, 0, 220), size=14, scale=s)
 
 
 def confirmed_only(tracked: dict) -> dict:

@@ -13,6 +13,7 @@ import cv2
 import numpy as np
 
 from config import DEMO_SOURCES, DISPLAY_MAX_WIDTH
+from text_render import draw_hud_line, draw_text, fit_text, text_height
 
 _PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 
@@ -48,6 +49,22 @@ def _detect_screen_size(default: tuple[int, int] = (1920, 1080)) -> tuple[int, i
 _MAX_DISPLAY_HEIGHT = int(_detect_screen_size()[1] * 0.85)
 
 
+def _display_scale(frame) -> float:
+    """Facteur de réduction appliqué par resize_for_display (1.0 si
+    l'image tient déjà à l'écran)."""
+    h, w = frame.shape[:2]
+    return min(1.0, DISPLAY_MAX_WIDTH / w, _MAX_DISPLAY_HEIGHT / h)
+
+
+def ui_scale(frame) -> float:
+    """Facteur à passer aux fonctions de text_render pour un texte dessiné
+    sur l'image d'origine : compense la réduction d'affichage, pour que le
+    texte ait la même taille à l'écran quelle que soit la résolution de
+    la source (sinon, sur une vidéo 1920px réduite à 1280px, il perdait un
+    tiers de sa taille et devenait flou)."""
+    return 1.0 / _display_scale(frame)
+
+
 def resize_for_display(frame, max_width: int = DISPLAY_MAX_WIDTH, max_height: int | None = None):
     """Réduit l'image pour l'affichage en contraignant à la fois la
     largeur (`max_width`, DISPLAY_MAX_WIDTH par défaut) ET la hauteur
@@ -56,13 +73,15 @@ def resize_for_display(frame, max_width: int = DISPLAY_MAX_WIDTH, max_height: in
     suffit pas pour toutes les sources (voir ci-dessus). Les coordonnées
     déjà dessinées sur l'image (boîtes, bandeaux...) n'ont rien à
     recalculer -- un simple resize global préserve leur position
-    relative, quel que soit le facteur d'échelle retenu."""
+    relative, quel que soit le facteur d'échelle retenu. INTER_AREA :
+    l'interpolation adaptée à une réduction (l'interpolation par défaut
+    crénelait le texte et les traits fins)."""
     max_height = _MAX_DISPLAY_HEIGHT if max_height is None else max_height
     h, w = frame.shape[:2]
     scale = min(1.0, max_width / w, max_height / h)
     if scale >= 1.0:
         return frame
-    return cv2.resize(frame, (int(w * scale), int(h * scale)))
+    return cv2.resize(frame, (int(w * scale), int(h * scale)), interpolation=cv2.INTER_AREA)
 
 
 CYCLE_KEY = ord("c")
@@ -257,9 +276,7 @@ class SourceCycler:
 
 def draw_source_label(frame, label: str):
     """Affiche la source courante juste sous le FPS (voir fps_counter.py)."""
-    text = f"Source : {label}"
-    cv2.putText(frame, text, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (0, 0, 0), 3)
-    cv2.putText(frame, text, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (0, 255, 255), 1)
+    draw_hud_line(frame, 1, f"Source : {label}", color=(120, 230, 255), scale=ui_scale(frame))
 
 
 def draw_banner(
@@ -268,36 +285,37 @@ def draw_banner(
     bg_color: tuple,
     at_bottom: bool = False,
     band_height: int = 40,
-    font_scale: float = 0.6,
-    thickness: int = 2,
+    size: int = 17,
+    bg_alpha: float = 0.85,
 ) -> None:
-    """Bandeau plein cadre (haut ou bas) -- fond opaque + texte blanc,
-    partagé par tous les scripts de démo : alerte D3 (bandeau haut,
-    04_live_agent_demo.py -- la réponse de l'agent, elle, s'affiche dans
-    la fenêtre Assistant, pas ici) et rappel des contrôles d'une scène
-    interactive (bandeau bas, draw_interactive_help ci-dessous, avec une
-    taille de bandeau/police plus grande que les valeurs par défaut
-    utilisées pour l'alerte).
-
-    `band_height`/`font_scale`/`thickness` par défaut reproduisent
-    exactement l'apparence d'origine (bandeau d'alerte) -- texte centré
-    verticalement dans le bandeau quelle que soit sa hauteur, pour rester
-    correct même à une taille de police différente."""
+    """Bandeau pleine largeur (haut ou bas), fond coloré semi-transparent
+    + texte blanc centré verticalement -- partagé par les scripts de démo :
+    alerte (bandeau haut, 03_live_agent_demo.py ; la réponse de l'agent,
+    elle, s'affiche dans la fenêtre Assistant) et rappel des contrôles
+    d'une scène interactive (bandeau bas, draw_interactive_help).
+    `band_height` et `size` sont exprimés en pixels à l'écran : ils sont
+    mis à l'échelle comme le reste du texte (voir ui_scale). Un texte trop
+    long est tronqué avec « … » plutôt que de déborder."""
+    s = ui_scale(frame)
     h, w = frame.shape[:2]
-    y0, y1 = (h - band_height, h) if at_bottom else (0, band_height)
-    display_text = text[:140]
-    (_, text_h), _ = cv2.getTextSize(display_text, cv2.FONT_HERSHEY_SIMPLEX, font_scale, thickness)
-    text_y = y0 + (band_height + text_h) // 2
-    cv2.rectangle(frame, (0, y0), (w, y1), bg_color, -1)
-    cv2.putText(frame, display_text, (10, text_y), cv2.FONT_HERSHEY_SIMPLEX, font_scale, (255, 255, 255), thickness)
+    band_h = int(round(band_height * s))
+    y0, y1 = (h - band_h, h) if at_bottom else (0, band_h)
+    roi = frame[y0:y1, 0:w]
+    tint = np.empty_like(roi)
+    tint[:] = bg_color
+    cv2.addWeighted(tint, bg_alpha, roi, 1.0 - bg_alpha, 0, dst=roi)
+    margin = int(round(14 * s))
+    display_text = fit_text(text, w - 2 * margin, size, scale=s)
+    text_y = y0 + (band_h - text_height(size, scale=s)) // 2
+    draw_text(frame, display_text, (margin, text_y), size=size, bg=None, pad=(0, 0), scale=s)
 
 
 _INTERACTIVE_HELP_TEXT = (
-    "Scene interactive : souris = deplacer la silhouette, molette = redimensionner, clic droit = afficher/masquer"
+    "Scène interactive — souris : déplacer la silhouette · molette : redimensionner · "
+    "clic droit : afficher / masquer"
 )
-_INTERACTIVE_HELP_COLOR = (90, 90, 90)
-_INTERACTIVE_HELP_BAND_HEIGHT = 60
-_INTERACTIVE_HELP_FONT_SCALE = 0.75
+_INTERACTIVE_HELP_COLOR = (40, 40, 40)
+_INTERACTIVE_HELP_BAND_HEIGHT = 44
 
 
 def draw_interactive_help(frame, is_interactive: bool) -> None:
@@ -321,5 +339,6 @@ def draw_interactive_help(frame, is_interactive: bool) -> None:
         _INTERACTIVE_HELP_COLOR,
         at_bottom=True,
         band_height=_INTERACTIVE_HELP_BAND_HEIGHT,
-        font_scale=_INTERACTIVE_HELP_FONT_SCALE,
+        size=16,
+        bg_alpha=0.7,
     )

@@ -19,3 +19,6 @@ PyYAML
 # agent/src/alerts/define_zones.py -- contrairement à PyYAML, relit et
 # réécrit le YAML sans perdre les commentaires ni la mise en forme.
 ruamel.yaml
+
+# Texte des fenêtres de define_zones.py (via demo/src/common/text_render.py)
+Pillow
