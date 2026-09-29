@@ -5,6 +5,8 @@ opencv-python
 onnxruntime
 # Lecture de config/demo.yaml (demo/src/common/config.py)
 PyYAML
+# Texte lissé, avec accents, sur les images (demo/src/common/text_render.py)
+Pillow
 
 # Non listés ici, volontairement :
 # - torch : installé à part, version CPU ou CUDA au choix

@@ -32,7 +32,8 @@ from agent.src.tracking.tracker import MultiClassByteTracker
 sys.path.insert(0, "demo/src/common")  # config.py/fps_counter.py/source_cycle.py
 # vivent à part des scripts, partagés par les 3 (voir demo/src/common/)
 from fps_counter import FPSCounter, draw_fps
-from source_cycle import SourceCycler, CYCLE_KEY, RESTART_KEY, draw_source_label, draw_interactive_help, resize_for_display
+from source_cycle import SourceCycler, CYCLE_KEY, RESTART_KEY, draw_source_label, draw_interactive_help, resize_for_display, ui_scale
+from text_render import draw_box_label
 from config import CONFIG_PATH, ONNX_PATH, INPUT_SIZE, DISABLED_CLASSES
 
 # Une couleur stable par tracker_id (modulo), pour repérer visuellement
@@ -66,6 +67,7 @@ def draw_dashed_rect(frame, pt1, pt2, color, thickness=2, dash_length=10):
 
 
 def draw_tracked(frame, tracked: dict, class_names: list[str]):
+    s = ui_scale(frame)
     for cls_idx, boxes in tracked.items():
         for x1, y1, x2, y2, score, tid, is_coasted, origin in boxes:
             # "predicted" (extrapolation Kalman pure, aucune detection ce
@@ -79,12 +81,12 @@ def draw_tracked(frame, tracked: dict, class_names: list[str]):
             color = COLORS[tid % len(COLORS)]
             x1, y1, x2, y2 = map(int, (x1, y1, x2, y2))
             if is_coasted:
-                draw_dashed_rect(frame, (x1, y1), (x2, y2), color, 2)
+                draw_dashed_rect(frame, (x1, y1), (x2, y2), color, max(2, round(2 * s)), round(10 * s))
                 label = f"#{tid} {class_names[cls_idx]} (faible)"
             else:
-                cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
+                cv2.rectangle(frame, (x1, y1), (x2, y2), color, max(2, round(2 * s)))
                 label = f"#{tid} {class_names[cls_idx]} {score:.2f}"
-            cv2.putText(frame, label, (x1, max(0, y1 - 8)), cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
+            draw_box_label(frame, label, x1, y1, color, scale=s)
     return frame
 
 

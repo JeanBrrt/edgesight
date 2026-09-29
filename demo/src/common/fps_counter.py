@@ -1,4 +1,4 @@
-"""Compteur de FPS glissant, affiché en overlay sur les 5 fenêtres de démo.
+"""Compteur de FPS glissant, affiché en overlay sur les 3 scripts de démo.
 
 Mesure le framerate réel de l'ensemble du pipeline (capture + inférence +
 tracking + dessin) tel qu'il tourne effectivement, frame après frame --
@@ -10,7 +10,8 @@ overhead d'affichage.
 import time
 from collections import deque
 
-import cv2
+from source_cycle import ui_scale
+from text_render import draw_hud_line
 
 WINDOW_SIZE = 30  # nombre de frames sur lesquelles la moyenne glisse
 
@@ -37,6 +38,4 @@ def draw_fps(frame, fps: float):
     tout le reste, y compris les bandeaux d'alerte) pour ne jamais être
     recouvert, sauf par un bandeau d'alerte plein cadre si l'un est
     affiché ce frame-ci (priorité visuelle assumée à l'alerte, 3s max)."""
-    text = f"FPS: {fps:.1f}"
-    cv2.putText(frame, text, (10, 24), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 4)
-    cv2.putText(frame, text, (10, 24), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+    draw_hud_line(frame, 0, f"FPS  {fps:.1f}", color=(120, 255, 120), bold=True, scale=ui_scale(frame))

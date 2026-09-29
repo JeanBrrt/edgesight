@@ -51,6 +51,10 @@ import cv2
 import numpy as np
 import yaml
 
+# Rendu du texte (police TrueType lissée, accents) partagé avec les démos.
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent / "demo" / "src" / "common"))
+from text_render import draw_box_label, draw_text, text_color_for  # noqa: E402
+
 MIN_POINTS_PER_ZONE = 3
 COLORS = [(66, 135, 245), (66, 245, 111), (245, 66, 197), (245, 173, 66)]
 
@@ -128,11 +132,11 @@ class ZoneDrawer:
             for px, py in self.current_points_px
         ]
         self.completed[self.current_name] = frac_points
-        print(f"Zone '{self.current_name}' definie ({len(frac_points)} points) : {frac_points}")
+        print(f"Zone '{self.current_name}' définie ({len(frac_points)} points) : {frac_points}")
         self.current_points_px = []
         self.zone_idx += 1
         if self.current_name is None:
-            print("Toutes les zones sont definies -- 'q' pour quitter et afficher le YAML.")
+            print("Toutes les zones sont définies -- 'q' pour enregistrer et quitter.")
         else:
             print(f"Zone suivante : '{self.current_name}' -- cliquez vos points, puis 'n' pour la fermer.")
 
@@ -140,34 +144,53 @@ class ZoneDrawer:
         pts = [(int(x * self.scale * self.orig_w), int(y * self.scale * self.orig_h)) for x, y in self.completed[name]]
         return np.array(pts, dtype=np.int32)
 
-    def render(self) -> np.ndarray:
+    def render(self, show_ui: bool = True) -> np.ndarray:
+        """Image affichée pendant le dessin. `show_ui=False` : zones et
+        noms seulement, sans les indications -- utilisé pour l'aperçu
+        enregistré dans demo/assets/zone_previews/."""
         img = self.display.copy()
         for i, name in enumerate(self.zone_names[: self.zone_idx]):
             color = COLORS[i % len(COLORS)]
             poly = self._polygon_px(name)
             overlay = img.copy()
-            cv2.fillPoly(overlay, [poly], color)
+            cv2.fillPoly(overlay, [poly], color, lineType=cv2.LINE_AA)
             cv2.addWeighted(overlay, 0.25, img, 0.75, 0, img)
-            cv2.polylines(img, [poly], isClosed=True, color=color, thickness=2)
-            cv2.putText(img, name, tuple(poly[0]), cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
+            cv2.polylines(img, [poly], isClosed=True, color=color, thickness=2, lineType=cv2.LINE_AA)
+            top = poly[np.argmin(poly[:, 1])]
+            draw_box_label(img, name, int(top[0]), int(top[1]), color, size=15)
 
         if self.current_name is not None:
             color = COLORS[self.zone_idx % len(COLORS)]
-            for px, py in self.current_points_px:
-                cv2.circle(img, (px, py), 5, color, -1)
             if len(self.current_points_px) > 1:
                 cv2.polylines(
-                    img, [np.array(self.current_points_px, dtype=np.int32)], isClosed=False, color=color, thickness=2
+                    img, [np.array(self.current_points_px, dtype=np.int32)], isClosed=False, color=color,
+                    thickness=2, lineType=cv2.LINE_AA,
                 )
-            n = len(self.current_points_px)
-            ready = " -- 'n' pour fermer" if n >= MIN_POINTS_PER_ZONE else f" -- {MIN_POINTS_PER_ZONE - n} de plus pour pouvoir fermer"
-            status = f"Zone '{self.current_name}' : {n} point(s){ready}"
-        else:
-            status = "Zones terminees -- 'q' pour quitter"
+            for px, py in self.current_points_px:
+                cv2.circle(img, (px, py), 6, (255, 255, 255), -1, lineType=cv2.LINE_AA)
+                cv2.circle(img, (px, py), 4, color, -1, lineType=cv2.LINE_AA)
 
-        # Contour noir + texte blanc, pour rester lisible quel que soit le fond.
-        cv2.putText(img, status, (10, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 3)
-        cv2.putText(img, status, (10, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 1)
+        if not show_ui:
+            return img
+
+        if self.current_name is not None:
+            n = len(self.current_points_px)
+            step = f"Zone {self.zone_idx + 1}/{len(self.zone_names)}"
+            if n >= MIN_POINTS_PER_ZONE:
+                hint = f"{n} points — « n » pour fermer la zone"
+            else:
+                missing = MIN_POINTS_PER_ZONE - n
+                hint = f"{n} point{'s' if n > 1 else ''} — encore {missing} avant de pouvoir fermer"
+            w_step, _ = draw_text(img, step, (12, 12), size=18, color=(200, 200, 200))
+            w_name, _ = draw_text(img, self.current_name, (12 + w_step + 6, 12), size=18, bold=True,
+                                  color=text_color_for(color), bg=color, bg_alpha=0.9)
+            draw_text(img, hint, (12 + w_step + w_name + 12, 12), size=18)
+        else:
+            draw_text(img, "Toutes les zones sont dessinées — « q » pour enregistrer et quitter",
+                      (12, 12), size=18)
+
+        help_text = "Clic gauche : point · Clic droit : annuler · n : fermer la zone · r : recommencer · q : terminer"
+        draw_text(img, help_text, (12, img.shape[0] - 12), size=14, anchor="bottom-left", bg_alpha=0.55)
         return img
 
 
@@ -477,8 +500,8 @@ def main() -> None:
     # même endroit plutôt qu'éparpillés à côté de chaque source.
     _PREVIEWS_DIR.mkdir(parents=True, exist_ok=True)
     annotated_path = _PREVIEWS_DIR / f"{args.scene_name}.png"
-    cv2.imwrite(str(annotated_path), drawer.render())
-    print(f"\nApercu sauvegarde : {annotated_path}")
+    cv2.imwrite(str(annotated_path), drawer.render(show_ui=False))
+    print(f"\nAperçu enregistré : {annotated_path}")
 
 
 if __name__ == "__main__":
