@@ -1298,20 +1298,11 @@
     différentes selon la classe, d'où l'usage systématique de la paire
     \texttt{(classe, tracker\_id)} comme clé partout où l'état est indexé
     (lissage, hystérésis, journal d'événements).
-    
-    Le contrat d'entrée/sortie reste celui déjà utilisé dans tout le projet
-    depuis la sortie de \texttt{NanoDetPlusHead.post\_process}
-    (\texttt{\{class\_idx: [[x1, y1, x2, y2, score], ...], ...\}}), avec deux
-    champs ajoutés à chaque boîte en sortie : \texttt{tracker\_id} et
-    \texttt{is\_coasted} (voir 8.3).
-    
+
     \subsection{Paramètres retenus}
-    
-    Les seuils par défaut de la librairie sont pensés pour des détecteurs à
-    haute confiance ; notre modèle (mAP $\sim$0,46 en INT8 à 896px, section
-    5.6) produit des scores plus modestes sur une détection pourtant nette
-    --- les seuils ont été abaissés en conséquence, ajustés empiriquement
-    sur des flux vidéos variés, hors dataset COCO :
+
+    Les valeurs retenues ont été validées empiriquement sur les sources
+    vidéo de la démonstration, hors dataset COCO :
     
     \begin{table}[!htbp]
     \centering
@@ -1333,17 +1324,16 @@
     \end{table}
     
     Le choix de 90 pour \texttt{lost\_track\_buffer} (plutôt que le défaut
-    30, soit 1 seconde) répond à un besoin concret mesuré empiriquement :
-    avec un affichage graphique réel (\texttt{imshow}, redimensionnement
-    4K$\to$1280px), le pipeline tourne nettement en dessous de 30 FPS ---
-    une tolérance d'1 seconde ne représenterait alors que 10 à 15 frames
-    de tolérance réelle, une fenêtre trop courte pour être perceptible à
-    l'oeil lors d'une brève occlusion. Vérifié sur un test dédié : 62
-    boîtes « en roue libre » sur 120 frames sans délai de rendu simulé,
-    seulement 20 avec un délai de 20 ms/frame représentatif d'un vrai rendu
-    GUI --- 90 (3 secondes réelles) redonne une fenêtre de tolérance
-    visible (89 sur le même test) sans faire « fantômer » une piste disparue
-    pendant un temps déraisonnable.
+    30) porte la tolérance d'une piste perdue de 1 à 3 secondes réelles.
+    Le tracker recevant l'horodatage de chaque frame, ce budget s'exprime
+    en temps et non en nombre de frames : il ne dépend donc pas du débit
+    réel de la démonstration, nettement inférieur à 30 FPS. Une seconde
+    s'est révélée trop courte pour traverser une occlusion brève (piéton
+    masqué par un véhicule, par exemple) sans que l'objet ne reparte avec
+    un nouvel identifiant --- ce qui fausserait les comptages et les durées
+    de présence du journal (section 8.4). Trois secondes conservent
+    l'identifiant dans ces cas sans maintenir trop longtemps une piste
+    réellement disparue.
 
     Le paramètre \texttt{minimum\_consecutive\_frames} fixe le délai avant
     qu'un nouvel objet apparaisse à l'écran : une piste doit être associée
@@ -1431,8 +1421,8 @@
     \end{enumerate}
     
     Point notable : \texttt{track\_activation\_threshold} et
-    \texttt{high\_conf\_det\_threshold} jouent des rôles distincts bien que
-    proches en valeur (0,65 et 0,5 retenus) --- le premier gouverne
+    \texttt{high\_conf\_det\_threshold} jouent des rôles distincts
+    (0,65 et 0,35 retenus) --- le premier gouverne
     uniquement la \textbf{naissance} d'une piste, le second gouverne
     uniquement quelles détections tentent la 1\textsuperscript{re} passe d'association.
     Une confusion entre les deux mènerait soit à des pistes trop faciles à
@@ -1451,31 +1441,34 @@
         ($\alpha=$\texttt{smoothing\_alpha}$=0,55$) sur les coordonnées de
         boîte affichées, indexée par \texttt{(classe, tracker\_id)} : réduit
         la gigue visuelle d'une détection à l'autre sans introduire un
-        retard excessif sur le mouvement réel. Relevé par rapport à
-        l'intention nominale (0,4 « à 30 FPS ») pour le même motif que
-        \texttt{lost\_track\_buffer} ci-dessus : au débit de rendu réel
-        mesuré ($\sim$14 FPS avec un affichage complet), garder 0,4 aurait
-        silencieusement rendu le lissage deux fois plus lent que prévu.
+        retard excessif sur le mouvement réel. Le lissage étant appliqué une
+        fois par frame, sa constante de temps dépend du débit : la valeur
+        nominale 0,4, pensée pour 30 FPS, aurait rendu le lissage environ
+        1,7 fois plus lent au débit réel de la démonstration ($\sim$18 FPS,
+        section 8.2). 0,55 rétablit approximativement la réactivité visée.
       \item \textbf{Hystérésis d'affichage} (trigger de Schmitt) --- une
         piste doit dépasser \texttt{hysteresis\_high}$=0,4$ pour devenir
         visible, mais ne redevient invisible qu'en repassant sous
         \texttt{hysteresis\_low}$=0,2$ (pas simplement sous
         \texttt{hysteresis\_high} à nouveau) --- évite qu'un score oscillant
         juste autour d'un seuil unique fasse clignoter la boîte d'un frame à
-        l'autre. Un score déjà filtré en amont (ex. seuil de score des
-        scripts de démo) devient ainsi redondant pour tout ce qui sort d'ici
-        : c'est déjà une boîte destinée à être affichée.
+        l'autre. La détection qui fait repasser une piste visible sous
+        \texttt{hysteresis\_low} est encore renvoyée une fois, marquée
+        \texttt{origin="weak"}, et affichée en pointillés plutôt que de
+        disparaître brutalement. Un score déjà filtré en amont (ex. seuil
+        de score des scripts de démo) devient ainsi redondant pour tout ce
+        qui sort d'ici : c'est déjà une boîte destinée à être affichée.
       \item \textbf{Extrapolation (« coasting »)} --- une piste confirmée,
         non ré-associée à une détection ce frame-ci mais toujours dans sa
-        fenêtre de tolérance interne, est quand même renvoyée avec
-        \texttt{is\_coasted=True} et une position lue directement sur
+        fenêtre de tolérance interne, est quand même renvoyée, marquée
+        \texttt{origin="predicted"}, avec une position lue directement sur
         l'état du filtre de Kalman (\texttt{track.get\_state\_bbox()}) ---
         un accès à l'état interne de la librairie, non exposé par l'API
         publique \texttt{.update()}, seul moyen d'obtenir cette
-        extrapolation. Réservé aux pistes ayant déjà franchi l'hystérésis
-        pendant qu'elles étaient confirmées : une piste jamais devenue
-        visible ne doit pas se mettre à « fantômer » sans être jamais
-        apparue.
+        extrapolation. Réservé aux pistes déjà devenues visibles au moins
+        une fois. Ces positions prédites sont calculées mais \textbf{ne sont
+        pas affichées} par les scripts de démonstration actuels, qui ne
+        dessinent que des boîtes adossées à une détection réelle.
       \item \textbf{Budget de coasting cumulé} ---
         \texttt{max\_cumulative\_predicted\_seconds}$=3,0$s : contrairement
         à \texttt{lost\_track\_buffer} (section 8.2), qui plafonne chaque
@@ -1490,19 +1483,20 @@
         appliqué ici au cumul plutôt qu'à un seul épisode.
     \end{itemize}
     
-    \textbf{Invariant central} : \texttt{is\_coasted} distingue une boîte
-    réellement associée à une détection ce frame-ci (\texttt{False}) d'une
-    boîte en roue libre (\texttt{True}). Cette distinction sert
-    \textbf{uniquement} à l'affichage (un contour pointillé plutôt que
-    plein dans les scripts de démo, \texttt{draw\_dashed\_rect}) --- une
-    extrapolation ne doit \textbf{jamais} être transmise au journal
-    d'événements (9.4) comme une observation réelle, sous peine de faire
+    \textbf{Invariant central} : chaque boîte renvoyée porte, en plus de son
+    \texttt{tracker\_id}, un indicateur \texttt{is\_coasted} et une origine.
+    \texttt{is\_coasted=False} (\texttt{origin="confirmed"}) désigne une
+    détection sûre, affichée en trait plein ; \texttt{is\_coasted=True}
+    regroupe les boîtes non fiables : détection faible d'une piste visible
+    (\texttt{"weak"}, affichée en pointillés, \texttt{draw\_dashed\_rect})
+    et position seulement prédite (\texttt{"predicted"}, non affichée).
+    Aucune boîte \texttt{is\_coasted} ne doit être transmise au journal
+    d'événements (8.4) comme une observation réelle, sous peine de faire
     « tourner le temps » d'une piste sur une simple prédiction de
-    mouvement. Cet invariant est appliqué systématiquement à l'appel du
-    journal via une fonction \texttt{confirmed\_only()} qui écarte les
-    boîtes \texttt{is\_coasted} avant tout appel à \texttt{EventStore.update()}
-    --- vérifié présent dans les scripts de démonstration qui combinent
-    tracking et journalisation.
+    mouvement. Cet invariant est appliqué à l'appel du journal via une
+    fonction \texttt{confirmed\_only()} qui écarte ces boîtes avant tout
+    appel à \texttt{EventStore.update()}, dans le script de démonstration
+    qui combine tracking et journalisation (\texttt{03\_live\_agent\_demo.py}).
     
     Enfin, à chaque frame, l'état de lissage et d'hystérésis des pistes
     définitivement abandonnées par le tracker (au-delà de
@@ -1543,7 +1537,7 @@
     
     La clé primaire de \texttt{events} est le couple \texttt{(class,
     track\_id)} --- cohérent avec l'espace de \texttt{tracker\_id} propre à
-    chaque classe déjà signalé en 9.1. Chaque frame où une piste est vue
+    chaque classe déjà signalé en 8.1. Chaque frame où une piste est vue
     déclenche un \emph{upsert} (\texttt{INSERT ... ON CONFLICT(class,
     track\_id) DO UPDATE SET last\_seen = excluded.last\_seen}) : la ligne
     est créée à la première apparition, puis seule \texttt{last\_seen} est
@@ -1581,9 +1575,11 @@
     
     \subsubsection{Requêtes exposées}
     
-    Huit méthodes publiques, chacune reprise telle quelle par un tool de
-    l'agent (section 9.5) --- la table \texttt{events} seule pour les six premières,
-    \texttt{zone\_events} pour les deux dernières :
+    Huit méthodes d'accès au journal --- la table \texttt{events} seule
+    pour les six premières, \texttt{zone\_events} pour les deux dernières.
+    Six d'entre elles servent directement les tools de l'agent (section
+    9.5) ; \texttt{active\_durations} et \texttt{log\_zone\_entry} sont
+    appelées par les moniteurs d'alerte et de zone :
     
     \begin{itemize}[leftmargin=1.5em]
       \item \texttt{count\_between(classe, début, fin)} --- nombre de
@@ -1632,8 +1628,12 @@
     démonstration) : elle absorbe uniquement le clignotement occasionnel du
     détecteur (quelques frames ratées sur un objet pourtant toujours
     présent). C'est une question produit à part entière, pas un simple
-    délai technique à deviner.
-    
+    délai technique à deviner. Les tools de l'agent (\texttt{count\_now},
+    \texttt{time\_since\_last\_seen}) utilisent une tolérance un peu plus
+    large, 2 secondes (\texttt{freshness\_seconds},
+    \texttt{config/agent.yaml}), tandis que \texttt{AlertMonitor} conserve
+    la valeur par défaut.
+
     \section{Agent conversationnel}
     
     L'agent répond en langage naturel aux questions portant sur les
