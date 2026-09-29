@@ -1,9 +1,17 @@
     \documentclass[11pt,a4paper]{article}
     
-    \usepackage[T1]{fontenc}
-    \usepackage[utf8]{inputenc}
+    % pdfLaTeX : préambule d'origine. XeTeX/LuaTeX (ex. Tectonic) ignorent
+    % inputenc et la police T1 n'y a pas les glyphes ’ et œ : fontspec y
+    % charge la même police Latin Modern, en Unicode.
+    \usepackage{iftex}
+    \ifPDFTeX
+      \usepackage[T1]{fontenc}
+      \usepackage[utf8]{inputenc}
+      \usepackage{lmodern}
+    \else
+      \usepackage{fontspec}
+    \fi
     \usepackage[french]{babel}
-    \usepackage{lmodern}
     \usepackage{geometry}
     \geometry{margin=2.5cm}
     \usepackage{booktabs}
