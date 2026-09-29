@@ -319,27 +319,39 @@ planter avec une trace Python à la première étape oubliée.
 
 ## Démo
 
-3 scripts, une brique de plus à chaque fois — pratique pour présenter le
-système en le construisant sous les yeux plutôt que de balancer le
-pipeline complet d'un coup. Rangés dans `demo/src/scripts/`, préfixés
-par leur ordre (`01_`...`03_`) pour ne jamais avoir à deviner lequel
-lancer en premier ; `demo/src/common/` regroupe les 3 fichiers partagés
-entre eux (`config.py`, `fps_counter.py`, `source_cycle.py`). Seul le
-dernier (`03_live_agent_demo.py`) a besoin de `llama-server`, qu'il lance
-lui-même au besoin (voir [Serveur LLM](#serveur-llm) plus bas) ; tous importent `agent/src/` (tracker, journal, alerte
-selon le script) en plus de la détection ONNX INT8. Lancer depuis la
-racine du projet. Touche `c` dans la fenêtre vidéo pour changer de
+La démo est construite en 3 scripts, chacun apportant un élément de plus à la démonstration. 
+
+1. **`demo/src/scripts/01_detection_demo.py`** — détection brute
+   uniquement, sans tracker/journal/agent : juste les boîtes du modèle
+   ONNX INT8, pour juger la sortie du détecteur isolément du reste du
+   pipeline.
+   ```bash
+   uv run python demo/src/scripts/01_detection_demo.py
+   ```
+2. **`demo/src/scripts/02_tracking_demo.py`** — ajoute le tracking
+   multi-classe : boîtes avec `tracker_id` persistant, sans journal ni
+   alerte. Pour juger la stabilité du tracker seul (ID qui tient face à
+   une occlusion brève).
+   ```bash
+    uv run python demo/src/scripts/02_tracking_demo.py
+   ```
+3. **`demo/src/scripts/03_live_agent_demo.py`** — pipeline complet :
+    tracking + journal + alerte + l'agent conversationnel, interrogeable en direct — y
+   compris pour configurer une alerte à la volée (ex. « préviens-moi si
+   une personne reste plus de 10 secondes »). Ce script ouvre deux fenêtres : la
+   vidéo (overlay détections/tracking + bannière d'alerte) et une fenêtre **Assistant** (historique de conversation
+   + champ de saisie, pré-remplie au démarrage d'exemples de questions
+   et du rappel des raccourcis clavier). **C'est le script à utiliser pour une démonstration
+   complète du projet.**
+   ```bash
+   uv run python demo/src/scripts/03_live_agent_demo.py
+   ```
+
+Touche `c` dans la fenêtre vidéo pour changer de
 source (une des vidéos de démo, en cycle), `r` pour redémarrer la vidéo
 courante, `q` pour quitter. FPS et source courante affichés en overlay
-(coin haut-gauche). Pas de webcam (retirée du projet, non pertinente
-pour ce cas d'usage) : uniquement des vidéos, celles fournies par défaut
-ou les vôtres (voir `custom_videos_dir` ci-dessous).
+(coin haut-gauche).
 
-Pas de script dédié pour C2 (journal) ou D3 (alerte temps réel)
-isolément : les deux se démontrent directement dans
-`03_live_agent_demo.py` (durées d'activité consultables via l'agent,
-alerte configurable en direct, ex. « préviens-moi si une personne reste
-plus de 10 secondes ») plutôt qu'avec un script séparé par brique.
 
 **`config/demo.yaml`** (chargé par `demo/src/common/config.py`) —
 configuration partagée par les 3 scripts (un seul fichier à éditer
@@ -361,55 +373,15 @@ plutôt que chacun individuellement) :
 - `DISPLAY_MAX_WIDTH`, `RAW_SCORE_THRESHOLD`, `PERSON_ALERT_THRESHOLD_SECONDS`
   — réglages d'affichage et d'alerte, voir les commentaires du fichier.
 
-1. **`demo/src/scripts/01_detection_demo.py`** — détection brute
-   uniquement, sans tracker/journal/agent : juste les boîtes du modèle
-   ONNX INT8, pour juger la sortie du détecteur isolément du reste du
-   pipeline.
-   ```bash
-   uv run python demo/src/scripts/01_detection_demo.py
-   ```
-2. **`demo/src/scripts/02_tracking_demo.py`** — ajoute C1 (tracking
-   multi-classe) : boîtes avec `tracker_id` persistant, sans journal ni
-   alerte. Pour juger la stabilité du tracker seul (ID qui tient face à
-   une occlusion brève).
-   ```bash
-   uv run python demo/src/scripts/02_tracking_demo.py
-   ```
-3. **`demo/src/scripts/03_live_agent_demo.py`** — pipeline complet
-   C1+C2+D3+E1/E2 : tracking + journal + alerte (D3, une règle de
-   présence posée en dur au démarrage en plus de celles posables en
-   direct) + l'agent conversationnel D1/D2, interrogeable en direct — y
-   compris pour configurer une alerte à la volée (ex. « préviens-moi si
-   une personne reste plus de 10 secondes »), plutôt que de démontrer
-   C2/D3 dans des scripts séparés sans LLM. Ouvre trois fenêtres : la
-   vidéo (overlay détections/tracking + bannière d'alerte), une fenêtre
-   **Logs** (trace complète du logger racine, tools/arguments choisis
-   par l'agent) et une fenêtre **Assistant** (historique de conversation
-   + champ de saisie, pré-remplie au démarrage d'exemples de questions
-   et du rappel des raccourcis clavier). Chaque question lance son
-   propre thread pendant que la vidéo continue de tourner sans
-   interruption (voir [docs/justifications.md](docs/justifications.md)
-   §E1/E2 pour le détail du thread + de la file `queue.Queue`
-   utilisés). C'est le script à utiliser pour une démonstration
-   complète du projet.
-   ```bash
-   uv run python demo/src/scripts/03_live_agent_demo.py
-   # puis, à tout moment, dans la fenêtre Assistant :
-   #   combien de personnes maintenant ?
-   ```
-
 ### Serveur LLM
 
 `03_live_agent_demo.py` lance lui-même `llama-server` s'il ne tourne pas
 déjà (quelques secondes au démarrage, messages `[llama-server]` dans la
 console, sortie du serveur dans `agent/data/llama-server.log`), et
-l'arrête en quittant. Réglages dans le bloc `llama_server` de
-`config/agent.yaml` (`auto_start: false` pour revenir au lancement
-manuel).
+l'arrête en quittant.
 
 Pour garder le serveur ouvert entre plusieurs lancements de la démo
-(évite de recharger le modèle à chaque fois), le lancer à part : il
-sera réutilisé tel quel, et jamais arrêté par la démo.
+(évite de recharger le modèle à chaque fois), il faut le lancer à part : 
 
 ```bash
 agent/third_party/llama.cpp/llama-server.exe \
@@ -421,7 +393,7 @@ agent/third_party/llama.cpp/llama-server.exe \
 
 ## Ajouter une scène avec zones de danger
 
-D3 (alerte de zone) surveille des zones de danger définies **par scène**
+l'alerte de zone surveille des zones de danger définies **par scène**
 (`config/zones.yaml`, clé `scenes`) : chaque scène associe un chemin de
 source (une vidéo, ou l'image de fond d'une scène interactive) à son
 propre jeu de zones nommées, sélectionné automatiquement dans
