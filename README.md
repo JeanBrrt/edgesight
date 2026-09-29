@@ -24,8 +24,7 @@ modèles.
 ![Détections du modèle INT8 (orange) face à la vérité terrain COCO (vert)](docs/figures/predictions_reussites.jpg)
 
 *Modèle INT8 déployé sur des images du jeu de test : détections en
-orange, vérité terrain COCO en vert. Le rapport montre aussi ses limites
-(petits objets lointains, section « Arbitrage final »).*
+orange, vérité terrain COCO en vert.*
 
 ## Sommaire
 
