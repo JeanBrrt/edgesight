@@ -236,9 +236,7 @@ la vidéo est ajoutée à la fin du cycle, sans rien configurer. Appuyez sur
 les 4 vidéos et la scène du chantier.
 
 Son nom à l'écran vient du nom du fichier : `mon_parking-nuit.mp4`
-s'affiche « perso - mon parking nuit ». Plusieurs vidéos sont classées
-par ordre alphabétique. Elles bouclent en fin de lecture, et git les
-ignore : elles ne risquent pas d'être commitées.
+s'affiche « perso - mon parking nuit ». 
 
 Ce qu'il faut savoir :
 
