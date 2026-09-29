@@ -42,7 +42,7 @@ class MultiClassByteTracker:
         kwargs = {**DEFAULT_TRACKER_KWARGS, **tracker_kwargs, "frame_rate": frame_rate}
         self.trackers = {cls_idx: ByteTrackTracker(**kwargs) for cls_idx in range(len(class_names))}
         # Clés (classe, tracker_id) : chaque tracker numérote ses pistes à
-        # partir de 1, un même numéro existe donc dans les deux classes.
+        # partir de 0, un même numéro existe donc dans les deux classes.
         self._smoothed_boxes: dict[tuple[int, int], np.ndarray] = {}
         self._visible_ids: set[tuple[int, int]] = set()
         # Pistes déjà visibles au moins une fois, gardées jusqu'à leur
