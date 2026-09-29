@@ -14,3 +14,8 @@ trackers
 # aussi demo/src/common/config.py. Jusqu'ici installé seulement par
 # ricochet via les dépendances de NanoDet (pyaml/omegaconf).
 PyYAML
+
+# Écriture des zones dans config/zones.yaml et config/demo.yaml par
+# agent/src/alerts/define_zones.py -- contrairement à PyYAML, relit et
+# réécrit le YAML sans perdre les commentaires ni la mise en forme.
+ruamel.yaml
