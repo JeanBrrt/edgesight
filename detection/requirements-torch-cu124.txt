@@ -1,0 +1,12 @@
+# torch + torchvision avec CUDA 12.4 -- nécessaire pour réentraîner
+# (nanodet/tools/train.py) ; la démo n'en a pas besoin (voir
+# requirements-torch-cpu.txt). Installé à part plutôt que via
+# detection/requirements.txt : les roues CUDA ne sont publiées que sur
+# l'index de PyTorch, pas sur PyPI. Le pin `torch>=1.10,<2.0` du
+# requirements de NanoDet est ignoré volontairement (incompatible
+# Python 3.12, voir README).
+--index-url https://download.pytorch.org/whl/cu124
+# Figé sur la version validée avec ce projet (patchs NanoDet, démo,
+# entraînement) -- l'index cu124 plafonne à 2.6, PyPI irait bien au-delà.
+torch==2.6.*
+torchvision==0.21.*
