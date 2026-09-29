@@ -181,6 +181,44 @@ agent/third_party/llama.cpp/llama-server.exe \
   -m agent/models/granite-4.1-3b-Q4_K_M.gguf --jinja -ngl 99 -c 8192 --port 8080
 ```
 
+### Scène interactive du chantier
+
+La 5ᵉ scène du cycle n'est pas une vidéo : c'est une photo de chantier
+sur laquelle on déplace une silhouette d'ouvrier, détectée par le
+modèle comme une vraie personne. Deux zones de danger y sont
+définies : `zone_centrale` (la fouille au centre, en orange sur
+l'aperçu ci-dessous) et `zone_laterale` (en bas à gauche, en vert).
+Pendant la démo, elles sont tracées en rouge sur la vidéo, avec leur
+nom.
+
+![Zones de danger de la scène chantier](demo/assets/zone_previews/chantier.png)
+
+Commandes de la silhouette :
+
+- **déplacer la souris** : la silhouette suit le curseur (aucun clic
+  nécessaire) ;
+- **molette** : agrandir ou réduire la silhouette ;
+- **clic droit** : afficher ou masquer la silhouette.
+
+**Scénario d'exemple : simuler une intrusion**
+
+1. Lancer `03_live_agent_demo.py`, puis appuyer 4 fois sur `c` pour
+   arriver sur la scène « chantier interactif ».
+2. Dans la fenêtre Assistant, demander :
+   « Alerte-moi si quelqu'un entre dans la zone centrale ». Le panneau
+   de droite montre l'outil appelé :
+   `set_zone_alert(zone_name="zone_centrale", object_class="person")`.
+3. Placer la silhouette hors des zones, puis la faire entrer dans la
+   zone centrale.
+4. L'alerte s'affiche aussitôt en bannière sur la vidéo, puis l'agent
+   la reformule en une phrase dans la fenêtre Assistant.
+5. Sortir de la zone puis y revenir déclenche une nouvelle alerte.
+   Demander ensuite « Combien de personnes sont entrées dans la zone
+   centrale ? » pour obtenir le décompte.
+
+Si la silhouette n'est pas détectée (pas de boîte autour d'elle),
+l'agrandir avec la molette.
+
 ## Ajouter une scène avec zones de danger
 
 Les zones sont définies par scène dans `config/zones.yaml`.
@@ -193,7 +231,10 @@ de la démo (touche `c`). `--dry-run` affiche le résultat sans rien
 Deux types de scène :
 
 - **Vidéo** : les zones sont testées sur les vraies détections de la
-  vidéo.
+  vidéo. Le script n'affiche qu'une seule image pour dessiner les
+  zones, la première par défaut (`--frame-index N` pour en choisir une
+  autre). Les zones restent fixes : la vidéo doit donc être filmée en
+  plan fixe.
 - **Scène interactive** (image fixe + silhouette détourée qui suit la
   souris, comme le chantier fourni) : elle permet de **provoquer à la
   demande** des situations précises, difficiles à trouver dans les
@@ -213,8 +254,13 @@ uv run python agent/src/alerts/define_zones.py demo/assets/scenes/06_mon_fond.jp
   --sprite demo/assets/silhouettes/ma_silhouette.png
 ```
 
+Les zones se dessinent **une par une, dans l'ordre des noms passés à
+`--zones`** : avec `--zones entree sortie`, le premier polygone dessiné
+devient `entree`, le second `sortie`. Le nom de la zone en cours est
+affiché en haut de la fenêtre.
+
 Clic gauche : ajouter un point ; clic droit : annuler ; `n` : fermer la
-zone ; `r` : recommencer la zone ; `q` : terminer. Un aperçu est
+zone et passer à la suivante ; `r` : recommencer la zone ; `q` : terminer. Un aperçu est
 enregistré dans `demo/assets/zone_previews/<scene-name>.png`.
 
 ## Rapport technique
