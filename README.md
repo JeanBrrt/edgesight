@@ -8,18 +8,20 @@ réel, le tout interrogeable en langage naturel via un agent
 conversationnel qui s'appuie sur un LLM local (tool calling).
 
 Le projet est accompagné d'un **[rapport technique détaillé](docs/rapport.pdf)**
-(33 pages) qui justifie chaque choix et présente les mesures associées
+(36 pages) qui justifie chaque choix et présente les mesures associées
 (voir [Rapport technique](#rapport-technique)).
 
-**Compétences mises en œuvre :** préparation de données (COCO), fine-tuning
-et évaluation d'un détecteur (NanoDet-Plus), une toolchain de
-quantification INT8 maison, sans outil clé en main (export ONNX et
-validation numérique contre PyTorch, lecteur de calibration dédié,
-quantification statique QDQ par canal, comparaison des méthodes de
-calibration, calibration par tranches pour borner la RAM, évaluation
-mAP fp32 vs INT8), benchmark de latence, tracking (ByteTrack),
-conception d'outils pour un agent LLM et banc de test comparatif de
-modèles.
+**Compétences mises en œuvre :** constitution d'un jeu de données à
+partir de COCO, fine-tuning et évaluation mAP d'un détecteur d'objets
+(NanoDet-Plus), quantification INT8 post-entraînement (PTQ) avec une
+toolchain maison, sans outil clé en main (export ONNX validé numériquement
+contre PyTorch, quantification statique QDQ par canal, comparaison des méthodes de
+calibration, calibration par lots pour borner la mémoire, mesure de la
+perte de précision fp32 vs INT8), benchmark de latence et optimisation de
+l'inférence CPU temps réel (ONNX Runtime, pipeline multi-thread),
+tracking multi-objets (ByteTrack, filtre de Kalman), conception d'un
+agent LLM local avec tool calling (llama.cpp), et banc d'évaluation
+comparatif de LLM.
 
 ![Détections du modèle INT8 (orange) face à la vérité terrain COCO (vert)](docs/figures/predictions_reussites.jpg)
 
@@ -31,6 +33,7 @@ orange, vérité terrain COCO en vert.*
 - [Structure du dépôt](#structure-du-dépôt)
 - [Installation](#installation)
 - [Démo](#démo)
+- [Tester sur vos propres vidéos](#tester-sur-vos-propres-vidéos)
 - [Ajouter une scène avec zones de danger](#ajouter-une-scène-avec-zones-de-danger)
 - [Rapport technique](#rapport-technique)
 - [Aller plus loin](#aller-plus-loin)
@@ -174,9 +177,9 @@ puis une scène interactive de chantier où une silhouette suit la
 souris), `r` redémarre la vidéo, `q` quitte.
 
 **Réglages** (`config/demo.yaml`) : modèle utilisé (`active_model` :
-896px par défaut, 512px ou 416px plus rapides), scènes du cycle. Toute
-vidéo déposée dans `demo/assets/custom/` est ajoutée automatiquement au
-cycle.
+896px par défaut, 512px ou 416px plus rapides), scènes du cycle. Pour
+ajouter vos vidéos, voir [Tester sur vos propres
+vidéos](#tester-sur-vos-propres-vidéos).
 
 Pour garder le serveur LLM ouvert entre plusieurs lancements (évite de
 recharger le modèle), le lancer à part ; la démo le réutilisera :
@@ -223,6 +226,31 @@ Commandes de la silhouette :
 
 Si la silhouette n'est pas détectée (pas de boîte autour d'elle),
 l'agrandir avec la molette.
+
+## Tester sur vos propres vidéos
+
+Déposez un fichier vidéo (`.mp4`, `.avi`, `.mov`, `.mkv` ou `.webm`) dans
+`demo/assets/custom/`, puis lancez n'importe laquelle des trois démos :
+la vidéo est ajoutée à la fin du cycle, sans rien configurer. Appuyez sur
+`c` jusqu'à elle : avec une seule vidéo ajoutée, c'est la 6ᵉ source, après
+les 4 vidéos et la scène du chantier.
+
+Son nom à l'écran vient du nom du fichier : `mon_parking-nuit.mp4`
+s'affiche « perso - mon parking nuit ». Plusieurs vidéos sont classées
+par ordre alphabétique. Elles bouclent en fin de lecture, et git les
+ignore : elles ne risquent pas d'être commitées.
+
+Ce qu'il faut savoir :
+
+- le modèle ne reconnaît que les **personnes** et les **voitures** ;
+- les objets qui paraissent petits à l'image (lointains) sont souvent
+  manqués ; ceux de taille moyenne à grande sont bien détectés (voir la
+  section « Arbitrage final » du rapport) ;
+- sans zones définies, tout fonctionne (détection, suivi, questions à
+  l'assistant, alertes de durée ou de nombre) sauf les alertes de zone.
+  Pour en ajouter, voir la section suivante ;
+- pour changer l'ordre de vos vidéos, préfixez leur nom
+  (`1_entree.mp4`, `2_parking.mp4`…).
 
 ## Ajouter une scène avec zones de danger
 
