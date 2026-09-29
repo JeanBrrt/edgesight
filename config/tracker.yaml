@@ -1,96 +1,45 @@
-# Paramètres du tracker multi-classe (agent/src/tracking/tracker.py), centralisés
-# ici pour être ajustables sans toucher au code.
+# Réglages du suivi multi-objets (agent/src/tracking/tracker.py). Valeurs
+# justifiées dans le rapport, section 8.2.
 #
-# track_activation_threshold / high_conf_det_threshold / hysteresis_high
-# / hysteresis_low : valeurs du rapport (docs/rapport.tex section 8.2),
-# reconduites ici après une mesure réelle des scores du modèle déployé
-# (nanodet-plus-m-1.5x_768-person-car-int8-QDQ-u8s8.onnx -- 861 images du
-# set de test, détections appariées à la vérité terrain à IoU >= 0.5).
-# Cette mesure a montré que les scores sont quantifiés en ~12 paliers
-# discrets (multiples de 0.078, signature de la quantification INT8 sur
-# la sortie sigmoïde) et qu'un seuil bien plus bas (~0.39 / 0.234)
-# couperait l'essentiel des faux positifs (concentrés au plancher,
-# médiane 0.078) tout en gardant ~75-90% des vrais positifs -- ces seuils
-# plus stricts (0.65 / 0.5) sont malgré tout conservés ici, en
-# connaissance de cause : ils excluent une part significative des vrais
-# positifs mesurés (médiane TP : 0.624 person, 0.546 car, donc environ la
-# moitié sous 0.65/0.5), au profit d'une plus grande sélectivité et de la
-# cohérence avec les valeurs déjà documentées et testées ailleurs (ex.
-# calibration de lost_track_buffer, plus bas). `frame_rate` calibré
-# séparément (débit réel ~14 FPS mesuré sur webcam avec rendu, contre 30
-# FPS supposé par la librairie), sans lien avec cette mesure de score.
-# `smoothing_alpha`/`max_cumulative_predicted_seconds` n'ont pas
-# d'équivalent dans la librairie -- mécanismes propres à ce projet.
+# Les scores du modèle INT8 896px vont par paliers (..., 0,576, 0,658,
+# 0,740, ...) : le seuil de création 0,65 revient à exiger 0,658.
+# smoothing_alpha et max_cumulative_predicted_seconds sont propres au
+# projet (absents de la librairie ByteTrack).
 
-# Référence FPS transmise à ByteTrackTracker -- calibre le pas
-# d'extrapolation du filtre de Kalman (frame_step = temps_écoulé x
-# frame_rate). NE calibre PAS lost_track_buffer, converti par la
-# librairie en secondes réelles indépendamment de ce paramètre (voir
-# lost_track_buffer ci-dessous). Valeur par défaut de la librairie,
-# jamais recalibrée (rien à y gagner, cf. rapport section 8.2).
+# FPS de référence du filtre de Kalman (défaut de la librairie). N'influe
+# pas sur lost_track_buffer, compté en secondes réelles.
 frame_rate: 30.0
 
-# Arguments transmis tels quels à ByteTrackTracker (une instance par
-# classe) -- valeurs du rapport (voir commentaire d'en-tête).
+# Passés tels quels à ByteTrackTracker (une instance par classe).
 tracker_kwargs:
-  # Seuil (strict) de création d'une nouvelle piste -- abaissé (défaut
-  # lib. 0.7) pour un modèle aux scores plus modestes que ceux visés par
-  # défaut par la librairie. Une mesure réelle (voir en-tête) suggère
-  # qu'un seuil ~0.39 suffirait à couper l'essentiel des faux positifs
-  # -- 0.65 est gardé volontairement plus strict.
+  # Score minimal pour créer une piste (défaut 0.7, abaissé pour les
+  # scores plus modestes de ce modèle).
   track_activation_threshold: 0.65
-  # Seuil (permissif) qui route une détection vers la 1re passe
-  # d'association plutôt que la 2e -- distinct du précédent, abaissé
-  # (défaut lib. 0.6) pour la même raison.
+  # Score au-dessus duquel une détection passe en 1re passe d'association
+  # (défaut 0.6).
   high_conf_det_threshold: 0.35
-  # Exprimé par la librairie en "frames à 30 FPS" mais utilisé en interne
-  # comme une tolérance en SECONDES D'HORLOGE RÉELLE
-  # (maximum_time_without_update = lost_track_buffer / 30.0),
-  # indépendamment du FPS réel. Relevé (défaut lib. 30 = 1s réelle) à 90
-  # = 3s réelle : avec un débit de rendu réel bien sous 30 FPS (~14 FPS
-  # mesurés), 1s ne représente que 10-15 frames de tolérance réelle --
-  # trop court pour être perceptible à l'œil sur une occlusion brève.
-  # Validé sur test dédié (89 vs 62 boîtes "en roue libre" sur 120 frames
-  # avec délai de rendu simulé).
+  # Durée de survie d'une piste perdue, en "images à 30 FPS" : 90 = 3 s
+  # réelles (défaut 30 = 1 s, trop court pour une occlusion brève).
   lost_track_buffer: 90
-  # Nombre de mises à jour réussies consécutives avant qu'une piste
-  # reçoive un tracker_id définitif -- relevé (défaut lib. 2) pour
-  # filtrer les créations de piste sur un faux positif isolé.
-  minimum_consecutive_frames: 15
-  # IoU minimal pour qu'une association détection<->piste soit retenue --
-  # valeur par défaut de la librairie, jamais recalibrée.
+  # Mises à jour consécutives avant qu'une piste reçoive un identifiant et
+  # soit affichée (défaut 2), pour ignorer les faux positifs isolés. Une
+  # piste pas encore confirmée disparaît au premier raté. Mesuré sur les
+  # vidéos de démo à ~18 FPS : 15 retardait l'affichage de 0,94 s en
+  # médiane ; 5 le ramène à 0,39 s sans plus de faux positifs.
+  minimum_consecutive_frames: 5
+  # IoU minimal pour associer une détection à une piste (défaut).
   minimum_iou_threshold: 0.1
 
-# Poids donné à la nouvelle mesure dans la moyenne mobile exponentielle
-# appliquée aux coordonnées affichées (0 < alpha <= 1) -- appliqué une
-# fois par appel update(), jamais mis à l'échelle du temps réel écoulé.
-# Relevé (contre 0.4 "à 30 FPS") pour conserver une réactivité réelle
-# comparable à l'intention d'origine au débit réel mesuré (~14 FPS),
-# plutôt que de laisser le lissage devenir deux fois plus lent sans le
-# vouloir.
+# Lissage exponentiel des boîtes affichées (poids de la nouvelle mesure).
+# Relevé depuis 0.4 car la démo tourne bien sous 30 FPS.
 smoothing_alpha: 0.55
 
-# Hystérésis d'affichage (trigger de Schmitt) : une piste doit dépasser
-# hysteresis_high pour devenir visible, mais ne redevient invisible qu'en
-# repassant sous hysteresis_low (pas simplement hysteresis_high à
-# nouveau) -- évite qu'une piste dont le score oscille juste autour d'un
-# seuil unique clignote à l'affichage d'un frame à l'autre. Les deux
-# seuils sont abaissés en cohérence avec
-# tracker_kwargs.track_activation_threshold (0.65) : hysteresis_high <
-# track_activation_threshold garantit qu'une piste tout juste créée
-# devient quasi immédiatement visible.
+# Hystérésis d'affichage : une piste apparaît au-dessus de hysteresis_high
+# et ne disparaît que sous hysteresis_low, pour éviter le clignotement.
 hysteresis_high: 0.4
 hysteresis_low: 0.2
 
-# Budget de temps réel CUMULÉ (pas par épisode) qu'une piste peut passer
-# en coasting "predicted" (extrapolation Kalman pure, aucune détection
-# réelle) avant d'en perdre le droit -- jusqu'à ce qu'elle repasse par une
-# confirmation solide (score >= hysteresis_high), qui remet son budget à
-# zéro. Sans ce plafond, une piste chroniquement à la limite pourrait
-# fantômer indéfiniment, épisode après épisode, sur toute la durée d'une
-# session -- chaque épisode individuel reste déjà borné par
-# tracker_kwargs.lost_track_buffer (1s avec la valeur par défaut
-# actuelle), mais rien ne limite leur somme.
-# Même ordre de grandeur que lost_track_buffer par cohérence d'intention,
-# appliqué ici au cumul plutôt qu'à un seul épisode.
+# Temps cumulé maximal qu'une piste peut passer en position seulement
+# prédite (sans détection), remis à zéro par une détection solide. Évite
+# qu'une piste fantôme réapparaisse indéfiniment.
 max_cumulative_predicted_seconds: 3.0

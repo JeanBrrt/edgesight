@@ -1,35 +1,25 @@
-# Paramètres de l'agent conversationnel (D1 agent/src/agent/tools.py, D2
-# agent/src/agent/agent.py) -- centralisés ici pour être ajustables sans
-# toucher au code.
+# Réglages de l'agent conversationnel (agent/src/agent/)
 
 llama_server_url: "http://127.0.0.1:8080/v1"
 
-# Lancement automatique de llama-server par 03_live_agent_demo.py
-# (agent/src/agent/llm_server.py). Si un serveur répond déjà sur
-# llama_server_url, il est réutilisé tel quel (et laissé tourner à la
-# sortie) ; sinon il est lancé avec ces paramètres, attendu jusqu'à ce
-# que /health réponde, puis arrêté à la fermeture de la démo. Hôte et port
-# toujours déduits de llama_server_url (une seule source de vérité) --
-# ne pas les répéter dans `args`. Chemins relatifs à la racine du projet.
-# `auto_start: false` = comportement d'origine (serveur à lancer à la main,
-# voir la commande llama-server de la section Démo du README).
+# Lancement de llama-server par 03_live_agent_demo.py
+# (agent/src/agent/llm_server.py) : un serveur qui répond déjà est
+# réutilisé, sinon il est lancé puis arrêté en fin de démo. Hôte et port
+# viennent de llama_server_url, ne pas les répéter dans `args`. Avec
+# `auto_start: false`, lancer le serveur à la main (README, section Démo).
 llama_server:
   auto_start: true
   binary: "agent/third_party/llama.cpp/llama-server.exe"
   model: "agent/models/granite-4.1-3b-Q4_K_M.gguf"
-  # Taille exacte du fichier ci-dessus (README étape 6) -- vérifiée par
-  # setup/check_demo.py pour repérer un téléchargement tronqué avant que
-  # llama-server ne refuse de le charger. À mettre à jour (ou retirer) en
-  # changeant de modèle.
+  # Taille exacte du modèle, vérifiée par setup/check_demo.py pour repérer
+  # un téléchargement tronqué. À mettre à jour en changeant de modèle.
   model_size_bytes: 2099501664
-  # --jinja indispensable (tool-calling), -ngl 99 = tout sur GPU, -c 8192 =
-  # contexte (cf. memory.max_turns plus bas) -- mêmes options que la commande de la section Démo du README.
+  # --jinja : requis pour les appels d'outils ; -ngl 99 : tout sur GPU ;
+  # -c 8192 : taille du contexte.
   args: ["--jinja", "-ngl", "99", "-c", "8192"]
-  # Chargement mesuré à ~4s (RTX 4060) -- large marge pour un premier
-  # lancement à froid (lecture du GGUF de 2,1 Go depuis le disque).
+  # Chargement mesuré à ~4 s ; large marge pour un premier lancement.
   startup_timeout_seconds: 120
-  # Sortie de llama-server (gitignoré, comme tout agent/data/) -- à
-  # consulter si le démarrage échoue.
+  # À consulter si le serveur ne démarre pas.
   log_path: "agent/data/llama-server.log"
 
 system_prompt: >-
@@ -49,64 +39,27 @@ system_prompt: >-
   donné pour répondre à une nouvelle question. Réponds ensuite de façon
   brève et naturelle en français.
 
-# Nombre max d'allers-retours LLM <-> tools avant d'abandonner (Agent.ask()).
+# Allers-retours LLM <-> outils maximum par question.
 max_rounds: 4
 
-# Plafond de tokens générés par requête au LLM. Sans lui, llama-server
-# génère sans limite (max_tokens=-1 côté serveur) : un modèle qui part en
-# boucle bloque l'assistant jusqu'au timeout -- observé sur "merci !"
-# (3 700+ tokens, 90s), et déjà sur le banc de test (agent/eval/harness.py,
-# plafonné à 1024 pour la même raison). Un tool call + une réponse courte
-# tiennent en < 200 tokens ; 512 laisse de la marge sans laisser une boucle
-# durer plus de ~10s.
-#
-# Essayé puis écarté (mesuré sur Granite-4.1-3B, 20 questions + banc
-# multi-tours) : imposer un appel de tool à chaque question
-# (tool_choice="required") et masquer les valeurs passées de l'historique,
-# pour empêcher le recyclage d'une valeur périmée. Sans eux : 19/20 bons
-# tools, 0 boucle ; avec : pas mieux, et le modèle bouclait sur "merci" /
-# "bonjour" dans ~1 cas sur 3.
+# Tokens générés maximum par requête. Sans plafond, un modèle qui boucle
+# bloque l'assistant (vu sur "merci !" : 3 700 tokens, 90 s). Un appel
+# d'outil et une réponse courte tiennent en moins de 200.
+# Essayé sans succès : forcer un appel d'outil à chaque question
+# (tool_choice="required") -- pas plus juste, et le modèle bouclait sur
+# "merci" ou "bonjour" une fois sur trois.
 max_tokens: 512
 
-# Mémoire conversationnelle (D2, agent/src/agent/agent.py:Session) -- si activée,
-# l'historique persiste entre deux appels de la MÊME session (portée par
-# l'appelant, ex. input_worker dans demo/src/scripts/03_live_agent_demo.py), pour
-# qu'une question elliptique ("et de voitures ?" après "combien de
-# personnes maintenant ?") soit comprise en contexte plutôt que traitée
-# isolément. `enabled: false` retombe EXACTEMENT sur le comportement
-# d'origine (chaque question reconstruit une liste [system, user] neuve,
-# aucun historique) -- c'est le seul réglage à toucher pour revenir en
-# arrière si la mémoire introduit un effet de bord indésirable (ex. un
-# modèle qui réutilise un chiffre périmé malgré la consigne du prompt
-# système ci-dessus). N'affecte JAMAIS les notifications d'alerte (D3,
-# alert_notifier) : celles-ci n'utilisent volontairement aucune session,
-# pour rester isolées du thread de conversation utilisateur (deux threads
-# concurrents ne doivent jamais partager le même historique mutable).
+# Mémoire de la conversation, pour comprendre "et les voitures ?" après
+# une question sur les personnes (rapport section 9.8). Les alertes n'en
+# ont pas : elles restent hors de la conversation.
 memory:
   enabled: true
-  # Nombre d'échanges (un "échange" = d'une question utilisateur à la
-  # suivante) conservés dans l'historique -- fenêtre glissante appliquée
-  # après chaque réponse finale, coupe toujours à une frontière d'échange
-  # complet (jamais au milieu d'une séquence de tool calls). Borne la
-  # croissance du contexte envoyé à llama-server (lancé avec -c 8192,
-  # section 9.1 du rapport) sur une session longue -- au-delà de ce
-  # nombre, les échanges les plus anciens sont oubliés.
+  # Échanges gardés dans l'historique ; les plus anciens sont oubliés.
   max_turns: 6
 
-# Tolérance de fraîcheur pour "actuellement présent" (D1, count_now ->
-# EventStore.active_tracks). Question produit pure (jusqu'à combien de
-# temps sans détection un objet compte-t-il encore comme "là", même
-# raisonnement que C1/C2 pour le clignotement occasionnel du détecteur) --
-# PAS un fudge-factor pour la latence LLM : `request_ts` est capturé dans
-# Agent.ask() AVANT tout appel au LLM et injecté explicitement comme `now`
-# dans chaque tool, donc le résultat est déjà indépendant de la latence
-# d'inférence (~1,6s mesurée), quelle qu'elle soit -- voir docs/rapport.tex
-# section 9.8 ("Un bug révélateur : latence LLM et fraîcheur des données")
-# pour le détail du bug trouvé (fenêtre trop stricte avant cet ancrage) puis
-# corrigé -- correctif indépendant du modèle servi (section 9.5). Volontairement
-# un peu plus large que la tolérance
-# de D3 (1,0s par défaut côté EventStore.active_durations, agent/src/alerts/alerts.py)
-# : une alerte de sécurité a intérêt à réagir vite à une vraie disparition,
-# une réponse conversationnelle peut se permettre d'être légèrement plus
-# tolérante sans que ça choque l'utilisateur.
+# Délai sans détection pendant lequel un objet compte encore comme
+# présent (outil count_now). Mesuré depuis l'envoi de la question, donc
+# indépendant de la latence du LLM (rapport section 9.7). Un peu plus
+# large que pour les alertes (1 s), qui doivent réagir vite.
 freshness_seconds: 2.0

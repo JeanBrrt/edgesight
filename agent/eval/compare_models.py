@@ -1,9 +1,6 @@
-"""Tableau comparatif de plusieurs runs de run_benchmark.py
-(agent/eval/results/*.json, un fichier par modèle) -- réussite globale,
-latence, et détail de réussite par tool.
+"""Compare les modèles passés dans run_benchmark.py 
 
-Usage (depuis la racine du projet), une fois au moins 2 fichiers
-présents dans agent/eval/results/ :
+Usage :
     uv run python agent/eval/compare_models.py
 """
 
@@ -14,8 +11,7 @@ from pathlib import Path
 
 
 def _tool_name_from_case_id(case_id: str) -> str:
-    # Convention cases.py : id = "<nom_du_tool>__<variante>" (ou
-    # "no_call"/"multi"/"disambiguation" pour les cas transverses).
+    # Ids de cases.py : "<outil>__<variante>", ou no_call/multi/disambiguation.
     return case_id.split("__", 1)[0]
 
 
@@ -24,7 +20,8 @@ def main():
     parser.add_argument("results_dir", nargs="?", default="agent/eval/results")
     args = parser.parse_args()
 
-    files = sorted(Path(args.results_dir).glob("*.json"))
+    # Sans les résultats du banc mémoire (*-memory.json), d'un autre format.
+    files = sorted(f for f in Path(args.results_dir).glob("*.json") if not f.stem.endswith("-memory"))
     if not files:
         print(f"Aucun résultat trouvé dans {args.results_dir} -- lancer run_benchmark.py d'abord.")
         return

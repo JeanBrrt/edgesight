@@ -1,20 +1,4 @@
 """Texte lisible sur les images OpenCV, via Pillow.
-
-`cv2.putText` ne dispose que des polices Hershey : tracés vectoriels
-rudimentaires, mal lissés et sans accents. Ce module dessine le texte
-avec une vraie police TrueType (lissage, accents), sur un fond arrondi
-optionnel, puis le compose dans l'image BGR -- utilisé par les scripts de
-démo et par agent/src/alerts/define_zones.py.
-
-Chaque texte est rendu une fois en petite vignette RGBA (mise en cache),
-puis fusionnée dans la zone concernée de l'image : jamais de conversion
-de l'image entière, donc un coût négligeable à chaque frame.
-
-`scale` : facteur appliqué à toutes les tailles (police, marges). Les
-démos dessinent sur l'image à sa résolution d'origine, réduite ensuite
-pour l'écran (source_cycle.resize_for_display) : elles passent
-`scale = 1 / facteur de réduction` pour que le texte garde la même
-taille à l'écran quelle que soit la résolution de la source.
 """
 
 import sys
@@ -59,8 +43,7 @@ def _font_path(bold: bool) -> str | None:
 def _font(size: int, bold: bool) -> ImageFont.FreeTypeFont:
     path = _font_path(bold)
     if path is None:
-        # Police intégrée à Pillow (redimensionnable depuis Pillow 10.1) :
-        # moins jolie, mais jamais d'échec faute de police système.
+        # Police intégrée à Pillow, faute de police système.
         return ImageFont.load_default(size=size)
     return ImageFont.truetype(path, size)
 
@@ -70,8 +53,7 @@ def _bgr_to_rgb(color: tuple) -> tuple:
 
 
 def text_color_for(bg_bgr: tuple) -> tuple:
-    """Blanc ou noir selon la luminosité du fond, pour rester lisible sur
-    n'importe quelle couleur de boîte (BGR en entrée et en sortie)."""
+    """Blanc ou noir selon la luminosité du fond (BGR)."""
     b, g, r = bg_bgr
     luminance = 0.299 * r + 0.587 * g + 0.114 * b
     return (20, 20, 20) if luminance > 150 else (255, 255, 255)
@@ -82,8 +64,7 @@ def _render(
     text: str, size: int, bold: bool, color: tuple, bg: tuple | None,
     bg_alpha: float, pad_x: int, pad_y: int, radius: int, outline: int,
 ) -> np.ndarray:
-    """Vignette RGBA (numpy, lecture seule) : fond arrondi optionnel +
-    texte lissé. Mise en cache : un même texte n'est rendu qu'une fois."""
+    """Vignette RGBA du texte (fond arrondi optionnel), mise en cache."""
     font = _font(size, bold)
     ascent, descent = font.getmetrics()
     text_w = int(np.ceil(font.getlength(text)))
@@ -104,8 +85,7 @@ def _render(
 
 
 def _blend(frame: np.ndarray, patch: np.ndarray, x: int, y: int) -> None:
-    """Compose la vignette RGBA dans `frame` (BGR, modifiée sur place), en
-    coupant ce qui dépasse du cadre."""
+    """Fusionne la vignette dans `frame` (sur place), coupée aux bords."""
     fh, fw = frame.shape[:2]
     ph, pw = patch.shape[:2]
     x0, y0 = max(x, 0), max(y, 0)
@@ -135,13 +115,12 @@ def draw_text(
     outline: int = 0,
     scale: float = 1.0,
 ) -> tuple[int, int]:
-    """Dessine `text` dans `frame` (BGR, sur place) et renvoie la taille
-    (largeur, hauteur) de l'étiquette en pixels de l'image.
+    """Dessine `text` dans `frame` (sur place) et renvoie la taille de
+    l'étiquette (largeur, hauteur).
 
-    `org` : point d'ancrage. `anchor` : "top-left" (l'étiquette part de
-    `org` vers le bas) ou "bottom-left" (elle se termine sur `org`, ex.
-    au-dessus d'une boîte). `bg=None` : pas de fond, texte seul (ajouter
-    `outline` pour un liseré noir). Couleurs en BGR, comme OpenCV."""
+    `anchor` : "top-left" (sous `org`) ou "bottom-left" (au-dessus).
+    `bg=None` : texte sans fond, `outline` pour un liseré noir. Couleurs
+    en BGR."""
     s = max(scale, 0.1)
     patch = _render(
         text, max(int(round(size * s)), 6), bold, tuple(color),
@@ -165,9 +144,8 @@ _HUD_PAD = (8, 4)
 
 def draw_hud_line(frame: np.ndarray, line: int, text: str, *, color: tuple = (255, 255, 255),
                   bold: bool = False, scale: float = 1.0) -> None:
-    """Étiquette du coin haut-gauche, empilée sur la ligne `line` (0, 1...) :
-    FPS sur la ligne 0, source courante sur la ligne 1, etc. Hauteur de
-    ligne calculée depuis la police, pour un espacement régulier."""
+    """Étiquette du coin haut-gauche, sur la ligne `line` (0 : FPS,
+    1 : source)."""
     ascent, descent = _font(max(int(round(HUD_SIZE * scale)), 6), False).getmetrics()
     line_h = ascent + descent + 2 * int(round(_HUD_PAD[1] * scale))
     y = int(round(_HUD_MARGIN * scale)) + line * (line_h + int(round(_HUD_GAP * scale)))
@@ -177,10 +155,8 @@ def draw_hud_line(frame: np.ndarray, line: int, text: str, *, color: tuple = (25
 
 def draw_box_label(frame: np.ndarray, text: str, x: int, y: int, color: tuple, *,
                    size: int = 14, scale: float = 1.0) -> None:
-    """Étiquette d'une boîte (ou d'une zone) : fond de la couleur de la
-    boîte, texte blanc ou noir selon le contraste, collée au-dessus du
-    point (x, y) -- ou juste en dessous s'il n'y a pas la place au-dessus
-    (boîte contre le haut de l'image)."""
+    """Étiquette d'une boîte ou d'une zone, sur fond de sa couleur, au-dessus
+    de (x, y), ou en dessous si elle touche le haut de l'image."""
     label_h = text_height(size, scale=scale) + 2 * int(round(3 * scale))
     anchor = "bottom-left" if y - label_h >= 0 else "top-left"
     draw_text(frame, text, (x, y), size=size, color=text_color_for(color), bg=color, bg_alpha=0.9,

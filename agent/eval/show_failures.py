@@ -1,13 +1,6 @@
-"""Rapport de lecture rapide des échecs d'un run de run_benchmark.py.
-
-Affiche uniquement les cas non entièrement réussis (FLAKY/FAIL/ERROR),
-avec le détail nécessaire pour comprendre CE QUE le LLM a fait à la
-place de ce qui était attendu -- sans avoir à relire le JSON brut ou le
-log DEBUG complet à la main. Distingue explicitement deux natures
-d'échec bien différentes :
-  - une ERREUR API (transport/serveur -- rien à voir avec le LLM lui-même) ;
-  - un mauvais choix de tool ou de paramètres (le comportement qu'on
-    cherche justement à évaluer).
+"""Affiche les échecs d'un passage de run_benchmark.py : pour chaque cas
+pas toujours réussi, ce que le LLM a appelé au lieu de ce qui était
+attendu. Distingue les erreurs d'API (serveur) des mauvais choix d'outil.
 
 Usage :
     uv run python agent/eval/show_failures.py agent/eval/results/hermes-3-8b.json

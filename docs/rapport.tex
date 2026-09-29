@@ -1322,9 +1322,9 @@
     \textbf{Paramètre} & \textbf{Retenu} & \textbf{Justification} \\
     \midrule
     \texttt{track\_activation\_threshold} & \textbf{0,65} & Seuil (strict) pour \textbf{créer} une nouvelle piste --- abaissé pour un modèle aux scores plus modestes que ceux visés par défaut \\
-    \texttt{high\_conf\_det\_threshold} & \textbf{0,5} & Seuil (permissif) qui route une détection vers l'association de 1\textsuperscript{re} passe plutôt que la 2\textsuperscript{e} (section 8.3) --- distinct du précédent, abaissé pour la même raison \\
+    \texttt{high\_conf\_det\_threshold} & \textbf{0,35} & Seuil (permissif) qui route une détection vers l'association de 1\textsuperscript{re} passe plutôt que la 2\textsuperscript{e} (section 8.3) --- distinct du précédent, abaissé pour la même raison \\
     \texttt{lost\_track\_buffer} & \textbf{90} & Exprimé par la librairie en « frames à 30 FPS » mais utilisé en interne comme une tolérance en \textbf{secondes d'horloge réelle} (\texttt{maximum\_time\_without\_update = lost\_track\_buffer / 30.0}) --- voir discussion ci-dessous \\
-    \texttt{minimum\_consecutive\_frames} & \textbf{15} & Nombre de mises à jour réussies consécutives avant qu'une piste reçoive un \texttt{tracker\_id} définitif --- relevé pour filtrer les créations de piste sur un faux positif isolé \\
+    \texttt{minimum\_consecutive\_frames} & \textbf{5} & Nombre de mises à jour réussies consécutives avant qu'une piste reçoive un \texttt{tracker\_id} définitif --- relevé pour filtrer les créations de piste sur un faux positif isolé, sans trop retarder l'affichage (voir ci-dessous) \\
     \texttt{minimum\_iou\_threshold} & 0,1 (inchangé) & Seuil d'IoU minimal pour qu'une association détection$\leftrightarrow$piste soit retenue par l'algorithme d'assignation (8.3) \\
     \texttt{frame\_rate} & 30,0 (inchangé) & Voir mise en garde ci-dessous \\
     \bottomrule
@@ -1344,7 +1344,42 @@
     GUI --- 90 (3 secondes réelles) redonne une fenêtre de tolérance
     visible (89 sur le même test) sans faire « fantômer » une piste disparue
     pendant un temps déraisonnable.
-    
+
+    Le paramètre \texttt{minimum\_consecutive\_frames} fixe le délai avant
+    qu'un nouvel objet apparaisse à l'écran : une piste doit être associée
+    pendant ce nombre de frames d'affilée, et une piste pas encore confirmée est
+    supprimée au premier raté du détecteur. Une première valeur de 15
+    retardait visiblement l'affichage. Le tracker a été rejoué sur les 4
+    vidéos de démo (1\,600 frames, au débit réel de la démonstration,
+    $\sim$18 FPS) avec plusieurs valeurs :
+
+    \begin{table}[!htbp]
+    \centering
+    \small
+    \begin{adjustbox}{max width=\linewidth}
+    \begin{tabular}{@{}lcccc@{}}
+    \toprule
+    \texttt{minimum\_consecutive\_frames} & \textbf{Délai médian} & \textbf{Délai p90} & \textbf{Détections nettes affichées} & \textbf{Pistes éphémères} \\
+    \midrule
+    15 & 0,94 s & 1,28 s & 91\,\% & 1 \\
+    8 & 0,56 s & 0,98 s & 95\,\% & 0 \\
+    \textbf{5 (retenu)} & \textbf{0,39 s} & \textbf{0,80 s} & \textbf{97\,\%} & \textbf{1} \\
+    3 & 0,28 s & 0,69 s & 98\,\% & 1 \\
+    \bottomrule
+    \end{tabular}
+    \end{adjustbox}
+    \end{table}
+
+    Le délai est mesuré entre le début de la suite continue de détections
+    d'un objet et son premier affichage ; une piste est dite éphémère si
+    elle reste affichée moins de 0,5 s. Passer de 15 à 5 divise le délai
+    par 2,4 sans faire apparaître de faux positifs supplémentaires (53 puis
+    54 pistes au total). 3 serait un peu plus rapide mais laisse moins de
+    marge sur des scènes plus difficiles. Le seuil de création
+    \texttt{track\_activation\_threshold} n'est pas en cause : les scores
+    du modèle INT8 vont par paliers (0,576, 0,658, 0,740\ldots), et 0,65
+    ou 0,60 donnent exactement le même résultat.
+
     \subsection{Logique de traitement, frame par frame}
     
     \subsubsection{Association détection$\leftrightarrow$piste (dans \texttt{ByteTrackTracker})}
@@ -1546,8 +1581,8 @@
     
     \subsubsection{Requêtes exposées}
     
-    Huit méthodes publiques, chacune reprise telle quelle par un tool D1
-    (section 9.5) --- la table \texttt{events} seule pour les six premières,
+    Huit méthodes publiques, chacune reprise telle quelle par un tool de
+    l'agent (section 9.5) --- la table \texttt{events} seule pour les six premières,
     \texttt{zone\_events} pour les deux dernières :
     
     \begin{itemize}[leftmargin=1.5em]
@@ -1566,9 +1601,11 @@
         \textbf{première} apparition. Répond à « personne présente depuis
         plus de 10 secondes » (consommé par \texttt{AlertMonitor}, section
         9.9, pas directement par un tool).
-      \item \texttt{most\_recent\_first\_seen(classe)} --- timestamp de la
-        piste la plus récemment apparue. Répond à « quand la dernière
-        voiture est-elle passée » (\texttt{time\_since\_last\_seen}).
+      \item \texttt{most\_recent\_last\_seen(classe)} --- timestamp de la
+        dernière détection, toutes pistes confondues. Répond à « quand la
+        dernière voiture est-elle passée » (\texttt{time\_since\_last\_seen}).
+        La dernière \emph{détection} et non la dernière \emph{apparition} :
+        une voiture présente depuis une minute est toujours visible.
       \item \texttt{average\_presence\_duration(classe)} --- durée moyenne
         (\texttt{last\_seen} $-$ \texttt{first\_seen}) sur toutes les pistes
         de cette classe depuis le début de la session. Répond à « en
@@ -1584,7 +1621,7 @@
         par un tool.
       \item \texttt{count\_zone\_entries(zone, classe)} --- nombre
         d'entrées journalisées dans cette zone. Répond à « combien de fois
-        une voiture est entrée dans le quai de chargement »
+        une personne est entrée dans la zone centrale »
         (\texttt{count\_zone\_entries}).
     \end{itemize}
     
@@ -1849,7 +1886,10 @@
         heure absolue \emph{ou} durée relative), \texttt{count\_between}
         (entre deux horaires précis).
       \item \textbf{Statistiques dérivées} --- \texttt{time\_since\_last\_seen}
-        (délai depuis la dernière apparition), \texttt{average\_presence\_duration}
+        (délai depuis la dernière détection : le nombre de secondes, ou,
+        si un objet est visible, une phrase déjà rédigée ; à partir d'un
+        délai de 0, Granite concluait « aucune voiture visible » 10 fois
+        sur 10), \texttt{average\_presence\_duration}
         (durée moyenne de présence), \texttt{peak\_concurrent\_count} (pic
         d'objets simultanés).
       \item \textbf{Alertes (configuration uniquement)} ---
@@ -1894,7 +1934,7 @@
     d'inférence}, quelle qu'elle soit, plutôt que de dépendre d'un seuil de
     tolérance élargi de façon arbitraire.
     
-    \subsection{Mémoire conversationnelle (D2)}
+    \subsection{Mémoire conversationnelle}
     \label{sec:agent-memoire}
     
     Chaque appel à \texttt{Agent.ask()}

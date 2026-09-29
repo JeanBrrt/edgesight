@@ -1,30 +1,11 @@
-"""Outil de calibration de zones -- ouvre une image (scène interactive
-silhouette+souris) ou une vidéo (zones vérifiées sur les vraies
-détections dedans) et laisse cliquer un nombre LIBRE de points (3
-minimum) par zone pour définir un polygone. Affiche le résultat en temps
-réel, puis écrit la scène dans config/zones.yaml (et l'ajoute au cycle
-de config/demo.yaml si c'est une scène interactive) -- en conservant les
-commentaires existants (ruamel.yaml). `--dry-run` affiche seulement les
-blocs YAML équivalents, sans rien écrire. Un aperçu des zones dessinées
-est enregistré dans demo/assets/zone_previews/<scene-name>.png.
-
-Chaque scène définie ici est INDÉPENDANTE des autres (config/zones.yaml,
-clé `scenes`) : la scène du chantier déjà fournie n'est jamais touchée
-par l'ajout d'une nouvelle scène, `agent/src/alerts/zones.py` sélectionne
-automatiquement le bon jeu de zones selon la source affichée
-(`SourceCycler.zone_source_key`, demo/src/source_cycle.py).
+"""Dessine à la souris les zones de danger d'une scène, puis les écrit
+dans config/zones.yaml.
 
 Deux types de scène :
-  - IMAGE (+ --sprite obligatoire) -- une scène interactive comme le
-    chantier fourni : fond fixe + silhouette détourée (RGBA) qui suit la
-    souris (voir InteractiveOverlaySource, demo/src/source_cycle.py). Les
-    zones sont vérifiées contre cette silhouette synthétique, jamais
-    contre une vraie personne/voiture.
-  - VIDÉO -- les zones sont vérifiées contre les vraies détections de
-    cette vidéo (personne/voiture réelles, comme n'importe quelle autre
-    source du cycle). `--sprite` n'a pas de sens ici et est ignoré si
-    fourni. Une frame de la vidéo (par défaut la première, --frame-index
-    pour en choisir une autre) sert de fond pour dessiner les zones.
+  - image + --sprite : scène interactive comme le chantier, où une
+    silhouette détourée (PNG RGBA) suit la souris ;
+  - vidéo : les zones s'appliquent aux vraies détections. Une seule image
+    sert au dessin (la première, ou --frame-index).
 
 Usage :
     uv run python agent/src/alerts/define_zones.py <image_ou_video> \
@@ -36,11 +17,9 @@ Usage :
 Contrôles pendant le dessin :
     clic gauche  -- ajoute un point à la zone en cours
     clic droit   -- annule le dernier point de la zone en cours
-    'n'          -- ferme la zone en cours (3 points minimum) et passe
-                    à la suivante
-    'r'          -- redémarre la zone en cours depuis zéro
-    'q'          -- quitte et enregistre le résultat (les zones déjà
-                    bouclées sont conservées même si tout n'est pas fini)
+    'n'          -- ferme la zone en cours (3 points minimum), passe à la suivante
+    'r'          -- recommence la zone en cours
+    'q'          -- termine et enregistre les zones déjà fermées
 """
 
 import argparse
@@ -51,7 +30,7 @@ import cv2
 import numpy as np
 import yaml
 
-# Rendu du texte (police TrueType lissée, accents) partagé avec les démos.
+# Rendu du texte partagé avec les démos.
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent / "demo" / "src" / "common"))
 from text_render import draw_box_label, draw_text, text_color_for  # noqa: E402
 
@@ -70,11 +49,7 @@ _PREVIEWS_DIR = _PROJECT_ROOT / "demo" / "assets" / "zone_previews"
 
 
 def _detect_screen_size(default: tuple[int, int] = (1920, 1080)) -> tuple[int, int]:
-    """Résolution d'écran réelle via tkinter (stdlib, pas de dépendance
-    supplémentaire) -- juste pour dimensionner la fenêtre, jamais affichée.
-    Retombe sur `default` si tkinter est indisponible (environnement
-    headless) plutôt que de planter l'outil pour un simple confort
-    d'affichage."""
+    """Résolution de l'écran via tkinter, `default` si indisponible."""
     try:
         import tkinter
 
@@ -116,9 +91,7 @@ class ZoneDrawer:
         self.current_points_px = []
 
     def close_current_zone(self) -> None:
-        """Ferme la zone en cours sur demande explicite ('n') plutôt
-        qu'après un nombre fixe de points -- un polygone valide demande
-        au moins 3 points, pas de maximum."""
+        """Ferme la zone en cours ('n'), s'il y a au moins 3 points."""
         if self.current_name is None:
             return
         if len(self.current_points_px) < MIN_POINTS_PER_ZONE:
@@ -145,9 +118,8 @@ class ZoneDrawer:
         return np.array(pts, dtype=np.int32)
 
     def render(self, show_ui: bool = True) -> np.ndarray:
-        """Image affichée pendant le dessin. `show_ui=False` : zones et
-        noms seulement, sans les indications -- utilisé pour l'aperçu
-        enregistré dans demo/assets/zone_previews/."""
+        """Image affichée pendant le dessin. `show_ui=False` : zones seules,
+        pour l'aperçu enregistré."""
         img = self.display.copy()
         for i, name in enumerate(self.zone_names[: self.zone_idx]):
             color = COLORS[i % len(COLORS)]
@@ -195,12 +167,8 @@ class ZoneDrawer:
 
 
 def _load_background(source_path: Path, frame_index: int) -> tuple[np.ndarray, str]:
-    """Renvoie (image_bgr, kind) où kind vaut "image" ou "video" --
-    déterminé par l'extension (mêmes listes que demo/src/config.py pour
-    les vidéos personnelles). Pour une vidéo, extrait la frame
-    `frame_index` (0 = première) comme fond de calibration : une image
-    fixe suffit, les zones sont des polygones normalisés indépendants du
-    reste de la vidéo."""
+    """Renvoie (image, "image" ou "video") selon l'extension. Pour une
+    vidéo, l'image numéro `frame_index`."""
     suffix = source_path.suffix.lower()
     if suffix in _IMAGE_EXTENSIONS:
         image = cv2.imread(str(source_path))
@@ -225,9 +193,7 @@ def _load_background(source_path: Path, frame_index: int) -> tuple[np.ndarray, s
 
 
 def _validate_sprite(sprite_path: Path) -> None:
-    """Mêmes vérifications qu'InteractiveOverlaySource (demo/src/source_cycle.py)
-    -- échoue ici plutôt qu'au prochain lancement de la démo, une fois la
-    scène déjà collée dans les fichiers de config."""
+    """Mêmes vérifications que la démo, pour échouer avant d'écrire la config."""
     sprite = cv2.imread(str(sprite_path), cv2.IMREAD_UNCHANGED)
     if sprite is None:
         sys.exit(f"PNG détouré introuvable ou illisible : {sprite_path}")
@@ -236,10 +202,7 @@ def _validate_sprite(sprite_path: Path) -> None:
 
 
 def _existing_scene_names() -> list[str]:
-    """Juste pour prévenir si --scene-name recalibre une scène déjà
-    définie (recalibrer est un usage légitime, cf. commentaire sur
-    'chantier' dans config/zones.yaml -- pas une erreur, seulement une
-    confirmation utile)."""
+    """Pour prévenir quand --scene-name redessine une scène existante."""
     try:
         with open(_ZONES_CONFIG_PATH, encoding="utf-8") as f:
             config = yaml.safe_load(f) or {}
@@ -249,11 +212,8 @@ def _existing_scene_names() -> list[str]:
 
 
 def _round_trip_yaml():
-    """Chargeur ruamel.yaml en mode aller-retour : relit puis réécrit un
-    fichier en gardant commentaires, guillemets et mise en forme -- vérifié
-    octet pour octet sur les fichiers de config/ (réécriture sans
-    modification = fichier identique). Réglages d'indentation alignés sur
-    le style de ces fichiers."""
+    """ruamel.yaml réglé pour réécrire les fichiers de config/ sans perdre
+    commentaires, guillemets ni mise en forme."""
     from ruamel.yaml import YAML
 
     y = YAML()
@@ -264,8 +224,7 @@ def _round_trip_yaml():
 
 
 def _flow_list(values: list):
-    """Liste YAML sur une ligne (`[a, b]`), comme les points des polygones
-    et les entrées de demo_sources déjà présents."""
+    """Liste YAML sur une ligne (`[a, b]`)."""
     from ruamel.yaml.comments import CommentedSeq
 
     seq = CommentedSeq(values)
@@ -276,10 +235,8 @@ def _flow_list(values: list):
 def _write_zones_config(
     scene_name: str, source_str: str, zones: dict, min_coverage_fraction: float | None
 ) -> str:
-    """Ajoute la scène à config/zones.yaml, ou met à jour ses zones si elle
-    existe déjà (recalibration). Une scène existante est modifiée sur
-    place, jamais recréée : ses commentaires sont conservés. Renvoie
-    "ajoutée" ou "mise à jour"."""
+    """Ajoute la scène à config/zones.yaml, ou la met à jour sur place.
+    Renvoie "ajoutée" ou "mise à jour"."""
     from ruamel.yaml.comments import CommentedMap
     from ruamel.yaml.scalarstring import DoubleQuotedScalarString
 
@@ -318,10 +275,9 @@ def _write_zones_config(
 
 
 def _write_demo_source(label: str, source_entry: str, background_str: str) -> str:
-    """Ajoute la scène interactive au cycle de config/demo.yaml
-    (demo_sources). Si une entrée utilise déjà la même image de fond, elle
-    est mise à jour (ex. autre silhouette) plutôt que dupliquée. Renvoie
-    "ajoutée", "mise à jour" ou "déjà présente"."""
+    """Ajoute la scène interactive à demo_sources (config/demo.yaml), ou
+    met à jour l'entrée qui a la même image de fond. Renvoie "ajoutée",
+    "mise à jour" ou "déjà présente"."""
     from ruamel.yaml.scalarstring import DoubleQuotedScalarString
 
     y = _round_trip_yaml()
@@ -404,9 +360,7 @@ def main() -> None:
         print(f"Note : '{args.scene_name}' existe déjà dans config/zones.yaml -- ce lancement la recalibre.")
 
     screen_w, screen_h = _detect_screen_size()
-    # Marge sous la résolution d'écran détectée -- sinon une image dont le
-    # ratio colle à celui de l'écran déborde légèrement (barre de titre,
-    # décorations de fenêtre, barre des tâches).
+    # Marge pour la barre de titre et la barre des tâches.
     max_w = args.max_width or int(screen_w * 0.9)
     max_h = args.max_height or int(screen_h * 0.85)
 
@@ -427,10 +381,7 @@ def main() -> None:
             drawer.undo_point()
 
     window = "Definition de zones -- clic gauche: point / clic droit: annuler / n: fermer / r: reset / q: quitter"
-    # WINDOW_NORMAL (plutôt que le défaut WINDOW_AUTOSIZE) rend la fenêtre
-    # redimensionnable à la souris -- OpenCV remappe automatiquement les
-    # coordonnées de clic vers l'espace de `display` quel que soit le
-    # redimensionnement, donc pas d'impact sur la précision des zones.
+    # Fenêtre redimensionnable ; OpenCV recale les clics, sans perte de précision.
     cv2.namedWindow(window, cv2.WINDOW_NORMAL)
     cv2.resizeWindow(window, display.shape[1], display.shape[0])
     cv2.setMouseCallback(window, on_mouse)
@@ -456,9 +407,7 @@ def main() -> None:
         print("Aucune zone definie.")
         return
 
-    # Chemin tel que fourni sur la ligne de commande, pas résolu en absolu
-    # -- attendu relatif à la racine du projet (comme le reste de
-    # config/zones.yaml et config/demo.yaml), collé tel quel dans le YAML.
+    # Chemin tel que fourni, relatif à la racine du projet comme dans config/.
     source_str = args.source.replace("\\", "/")
     label = args.label or args.scene_name.replace("_", " ")
 
@@ -495,9 +444,7 @@ def main() -> None:
                 "(config/demo.yaml) ou déposée dans demo/assets/custom/."
             )
 
-    # Nommé d'après la scène (pas d'après la source) : recalibrer une scène
-    # écrase son propre aperçu, et tous les aperçus restent regroupés au
-    # même endroit plutôt qu'éparpillés à côté de chaque source.
+    # Nommé d'après la scène : la redessiner remplace son aperçu.
     _PREVIEWS_DIR.mkdir(parents=True, exist_ok=True)
     annotated_path = _PREVIEWS_DIR / f"{args.scene_name}.png"
     cv2.imwrite(str(annotated_path), drawer.render(show_ui=False))

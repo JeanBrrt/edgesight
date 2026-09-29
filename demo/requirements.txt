@@ -6,14 +6,6 @@ onnxruntime
 # Lecture de config/demo.yaml
 PyYAML
 
-# Texte lissé, avec accents, sur les images (demo/src/common/text_render.py)
+# Texte lissé, avec accents, sur les images
 Pillow
 
-# Non listés ici, volontairement :
-# - torch : installé à part, version CPU ou CUDA au choix
-#   (detection/requirements-torch-cpu.txt ou -cu124.txt, voir README
-#   étape 3). Le lister ici imposerait la version CPU de PyPI, que
-#   l'installation CUDA ne remplacerait pas ensuite.
-# - nanodet : code vendored, installé en éditable (README étapes 2-4).
-# - tracking, agent (supervision, trackers, openai) : vivent dans agent/,
-#   voir agent/requirements.txt.
