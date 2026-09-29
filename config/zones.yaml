@@ -29,24 +29,16 @@ min_coverage_fraction: 0.2
 
 scenes:
   chantier:
-    # Scène interactive (image de fond + silhouette qui suit la souris,
-    # cf. InteractiveOverlaySource dans demo/src/source_cycle.py) -- pas
-    # une vraie vidéo. Zones calibrées sur
-    # demo/assets/scenes/05_construction_site_access.jpg via
-    # agent/src/alerts/define_zones.py (clic manuel sur l'image, coordonnées
-    # normalisées écrites automatiquement). Aperçu visuel :
-    # demo/assets/zone_previews/chantier.png. À
-    # recalibrer si la scène de fond change.
     source: "demo/assets/scenes/05_construction_site_access.jpg"
     zones:
       zone_centrale:
-        - [0.639, 0.85]
-        - [0.861, 0.537]
-        - [0.474, 0.462]
-        - [0.122, 0.584]
+        - [0.116, 0.584]
+        - [0.473, 0.463]
+        - [0.863, 0.53]
+        - [0.635, 0.854]
       zone_laterale:
-        - [0.363, 0.82]
-        - [0.138, 0.996]
-        - [0.003, 0.83]
-        - [0.003, 0.635]
-        - [0.045, 0.616]
+        - [0.049, 0.61]
+        - [0.366, 0.822]
+        - [0.139, 0.996]
+        - [0.002, 0.831]
+        - [0.002, 0.631]
