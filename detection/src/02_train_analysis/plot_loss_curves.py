@@ -1,21 +1,11 @@
-"""Trace la loss d'entraînement vs la loss de validation par epoch, pour
-diagnostiquer un éventuel sur-/sous-apprentissage.
-
-NanoDet calcule et logue une loss de validation avec la même fonction de
-perte que l'entraînement (`forward_train` est aussi appelé côté validation,
-cf. `nanodet/trainer/task.py::validation_step`) -- ce n'est donc pas du
-bruit ni une approximation, juste un signal qui n'était jusqu'ici pas
-extrait du log texte par `parse_training_log.py`.
-
-La loss totale (utilisée pour la rétropropagation) n'est pas logguée telle
-quelle par NanoDet, seulement ses 6 composantes (loss_qfl/loss_bbox/
-loss_dfl + leurs équivalents aux_*, cf. nanodet_plus_head.py::loss) --
-reconstruite ici en sommant les colonnes, par ligne.
+"""Trace la loss d'entraînement et de validation par epoch, pour repérer
+un sur- ou sous-apprentissage.
 
 Usage :
     uv run python detection/src/02_train_analysis/plot_loss_curves.py <results_dir>
-    (results_dir doit contenir train_losses.csv et val_loss.csv,
-    produits par parse_training_log.py)
+
+results_dir doit contenir train_losses.csv et val_loss.csv (générés par
+parse_training_log.py).
 """
 
 import csv
@@ -35,9 +25,7 @@ LOSS_COLUMNS = [
 
 
 def load_mean_loss_per_epoch(csv_path: str) -> dict[int, float]:
-    """Loss totale moyenne par epoch (moyenne des lignes loggées à cette
-    epoch, elles-mêmes déjà des moyennes de batch -- cf. task.py
-    `loss_states[loss_name].mean().item()`)."""
+    """Loss totale moyenne par epoch."""
     sums_by_epoch: dict[int, list[float]] = defaultdict(list)
     with open(csv_path, newline="", encoding="utf-8") as f:
         for row in csv.DictReader(f):
@@ -49,12 +37,7 @@ def load_mean_loss_per_epoch(csv_path: str) -> dict[int, float]:
 def main():
     results_dir = sys.argv[1]
     train_by_epoch = load_mean_loss_per_epoch(f"{results_dir}/train_losses.csv")
-    # val_loss.csv : vraie moyenne sur tout le set de validation (task.py
-    # validation_epoch_end) -- seule série de loss de validation parsée
-    # (parse_training_log.py n'extrait plus l'échantillon par batch,
-    # biaisé de façon fixe puisque le dataloader de validation n'est
-    # jamais mélangé, jusqu'à ~0,10-0,12 d'écart selon la résolution,
-    # cf. rapport section 4.1).
+    # Moyenne sur tout le set de validation
     val_by_epoch = load_mean_loss_per_epoch(f"{results_dir}/val_loss.csv")
 
     train_epochs = sorted(train_by_epoch)

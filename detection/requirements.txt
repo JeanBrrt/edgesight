@@ -1,18 +1,16 @@
-# Dépendances du pipeline de détection (entraînement, export, quantification)
-# Framework d'entraînement et bibliothèques de quantification/export à ajouter
-# une fois l'architecture choisie (unité B1).
+# Pipeline de détection
 numpy
 opencv-python
 onnx
 onnxruntime
 
-# Préparation du dataset (A2)
+# Préparation du dataset 
 pycocotools
 requests
 tqdm
 scikit-learn
 
-# Benchmark (B4)
+# Benchmark
 psutil
 
 # NanoDet impose pytorch-lightning<2, dont l'import (via lightning_fabric)

@@ -15,9 +15,7 @@ from nanodet.data.collate import naive_collate
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
 
-# ONNX Runtime sature tous les coeurs logiques par défaut (pas de limite
-# de threads posée ici) -- limité au niveau OS pour garder de la marge
-# thermique/réactivité (cf. quantize.py pour le détail).
+# ONNX Runtime prend tous les coeurs par défaut : on en garde la moitié.
 _n_cores = os.cpu_count() or 2
 psutil.Process().cpu_affinity(list(range(max(1, _n_cores // 2))))
 
@@ -25,16 +23,13 @@ CONFIG_PATH = "detection/third_party/nanodet/config/nanodet-plus-m-1.5x_896-pers
 INT8_ONNX = "detection/models/nanodet-plus-m-1.5x_896-person-car-int8-QDQ-u8s8.onnx"
 TEST_ANN = "detection/data/04_processed/test.json"
 TEST_IMG_DIR = "detection/data/03_raw/test"
-# En dur, cohérent avec la résolution d'export du fichier INT8 ci-dessus.
 INPUT_SIZE = (896, 896)
 
 load_config(cfg, CONFIG_PATH)
 cfg.defrost()
 cfg.data.val.input_size = INPUT_SIZE
 cfg.freeze()
-model = build_model(
-    cfg.model
-)  # pas de load_model_weight : on n'utilise que model.head.post_process
+model = build_model(cfg.model)  # sans poids, seul post_process sert
 pipeline = Pipeline(cfg.data.val.pipeline, cfg.data.val.keep_ratio)
 
 session = ort.InferenceSession(INT8_ONNX, providers=["CPUExecutionProvider"])
@@ -42,11 +37,9 @@ NUM_CLASSES = cfg.model.arch.head.num_classes
 
 
 def undo_export_sigmoid(raw_output, num_classes):
-    """L'export ONNX (_forward_onnx) applique déjà un sigmoid sur la partie
-    classification ; post_process en applique un second en interne. Sans cette
-    correction, le sigmoid est appliqué deux fois, ce qui compresse tous les
-    scores vers [0.5, 0.7] et laisse passer des centaines de faux candidats
-    au NMS (bug découvert et diagnostiqué en marge de E1, cf. justifications.md)."""
+    """Annule le sigmoid de l'export ONNX, que post_process réapplique.
+    Sans ça, les scores sont écrasés vers [0.5, 0.7] et des centaines de
+    faux candidats arrivent au NMS."""
     cls, reg = np.split(raw_output, [num_classes], axis=-1)
     cls = np.clip(cls, 1e-7, 1 - 1e-7)
     logits = np.log(cls / (1 - cls))

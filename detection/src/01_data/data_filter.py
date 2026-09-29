@@ -8,19 +8,10 @@ OUTPUT_DIR = "detection/data/02_filtered"
 CLASS_NAMES = ["person", "car"]
 SEED = 42
 
-# Cibles par bucket (B2.7) : "car" est systématiquement le bucket goulot
-# d'étranglement (seulement 3732 images car-seul et 8519 both dans
-# train2017, contre 55596 person-seul) — un N_PER_CLASS unique appliqué
-# aux 3 buckets ne fait qu'ajouter du person-seul et laisse ~4500 images
-# "both" (donc porteuses de voitures) inutilisées. On prend tout ce qui
-# existe pour les buckets liés à "car" (min() les plafonne de toute façon
-# à la taille réelle du pool, y compris pour les petits pools de val2017)
-# et on plafonne modérément person-seul pour ne pas retomber dans le même
-# travers.
 BUCKET_TARGETS = {
     "only_person": 5000,
     "only_car": 100_000,  # = tout le pool disponible
-    "both": 100_000,      # = tout le pool disponible, plus grosse source de "car"
+    "both": 100_000,  # = tout le pool disponible, plus grosse source de "car"
 }
 
 
@@ -45,7 +36,9 @@ def balanced_sample(class_ids: dict, bucket_targets: dict, seed: int) -> set:
     only_car = list(car_ids - person_ids)
     both = list(person_ids & car_ids)
 
-    sampled_person = rd.sample(population=only_person, k=min(bucket_targets["only_person"], len(only_person)))
+    sampled_person = rd.sample(
+        population=only_person, k=min(bucket_targets["only_person"], len(only_person))
+    )
     sampled_car = rd.sample(population=only_car, k=min(bucket_targets["only_car"], len(only_car)))
     sampled_both = rd.sample(population=both, k=min(bucket_targets["both"], len(both)))
 

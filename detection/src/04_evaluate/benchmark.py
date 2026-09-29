@@ -9,20 +9,17 @@ import onnxruntime as ort
 import psutil
 import torch
 
-from nanodet.data.batch_process import stack_batch_img  # noqa: F401 (référence pipeline, non utilisé directement ici)
 from nanodet.data.transform import Pipeline
 from nanodet.model.arch import build_model
 from nanodet.util import Logger, cfg, load_config, load_model_weight
 
 CONFIG_PATH = "detection/third_party/nanodet/config/nanodet-plus-m-1.5x_896-person-car.yml"
-# Modèle final retenu (896px, section 4.3) -- chemin canonique model_best.
+# Modèle final (896px, rapport section 4.3).
 PT_MODEL_PATH = "workspace/nanodet-plus-m-1.5x_896-person-car/model_best/nanodet_model_best.pth"
 ONNX_FP32_PATH = "detection/models/nanodet-plus-m-1.5x_896-person-car-fp32.onnx"
-# En dur, cohérent avec la résolution d'export des fichiers ci-dessus.
 INPUT_SIZE = (896, 896)
-# s8s8 (QDQ et QOperator) déjà écarté en B3.4/B4 sur le modèle 416px — pas
-# régénéré ici, les deux blocs restent optionnels (`if os.path.exists`) au
-# cas où on voudrait un jour revalider le choix sur le nouveau modèle.
+# Variantes écartées (rapport section 5.3), mesurées seulement si le
+# fichier existe. Seul le modèle QDQ u8s8 est livré avec le dépôt.
 ONNX_INT8_QDQ_S8S8_PATH = "detection/models/nanodet-plus-m-1.5x_896-person-car-int8-QDQ-s8s8.onnx"
 ONNX_INT8_QOPERATOR_S8S8_PATH = "detection/models/nanodet-plus-m-1.5x_896-person-car-int8-QOperator-s8s8.onnx"
 ONNX_INT8_QDQ_U8S8_PATH = "detection/models/nanodet-plus-m-1.5x_896-person-car-int8-QDQ-u8s8.onnx"
@@ -47,7 +44,7 @@ def prepare_input():
 
 
 def measure_rss():
-    """RSS courant (Mo), après un passage du garbage collector pour un chiffre stable."""
+    """RSS courant (octets), après un passage du garbage collector pour un chiffre stable."""
     gc.collect()
     return process.memory_info().rss
 
@@ -163,8 +160,8 @@ def main():
         gc.collect()
     else:
         print(
-            f"[info] {ONNX_INT8_QDQ_S8S8_PATH} introuvable — déjà écarté en "
-            "B3.4/B4 sur le modèle 416px, pas régénéré ici.\n"
+            f"[info] {ONNX_INT8_QDQ_S8S8_PATH} introuvable — variante écartée "
+            "(rapport section 5.3), ignorée.\n"
         )
 
     # --- 5. ONNX INT8 QOperator (s8s8), CPU (optionnel, si le fichier existe) ---
@@ -180,8 +177,8 @@ def main():
         gc.collect()
     else:
         print(
-            f"[info] {ONNX_INT8_QOPERATOR_S8S8_PATH} introuvable — "
-            "régénère-le avec quant_format=QOperator (fichier de sortie différent) pour l'inclure au comparatif.\n"
+            f"[info] {ONNX_INT8_QOPERATOR_S8S8_PATH} introuvable — variante écartée "
+            "(rapport section 5.3), ignorée.\n"
         )
 
     # --- 6. ONNX INT8 QDQ (u8s8 activations), CPU (optionnel, si le fichier existe) ---
@@ -198,7 +195,7 @@ def main():
     else:
         print(
             f"[info] {ONNX_INT8_QDQ_U8S8_PATH} introuvable — "
-            "régénère-le avec activation_type=QUInt8 pour l'inclure au comparatif.\n"
+            "le générer avec detection/src/03_quantize/quantize.py.\n"
         )
 
     print()

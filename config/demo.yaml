@@ -5,24 +5,16 @@
 config_path: "detection/third_party/nanodet/config/nanodet-plus-m-1.5x_416-person-car.yml"
 
 # Modèles disponibles. onnx_path et input_size sont toujours groupés
-# ensemble ici pour éviter le mismatch de résolution déjà rencontré (cf.
-# docs/justifications.md "Bug latent...") : chaque fichier ONNX est figé à
+# ensemble ici pour éviter le mismatch de résolution déjà rencontré (taille
+# d'entrée lue dans la config d'entraînement passée à 512px alors que le
+# modèle déployé restait en 416px : pas de plantage, mais des détections
+# silencieusement faussées) : chaque fichier ONNX est figé à
 # la résolution de son export, indépendamment de ce que dit config_path
 # (qui reflète la config d'ENTRAÎNEMENT courante, pas forcément celle du
 # modèle choisi ici).
 models:
   "896px":
-    # mAP=0,466 sur test.json (INT8, model_best epoch 36/50 -- training
-    # arrêté manuellement à l'epoch 40, cette epoch n'a pas amélioré le
-    # mAP val donc model_best est resté sur l'epoch 36). Meilleure
-    # précision du projet à ce jour (+1,7% vs 768px sur mAP, +6,4% sur
-    # AP_small, -4,2% sur AP_large), mais 25 FPS pure inférence pas
-    # mesuré pour CE modèle précis -- seule la latence architecture-only
-    # (indépendante des poids) a été mesurée en amont (section 4.3.1 du
-    # rapport, ~28 FPS à 896px). Entraînement non mené à son terme
-    # (epoch 40/50) : à retenir comme un modèle "meilleur effort",
-    # pas un résultat final comparable en rigueur aux 3 générations
-    # entraînées jusqu'au bout.
+    # mAP=0,462 sur test.json -- 26,9 FPS, meilleure précision du projet (rapport section 6)
     onnx_path: "detection/models/nanodet-plus-m-1.5x_896-person-car-int8-QDQ-u8s8.onnx"
     input_size: [896, 896]
   "512px":
