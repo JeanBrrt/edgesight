@@ -2,10 +2,10 @@
 silhouette+souris) ou une vidéo (zones vérifiées sur les vraies
 détections dedans) et laisse cliquer un nombre LIBRE de points (3
 minimum) par zone pour définir un polygone. Affiche le résultat en temps
-réel et imprime à la fin les blocs YAML prêts à coller dans
-config/zones.yaml (et config/demo.yaml si la scène est une nouvelle
-scène interactive) -- voir le README, section "Ajouter une scène avec
-zones de danger", pour un exemple complet. Un aperçu des zones dessinées
+réel, puis écrit la scène dans config/zones.yaml (et l'ajoute au cycle
+de config/demo.yaml si c'est une scène interactive) -- en conservant les
+commentaires existants (ruamel.yaml). `--dry-run` affiche seulement les
+blocs YAML équivalents, sans rien écrire. Un aperçu des zones dessinées
 est enregistré dans demo/assets/zone_previews/<scene-name>.png.
 
 Chaque scène définie ici est INDÉPENDANTE des autres (config/zones.yaml,
@@ -31,7 +31,7 @@ Usage :
         --scene-name <nom> --zones <nom1> <nom2> ... \
         [--sprite <png_rgba>] [--label <libellé_démo>] \
         [--frame-index N] [--min-coverage-fraction 0.2] \
-        [--max-width 1280] [--max-height ...]
+        [--max-width 1280] [--max-height ...] [--dry-run]
 
 Contrôles pendant le dessin :
     clic gauche  -- ajoute un point à la zone en cours
@@ -39,7 +39,7 @@ Contrôles pendant le dessin :
     'n'          -- ferme la zone en cours (3 points minimum) et passe
                     à la suivante
     'r'          -- redémarre la zone en cours depuis zéro
-    'q'          -- quitte et imprime le résultat (les zones déjà
+    'q'          -- quitte et enregistre le résultat (les zones déjà
                     bouclées sont conservées même si tout n'est pas fini)
 """
 
@@ -59,6 +59,9 @@ _VIDEO_EXTENSIONS = {".mp4", ".avi", ".mov", ".mkv", ".webm"}
 
 _PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 _ZONES_CONFIG_PATH = _PROJECT_ROOT / "config" / "zones.yaml"
+_DEMO_CONFIG_PATH = _PROJECT_ROOT / "config" / "demo.yaml"
+# Même préfixe que demo/src/common/source_cycle.py
+_INTERACTIVE_PREFIX = "INTERACTIVE:"
 _PREVIEWS_DIR = _PROJECT_ROOT / "demo" / "assets" / "zone_previews"
 
 
@@ -222,6 +225,104 @@ def _existing_scene_names() -> list[str]:
     return list((config.get("scenes") or {}).keys())
 
 
+def _round_trip_yaml():
+    """Chargeur ruamel.yaml en mode aller-retour : relit puis réécrit un
+    fichier en gardant commentaires, guillemets et mise en forme -- vérifié
+    octet pour octet sur les fichiers de config/ (réécriture sans
+    modification = fichier identique). Réglages d'indentation alignés sur
+    le style de ces fichiers."""
+    from ruamel.yaml import YAML
+
+    y = YAML()
+    y.preserve_quotes = True
+    y.width = 4096  # jamais de retour à la ligne automatique
+    y.indent(mapping=2, sequence=4, offset=2)
+    return y
+
+
+def _flow_list(values: list):
+    """Liste YAML sur une ligne (`[a, b]`), comme les points des polygones
+    et les entrées de demo_sources déjà présents."""
+    from ruamel.yaml.comments import CommentedSeq
+
+    seq = CommentedSeq(values)
+    seq.fa.set_flow_style()
+    return seq
+
+
+def _write_zones_config(
+    scene_name: str, source_str: str, zones: dict, min_coverage_fraction: float | None
+) -> str:
+    """Ajoute la scène à config/zones.yaml, ou met à jour ses zones si elle
+    existe déjà (recalibration). Une scène existante est modifiée sur
+    place, jamais recréée : ses commentaires sont conservés. Renvoie
+    "ajoutée" ou "mise à jour"."""
+    from ruamel.yaml.comments import CommentedMap
+    from ruamel.yaml.scalarstring import DoubleQuotedScalarString
+
+    y = _round_trip_yaml()
+    with open(_ZONES_CONFIG_PATH, encoding="utf-8") as f:
+        config = y.load(f)
+    scenes = config.get("scenes")
+    if scenes is None:
+        scenes = config["scenes"] = CommentedMap()
+
+    zones_map = CommentedMap()
+    for name, points in zones.items():
+        zones_map[name] = [_flow_list([x, y_]) for x, y_ in points]
+
+    # zones.py associe une source à UNE scène : si une autre scène utilise
+    # déjà cette source, une seule des deux serait active.
+    for other_name, other in scenes.items():
+        if other_name != scene_name and other.get("source") == source_str:
+            print(
+                f"Attention : la scène '{other_name}' utilise déjà cette source -- une seule "
+                f"des deux sera active. Pour recalibrer, relancer avec --scene-name {other_name}."
+            )
+
+    status = "mise à jour" if scene_name in scenes else "ajoutée"
+    scene = scenes.get(scene_name)
+    if scene is None:
+        scene = scenes[scene_name] = CommentedMap()
+    scene["source"] = DoubleQuotedScalarString(source_str)
+    if min_coverage_fraction is not None:
+        scene["min_coverage_fraction"] = min_coverage_fraction
+    scene["zones"] = zones_map
+
+    with open(_ZONES_CONFIG_PATH, "w", encoding="utf-8") as f:
+        y.dump(config, f)
+    return status
+
+
+def _write_demo_source(label: str, source_entry: str, background_str: str) -> str:
+    """Ajoute la scène interactive au cycle de config/demo.yaml
+    (demo_sources). Si une entrée utilise déjà la même image de fond, elle
+    est mise à jour (ex. autre silhouette) plutôt que dupliquée. Renvoie
+    "ajoutée", "mise à jour" ou "déjà présente"."""
+    from ruamel.yaml.scalarstring import DoubleQuotedScalarString
+
+    y = _round_trip_yaml()
+    with open(_DEMO_CONFIG_PATH, encoding="utf-8") as f:
+        config = y.load(f)
+    sources = config["demo_sources"]
+    entry = _flow_list([DoubleQuotedScalarString(label), DoubleQuotedScalarString(source_entry)])
+
+    status = "ajoutée"
+    for i, (_, existing) in enumerate(sources):
+        if existing == source_entry:
+            return "déjà présente"
+        if existing.startswith(_INTERACTIVE_PREFIX) and existing[len(_INTERACTIVE_PREFIX):].split("|")[0] == background_str:
+            sources[i] = entry
+            status = "mise à jour"
+            break
+    else:
+        sources.append(entry)
+
+    with open(_DEMO_CONFIG_PATH, "w", encoding="utf-8") as f:
+        y.dump(config, f)
+    return status
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("source", help="Image (scène interactive) ou vidéo (zones sur détections réelles) servant de fond.")
@@ -251,6 +352,10 @@ def main() -> None:
     parser.add_argument(
         "--max-height", type=int, default=None,
         help="Hauteur max d'affichage -- par defaut, deduite automatiquement de la resolution d'ecran detectee.",
+    )
+    parser.add_argument(
+        "--dry-run", action="store_true",
+        help="N'écrit rien dans config/ : affiche seulement les blocs YAML équivalents.",
     )
     args = parser.parse_args()
 
@@ -334,30 +439,38 @@ def main() -> None:
     source_str = args.source.replace("\\", "/")
     label = args.label or args.scene_name.replace("_", " ")
 
-    print("\n--- A coller dans config/zones.yaml (sous la cle 'scenes:') ---\n")
-    print(f"  {args.scene_name}:")
-    print(f'    source: "{source_str}"')
-    if args.min_coverage_fraction is not None:
-        print(f"    min_coverage_fraction: {args.min_coverage_fraction}")
-    print("    zones:")
-    for name, points in drawer.completed.items():
-        print(f"      {name}:")
-        for x, y in points:
-            print(f"        - [{x}, {y}]")
-
+    demo_entry = None
     if kind == "image":
-        print("\n--- A coller dans config/demo.yaml (sous la cle 'demo_sources:') ---\n")
         sprite_str = args.sprite.replace("\\", "/")
-        print(f'  - ["{label}", "INTERACTIVE:{source_str}|{sprite_str}"]')
+        demo_entry = f"{_INTERACTIVE_PREFIX}{source_str}|{sprite_str}"
+
+    if args.dry_run:
+        print("\n--dry-run : rien n'est écrit. Blocs équivalents :\n")
+        print("config/zones.yaml (sous 'scenes:') :")
+        print(f"  {args.scene_name}:")
+        print(f'    source: "{source_str}"')
+        if args.min_coverage_fraction is not None:
+            print(f"    min_coverage_fraction: {args.min_coverage_fraction}")
+        print("    zones:")
+        for name, points in drawer.completed.items():
+            print(f"      {name}:")
+            for x, y in points:
+                print(f"        - [{x}, {y}]")
+        if demo_entry:
+            print("\nconfig/demo.yaml (sous 'demo_sources:') :")
+            print(f'  - ["{label}", "{demo_entry}"]')
     else:
-        print(
-            "\nVidéo : pas d'entrée à ajouter si le fichier est déjà repris par "
-            "config/demo.yaml (demo_sources) ou déposé dans custom_videos_dir "
-            "(demo/assets/custom/, repris automatiquement) -- seul le chemin "
-            "compte pour que les zones soient reconnues, pas le libellé. Pour "
-            "lui donner un libellé personnalisé dans demo_sources :\n"
-        )
-        print(f'  - ["{label}", "{source_str}"]')
+        status = _write_zones_config(args.scene_name, source_str, drawer.completed, args.min_coverage_fraction)
+        print(f"\nScène '{args.scene_name}' {status} dans config/zones.yaml.")
+        if demo_entry:
+            status = _write_demo_source(label, demo_entry, source_str)
+            print(f"Scène interactive {status} dans le cycle de config/demo.yaml (touche 'c').")
+        else:
+            print(
+                "Vidéo : ses zones sont actives dès qu'elle est affichée, à condition "
+                "qu'elle soit dans le cycle -- listée dans demo_sources "
+                "(config/demo.yaml) ou déposée dans demo/assets/custom/."
+            )
 
     # Nommé d'après la scène (pas d'après la source) : recalibrer une scène
     # écrase son propre aperçu, et tous les aperçus restent regroupés au

@@ -34,7 +34,7 @@ scenes:
     # une vraie vidéo. Zones calibrées sur
     # demo/assets/scenes/05_construction_site_access.jpg via
     # agent/src/alerts/define_zones.py (clic manuel sur l'image, coordonnées
-    # normalisées imprimées automatiquement). Aperçu visuel :
+    # normalisées écrites automatiquement). Aperçu visuel :
     # demo/assets/zone_previews/chantier.png. À
     # recalibrer si la scène de fond change.
     source: "demo/assets/scenes/05_construction_site_access.jpg"

@@ -7,7 +7,11 @@ personnes et de véhicules par un modèle full CNN quantifié INT8
 réel, le tout interrogeable en langage naturel via un agent
 conversationnel qui s'appuie sur un LLM local (tool calling).
 
-Compétences mises en œuvre : préparation de données (COCO), fine-tuning
+Le projet est accompagné d'un **[rapport technique détaillé](docs/rapport.pdf)**
+(33 pages) qui justifie chaque choix et présente les mesures associées
+(voir [Rapport technique](#rapport-technique)).
+
+**Compétences mises en œuvre :** préparation de données (COCO), fine-tuning
 et évaluation d'un détecteur (NanoDet-Plus), une toolchain de
 quantification INT8 maison, sans outil clé en main (export ONNX et
 validation numérique contre PyTorch, lecteur de calibration dédié,
@@ -42,7 +46,7 @@ modèles.
 
 Déjà inclus dans le clone : les modèles ONNX (fp32 + INT8, 416/512/896px),
 le checkpoint pré-entraîné, les configs NanoDet et les vidéos de démo.
-Pas besoin de réentraîner pour tester.
+Pas besoin de réentraîner pour tester les démos.
 
 ## Installation
 
@@ -181,7 +185,22 @@ agent/third_party/llama.cpp/llama-server.exe \
 
 Les zones sont définies par scène dans `config/zones.yaml`.
 `agent/src/alerts/define_zones.py` permet de les dessiner à la souris,
-puis affiche les blocs YAML à coller dans la config.
+puis les enregistre directement dans la config, en conservant ses
+commentaires. Une nouvelle scène interactive est aussi ajoutée au cycle
+de la démo (touche `c`). `--dry-run` affiche le résultat sans rien
+écrire.
+
+Deux types de scène :
+
+- **Vidéo** : les zones sont testées sur les vraies détections de la
+  vidéo.
+- **Scène interactive** (image fixe + silhouette détourée qui suit la
+  souris, comme le chantier fourni) : elle permet de **provoquer à la
+  demande** des situations précises, difficiles à trouver dans les
+  banques de vidéos libres de droits, comme une personne qui entre
+  dans une zone de danger ou qui s'y attarde. On peut ainsi tester une
+  alerte de façon reproductible, en choisissant soi-même le lieu, le
+  moment et la trajectoire.
 
 ```bash
 # Sur une vidéo
@@ -200,7 +219,7 @@ enregistré dans `demo/assets/zone_previews/<scene-name>.png`.
 
 ## Rapport technique
 
-[`docs/rapport.tex`](docs/rapport.tex) documente l'ensemble du projet :
+Le [rapport technique](docs/rapport.pdf) documente l'ensemble du projet :
 les choix faits à chaque étape, les alternatives écartées, et les
 mesures qui les justifient (mAP, latence, taille, taux de réussite de
 l'agent). C'est la référence pour toute question sur le *pourquoi*
@@ -218,9 +237,10 @@ d'un choix ; le README ne couvre que l'installation et la démo.
 | Comment l'ensemble tourne-t-il en temps réel ? | Intégration système et démonstration live |
 | Limites et pistes d'amélioration | Synthèse générale et perspectives |
 
-Le rapport est fourni en source LaTeX (figures dans `docs/figures/`) ;
-le compiler avec une distribution LaTeX, par exemple
-`latexmk -pdf rapport.tex` depuis `docs/`.
+Le rapport est disponible en PDF, [`docs/rapport.pdf`](docs/rapport.pdf),
+à côté de sa source LaTeX, [`docs/rapport.tex`](docs/rapport.tex)
+(figures dans `docs/figures/`). Pour le recompiler après modification,
+depuis `docs/` : `tectonic rapport.tex` ou `latexmk -pdf rapport.tex`.
 [`docs/justifications.md`](docs/justifications.md) complète le rapport
 avec les notes de travail détaillées (commandes, tableaux comparatifs
 bruts).
