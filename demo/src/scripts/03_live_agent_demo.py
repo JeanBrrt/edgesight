@@ -290,7 +290,7 @@ LOG_PATH = "agent/data/03_live_agent_demo.log"
 
 def main():
     # Deux handlers sur le logger racine : un fichier (trace complète,
-    # cf. README) et une file lue par la fenêtre Logs (poll_log_queue,
+    # LOG_PATH) et une file lue par la fenêtre Logs (poll_log_queue,
     # plus bas) -- même enregistrement, deux destinations, aucune des deux
     # ne dépend de l'autre.
     log_queue: "queue.Queue[str]" = queue.Queue()

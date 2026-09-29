@@ -192,7 +192,7 @@ def llama_server():
         return
     if not LLAMA_SERVER_LAUNCH.get("auto_start", False):
         _log(f"aucun serveur sur {LLAMA_SERVER_URL} et auto_start désactivé "
-              "(config/agent.yaml) -- à lancer à la main (README, étape 8).")
+              "(config/agent.yaml) -- à lancer à la main (README, section Démo).")
         yield
         return
 

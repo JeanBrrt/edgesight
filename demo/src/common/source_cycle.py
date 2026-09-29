@@ -144,10 +144,10 @@ class InteractiveOverlaySource:
         # (1.0), sans toucher aux bornes MIN_SCALE/MAX_SCALE -- la molette
         # garde toute son amplitude, seul le point de depart change.
         self.scale = 1.0 / 3
-        # Invisible par defaut : sur la scene chantier, l'overlay ne doit
-        # apparaitre qu'a la demande (clic droit), pas des l'arrivee sur
-        # cette source.
-        self.visible = False
+        # Visible par defaut : la silhouette suit la souris des l'arrivee
+        # sur cette source, sans clic prealable (clic droit pour la
+        # masquer/reafficher).
+        self.visible = True
 
     def on_mouse(self, event: int, x: int, y: int, flags: int) -> None:
         if event == cv2.EVENT_MOUSEMOVE:
