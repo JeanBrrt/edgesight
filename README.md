@@ -151,32 +151,8 @@ uv run python setup/check_project.py   # optionnel : reproduction complète du p
 que le pipeline de données n'a pas tourné — normal si on ne veut que la
 démo (voir [Vérifier son installation](#vérifier-son-installation)).
 
-**8. Lancer les démos**
-
-```bash
-uv run python demo/src/scripts/01_detection_demo.py
-uv run python demo/src/scripts/02_tracking_demo.py
-uv run python demo/src/scripts/03_live_agent_demo.py
-```
-
-`03_live_agent_demo.py` lance lui-même `llama-server` s'il ne tourne pas
-déjà (quelques secondes au démarrage, messages `[llama-server]` dans la
-console, sortie du serveur dans `agent/data/llama-server.log`), et
-l'arrête en quittant. Réglages dans le bloc `llama_server` de
-`config/agent.yaml` (`auto_start: false` pour revenir au lancement
-manuel).
-
-Pour garder le serveur ouvert entre plusieurs lancements de la démo
-(évite de recharger le modèle à chaque fois), le lancer à part : il
-sera réutilisé tel quel, et jamais arrêté par la démo.
-
-```bash
-agent/third_party/llama.cpp/llama-server.exe \
-  -m agent/models/granite-4.1-3b-Q4_K_M.gguf \
-  --jinja -ngl 99 -c 8192 --port 8080
-# prêt quand les logs affichent "model loaded"
-# (ou quand `curl localhost:8080/health` renvoie {"status":"ok"})
-```
+Installation terminée : pour lancer les démos, voir la section
+[Démo](#démo).
 
 ## Détails de l'installation
 
@@ -272,7 +248,7 @@ plus haute qui reste ≤ la "CUDA Version" affichée par `nvidia-smi` —
 ex. driver en CUDA 13.0 → la 13.4 est exclue, prendre la 12.4 (vérifié
 avec `b11238`).
 
-**Options de lancement** (étape 8) : `--jinja` est indispensable — active
+**Options de lancement** (voir [Serveur LLM](#serveur-llm)) : `--jinja` est indispensable — active
 le tool-calling compatible OpenAI. `-ngl 99` décharge toutes les couches
 sur GPU (~2,8-3,3 Go de VRAM avec ce modèle en Q4_K_M, cf.
 [docs/rapport.tex](docs/rapport.tex) section 9.2 pour le comparatif de
@@ -350,7 +326,7 @@ par leur ordre (`01_`...`03_`) pour ne jamais avoir à deviner lequel
 lancer en premier ; `demo/src/common/` regroupe les 3 fichiers partagés
 entre eux (`config.py`, `fps_counter.py`, `source_cycle.py`). Seul le
 dernier (`03_live_agent_demo.py`) a besoin de `llama-server`, qu'il lance
-lui-même au besoin (étape 8 de l'[installation](#installation-pas-à-pas)) ; tous importent `agent/src/` (tracker, journal, alerte
+lui-même au besoin (voir [Serveur LLM](#serveur-llm) plus bas) ; tous importent `agent/src/` (tracker, journal, alerte
 selon le script) en plus de la détection ONNX INT8. Lancer depuis la
 racine du projet. Touche `c` dans la fenêtre vidéo pour changer de
 source (une des vidéos de démo, en cycle), `r` pour redémarrer la vidéo
@@ -421,6 +397,27 @@ plutôt que chacun individuellement) :
    # puis, à tout moment, dans la fenêtre Assistant :
    #   combien de personnes maintenant ?
    ```
+
+### Serveur LLM
+
+`03_live_agent_demo.py` lance lui-même `llama-server` s'il ne tourne pas
+déjà (quelques secondes au démarrage, messages `[llama-server]` dans la
+console, sortie du serveur dans `agent/data/llama-server.log`), et
+l'arrête en quittant. Réglages dans le bloc `llama_server` de
+`config/agent.yaml` (`auto_start: false` pour revenir au lancement
+manuel).
+
+Pour garder le serveur ouvert entre plusieurs lancements de la démo
+(évite de recharger le modèle à chaque fois), le lancer à part : il
+sera réutilisé tel quel, et jamais arrêté par la démo.
+
+```bash
+agent/third_party/llama.cpp/llama-server.exe \
+  -m agent/models/granite-4.1-3b-Q4_K_M.gguf \
+  --jinja -ngl 99 -c 8192 --port 8080
+# prêt quand les logs affichent "model loaded"
+# (ou quand `curl localhost:8080/health` renvoie {"status":"ok"})
+```
 
 ## Ajouter une scène avec zones de danger
 
