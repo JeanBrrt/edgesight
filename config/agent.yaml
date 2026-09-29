@@ -47,6 +47,22 @@ system_prompt: >-
 # Nombre max d'allers-retours LLM <-> tools avant d'abandonner (Agent.ask()).
 max_rounds: 4
 
+# Plafond de tokens générés par requête au LLM. Sans lui, llama-server
+# génère sans limite (max_tokens=-1 côté serveur) : un modèle qui part en
+# boucle bloque l'assistant jusqu'au timeout -- observé sur "merci !"
+# (3 700+ tokens, 90s), et déjà sur le banc de test (agent/eval/harness.py,
+# plafonné à 1024 pour la même raison). Un tool call + une réponse courte
+# tiennent en < 200 tokens ; 512 laisse de la marge sans laisser une boucle
+# durer plus de ~10s.
+#
+# Essayé puis écarté (mesuré sur Granite-4.1-3B, 20 questions + banc
+# multi-tours) : imposer un appel de tool à chaque question
+# (tool_choice="required") et masquer les valeurs passées de l'historique,
+# pour empêcher le recyclage d'une valeur périmée. Sans eux : 19/20 bons
+# tools, 0 boucle ; avec : pas mieux, et le modèle bouclait sur "merci" /
+# "bonjour" dans ~1 cas sur 3.
+max_tokens: 512
+
 # Mémoire conversationnelle (D2, agent/src/agent/agent.py:Session) -- si activée,
 # l'historique persiste entre deux appels de la MÊME session (portée par
 # l'appelant, ex. input_worker dans demo/src/scripts/03_live_agent_demo.py), pour

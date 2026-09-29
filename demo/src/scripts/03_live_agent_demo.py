@@ -148,20 +148,23 @@ def _format_tool_arg(value) -> str:
     return f'"{value}"' if isinstance(value, str) else str(value)
 
 
-def format_tool_calls(question: str, tool_calls: list[tuple[str, dict]]) -> str:
+def format_tool_calls(question: str, tool_calls: list[tuple[str, dict, str]]) -> str:
     """Résumé clair et minimaliste des tools D2 appelés par l'agent pour
     UNE question -- affiché dans le panneau "Outils appelés" de la
     fenêtre Assistant (voir main()), en plus de la réponse en langage
     naturel déjà affichée dans la conversation. `tool_calls` : liste
-    (nom, arguments) telle que renvoyée par `Agent.ask(tool_calls_log=...)`,
-    agent/src/agent/agent.py -- déjà dans l'ordre d'appel, tous rounds
-    confondus."""
+    (nom, arguments, résultat) telle que renvoyée par
+    `Agent.ask(tool_calls_log=...)`, agent/src/agent/agent.py -- déjà dans
+    l'ordre d'appel, tous rounds confondus. Le résultat est la valeur
+    brute renvoyée au LLM : permet de voir d'un coup d'œil si une réponse
+    fausse vient du tool ou de sa reformulation par le LLM."""
     if not tool_calls:
         return f"{question}\n  (aucun outil)"
     lines = [question]
-    for name, args in tool_calls:
+    for name, args, result in tool_calls:
         args_str = ", ".join(f"{key}={_format_tool_arg(value)}" for key, value in args.items())
         lines.append(f"  {name}({args_str})")
+        lines.append(f"    → {result}")
     return "\n".join(lines)
 
 
@@ -245,7 +248,7 @@ def alert_notifier(agent: Agent, alert: dict, answers: "queue.Queue[tuple[str, s
         f"[Systeme] Une alerte vient de se declencher automatiquement : "
         f"{alert['detail']}. Previens l'utilisateur en une phrase courte."
     )
-    tool_calls: list[tuple[str, dict]] = []
+    tool_calls: list[tuple[str, dict, str]] = []
     answer = agent.ask(pseudo_question, tool_calls_log=tool_calls)
     answers.put((f"[Alerte] {alert['detail']}", answer, tool_calls))
 
@@ -408,7 +411,7 @@ def main():
     append_chat(WELCOME_MESSAGE)
 
     def ask_and_queue(question: str) -> None:
-        tool_calls: list[tuple[str, dict]] = []
+        tool_calls: list[tuple[str, dict, str]] = []
         answer = agent.ask(question, session=session, tool_calls_log=tool_calls)
         answers.put((question, answer, tool_calls))
         root.after(0, reenable_chat_input)
