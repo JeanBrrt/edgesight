@@ -1,8 +1,19 @@
-# Viseio — Projet technique (entretien)
+# EdgeSight — Détection embarquée et agent conversationnel
 
-Projet de démonstration pour l'entretien Viseio : détection de personnes et
-véhicules par un modèle full CNN quantifié INT8 (≤5 Mo), interrogeable via
-un agent conversationnel simple (LLM local).
+Projet vitrine personnel, conçu pour démontrer et explorer, de bout en
+bout, une chaîne de vision par ordinateur pensée pour l'embarqué :
+détection de personnes et de véhicules par un modèle full CNN quantifié
+INT8 (≤5 Mo), suivi multi-objets, journal d'événements et alertes en
+temps réel, le tout interrogeable en langage naturel via un agent
+conversationnel qui s'appuie sur un LLM local (tool calling).
+
+Compétences mises en œuvre : préparation de données (COCO),
+fine-tuning et évaluation d'un détecteur (NanoDet-Plus), export ONNX et
+quantification INT8, benchmark de latence, tracking (ByteTrack),
+conception d'outils pour un agent LLM et banc de test comparatif de
+modèles. Les choix et mesures sont détaillés dans
+[docs/rapport.tex](docs/rapport.tex) et
+[docs/justifications.md](docs/justifications.md).
 
 ## Ce qui est inclus dans le clone
 
@@ -382,8 +393,8 @@ plutôt que chacun individuellement) :
    propre thread pendant que la vidéo continue de tourner sans
    interruption (voir [docs/justifications.md](docs/justifications.md)
    §E1/E2 pour le détail du thread + de la file `queue.Queue`
-   utilisés). C'est le script à utiliser pour la démo présentée à
-   l'entretien.
+   utilisés). C'est le script à utiliser pour une démonstration
+   complète du projet.
    ```bash
    uv run python demo/src/scripts/03_live_agent_demo.py
    # puis, à tout moment, dans la fenêtre Assistant :
