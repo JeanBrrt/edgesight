@@ -19,6 +19,7 @@ from ._config import (
     LLAMA_SERVER_URL,
     SYSTEM_PROMPT,
     DEFAULT_MAX_ROUNDS,
+    MAX_TOKENS,
     MEMORY_ENABLED,
     MEMORY_MAX_TURNS,
 )
@@ -99,7 +100,7 @@ class Agent:
         question: str,
         session: "Session | None" = None,
         max_rounds: int = DEFAULT_MAX_ROUNDS,
-        tool_calls_log: list[tuple[str, dict]] | None = None,
+        tool_calls_log: list[tuple[str, dict, str]] | None = None,
     ) -> str:
         """`session` optionnelle (défaut `None`) : sans elle, comportement
         D'ORIGINE inchangé -- une liste [system, user] neuve à chaque
@@ -116,7 +117,8 @@ class Agent:
         `session` -- aucun code à toucher ailleurs pour revenir en arrière.
 
         `tool_calls_log` optionnelle : si fournie, chaque appel d'outil
-        (nom, arguments) de CET échange y est ajouté au fur et à mesure --
+        (nom, arguments, résultat renvoyé au LLM -- chaîne, éventuellement
+        un message d'erreur) de CET échange y est ajouté au fur et à mesure --
         pour un appelant qui veut afficher les tools utilisés sans dépendre
         du fichier de log (cf. le panneau "Outils appelés" de
         demo/src/scripts/03_live_agent_demo.py). Sans elle (défaut), le
@@ -157,7 +159,7 @@ class Agent:
             rollback_len = 0  # jamais utilisé (liste jetable), valeur sans effet
         messages.append({"role": "user", "content": question})
 
-        # `tool_calls_log` accumule CHAQUE appel d'outil (nom, arguments) sur
+        # `tool_calls_log` accumule CHAQUE appel d'outil (nom, arguments, résultat) sur
         # toute la durée de cette question, tous rounds confondus -- sert au
         # résumé loggé ci-dessous (_log_summary) et, si l'appelant a fourni
         # sa propre liste, à son propre affichage (voir docstring ci-dessus).
@@ -175,12 +177,24 @@ class Agent:
         # court-circuit plus bas.
         had_ordinary_result = False
 
+        def _finish(answer: str, round_idx: int, outcome: str) -> str:
+            logger.info("Reponse finale (round %d, %s) : %s", round_idx, outcome, answer)
+            _log_summary(round_idx + 1, outcome)
+            if use_memory:
+                messages.append({"role": "assistant", "content": answer})
+                if session.messages is messages:
+                    self._trim_session(session, messages)
+            return answer
+
+        request_options = {"max_tokens": MAX_TOKENS} if MAX_TOKENS else {}
+
         for round_idx in range(max_rounds):
             try:
                 response = self.client.chat.completions.create(
                     model="local",
                     messages=messages,
                     tools=TOOL_SCHEMAS,
+                    **request_options,
                 )
             except OpenAIError as exc:
                 # Couvre les erreurs réseau (llama-server pas lancé/injoignable),
@@ -195,16 +209,21 @@ class Agent:
                 if use_memory and session.messages is messages:
                     del messages[rollback_len:]
                 return "Erreur : impossible de contacter le serveur LLM (llama-server est-il lancé ?)."
-            message = response.choices[0].message
+            choice = response.choices[0]
+            message = choice.message
+
+            # Plafond max_tokens atteint : le modèle est parti en boucle
+            # (une réponse normale en est très loin, cf. config/agent.yaml).
+            # Réponse tronquée jamais montrée ni gardée en mémoire.
+            if choice.finish_reason == "length":
+                logger.warning("Plafond max_tokens=%s atteint (round %d) -- reponse abandonnee.", MAX_TOKENS, round_idx)
+                _log_summary(round_idx + 1, "plafond max_tokens atteint")
+                if use_memory and session.messages is messages:
+                    del messages[rollback_len:]
+                return "Désolé, je n'ai pas réussi à formuler une réponse. Pouvez-vous reformuler la question ?"
 
             if not message.tool_calls:
-                logger.info("Reponse finale (round %d) : %s", round_idx, message.content)
-                _log_summary(round_idx + 1, "reponse finale")
-                if use_memory:
-                    messages.append({"role": "assistant", "content": message.content})
-                    if session.messages is messages:
-                        self._trim_session(session, messages)
-                return message.content
+                return _finish(message.content, round_idx, "reponse finale")
 
             messages.append(message.model_dump(exclude_none=True))
             final_answers: list[str] = []
@@ -214,11 +233,11 @@ class Agent:
                 except json.JSONDecodeError:
                     result = f"Erreur : arguments JSON invalides reçus pour '{call.function.name}'."
                     logger.info("Tool %s -- arguments JSON invalides : %r", call.function.name, call.function.arguments)
-                    tool_calls_log.append((call.function.name, {"_json_error": call.function.arguments}))
+                    tool_calls_log.append((call.function.name, {"_json_error": call.function.arguments}, result))
                 else:
                     result = self._execute_tool(call.function.name, arguments, now=request_ts)
                     logger.info("Tool %s(%s) -> %s", call.function.name, arguments, result)
-                    tool_calls_log.append((call.function.name, arguments))
+                    tool_calls_log.append((call.function.name, arguments, result))
                 if isinstance(result, FinalAnswer):
                     final_answers.append(result)
                 else:
@@ -235,14 +254,7 @@ class Agent:
             # -- sans cette vérification sur tout l'échange, le chiffre du
             # premier tour était perdu).
             if final_answers and not had_ordinary_result:
-                answer = " ".join(final_answers)
-                logger.info("Reponse finale directe (round %d, sans reformulation) : %s", round_idx, answer)
-                _log_summary(round_idx + 1, "reponse finale directe")
-                if use_memory:
-                    messages.append({"role": "assistant", "content": answer})
-                    if session.messages is messages:
-                        self._trim_session(session, messages)
-                return answer
+                return _finish(" ".join(final_answers), round_idx, "reponse finale directe, sans reformulation")
 
         logger.info("Abandon apres %d tours sans reponse finale.", max_rounds)
         _log_summary(max_rounds, "abandon")

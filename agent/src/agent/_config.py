@@ -27,6 +27,11 @@ LLAMA_SERVER_LAUNCH = _CONFIG.get("llama_server", {"auto_start": False})
 SYSTEM_PROMPT = _CONFIG["system_prompt"]
 DEFAULT_MAX_ROUNDS = _CONFIG["max_rounds"]
 
+# Plafond de tokens générés par requête -- voir config/agent.yaml.
+# `.get(...)` : un config/agent.yaml antérieur à cet ajout garde le
+# comportement d'origine (pas de plafond).
+MAX_TOKENS = _CONFIG.get("max_tokens")
+
 # Mémoire conversationnelle -- voir config/agent.yaml pour la discussion
 # complète. `.get(...)` avec valeurs par défaut : un config/agent.yaml
 # antérieur à cet ajout (sans bloc `memory:`) continue de fonctionner
