@@ -14,3 +14,12 @@ scikit-learn
 
 # Benchmark (B4)
 psutil
+
+# NanoDet impose pytorch-lightning<2, dont l'import (via lightning_fabric)
+# appelle pkg_resources -- retiré de setuptools à partir de la 81. Sans ce
+# plafond, l'installation de torch (README étape 3) tire un setuptools
+# récent et les 3 démos plantent dès l'import de nanodet.model.arch
+# (ModuleNotFoundError: No module named 'pkg_resources'). Installé ici,
+# à l'étape 1 et depuis PyPI, pour couvrir aussi bien torch CPU que CUDA
+# (l'index PyTorch de requirements-torch-cu124.txt ne sert pas setuptools).
+setuptools<81

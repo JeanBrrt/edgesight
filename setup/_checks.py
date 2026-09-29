@@ -6,8 +6,17 @@ auto-ajouté par Python pour le script lancé directement, comme
 detection/src/ -- pas besoin de sys.path.insert ici)."""
 
 import importlib
+import os
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Callable
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+# Tous les chemins vérifiés (et ceux des configs YAML) sont relatifs à la
+# racine du projet -- on s'y place d'office, pour que les scripts donnent
+# le même verdict quel que soit le dossier d'où ils sont lancés.
+os.chdir(PROJECT_ROOT)
 
 
 @dataclass
@@ -30,11 +39,26 @@ def check_file(path: str, label: str | None = None) -> CheckResult:
 
 def check_import(module_name: str, label: str | None = None, optional: bool = False) -> CheckResult:
     label = label or module_name
+    # Exception (pas seulement ImportError) : un module présent mais dont
+    # l'import plante plus loin (dépendance transitive cassée, cf.
+    # pkg_resources absent pour pytorch-lightning) doit être signalé, pas
+    # faire planter le script de vérification.
     try:
         importlib.import_module(module_name)
-    except ImportError as exc:
-        return CheckResult(label, False, f"import {module_name} échoue : {exc}", optional=optional)
+    except Exception as exc:
+        return CheckResult(label, False, f"import {module_name} échoue : {type(exc).__name__}: {exc}", optional=optional)
     return CheckResult(label, True, f"import {module_name} OK", optional=optional)
+
+
+def check_call(label: str, fn: Callable[[], str | None], optional: bool = False) -> CheckResult:
+    """Exécute une vérification arbitraire : `fn` lève une exception en
+    cas d'échec (son message devient le détail affiché), ou renvoie un
+    détail facultatif en cas de succès. Jamais d'exception propagée."""
+    try:
+        detail = fn() or ""
+    except Exception as exc:
+        return CheckResult(label, False, f"{type(exc).__name__}: {exc}", optional=optional)
+    return CheckResult(label, True, detail, optional=optional)
 
 
 def run(title: str, results: list[CheckResult]) -> bool:

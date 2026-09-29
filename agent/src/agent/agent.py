@@ -2,8 +2,8 @@
 compatible OpenAI), exécute les tools qu'il demande, renvoie le résultat,
 récupère la réponse finale en langage naturel.
 
-Suppose que `llama-server` tourne déjà (voir README / commande de lancement
-dans docs/justifications.md).
+Suppose que `llama-server` tourne déjà (voir la commande de lancement de
+la section Démo du README).
 """
 
 import json
